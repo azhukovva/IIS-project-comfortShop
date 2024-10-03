@@ -1,0 +1,10 @@
+/* 
+* Styles for all app 
+*/
+.container {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+  margin: 50px;
+  font-family: "Montserrat", sans-serif;
+}
