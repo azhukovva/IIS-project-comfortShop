@@ -1,0 +1,12 @@
+.header {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem 0;
+    /* background-color: black; */
+    justify-content: space-between;
+}
+
+.actionsContainer, .categoriesContainer {
+    display: flex;
+    gap: 1rem;
+}

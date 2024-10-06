@@ -1,0 +1,25 @@
+.container {
+    padding: .8rem 2.2rem;
+    color: black;
+    background-color: #fff;
+    font-size: 18px;
+    border: transparent;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    white-space: nowrap; 
+}
+
+.container:hover {
+    background-color: #F2EDE2;
+}
+
+.active {
+    background-color: black;
+    color: #fff;
+}
+
+.active:hover {
+    background-color: black;
+}

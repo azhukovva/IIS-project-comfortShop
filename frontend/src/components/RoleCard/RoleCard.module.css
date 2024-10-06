@@ -1,0 +1,28 @@
+.cardContainer {
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  padding: 50px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.4s, box-shadow 0.2s;
+}
+
+.cardContainer:hover {
+  transform: scale(1.05);
+  /* transform: translateY(-5px);     */
+}
+
+.textContainer {
+  margin-top: 2rem;
+  justify-content: center;
+    align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.textContainer * {
+  margin: 0;
+}
