@@ -1,13 +1,13 @@
 .cardContainer {
     width: 100%; 
+    flex: 0 1 calc(25% - 2.5rem);
     height: 17rem; 
+    margin: 0;
     border-radius: 12px; 
-    margin-top: 5rem;
     overflow: hidden; 
     background-size: cover; /* Cover the entire card with the image */
     background-position: center; 
     position: relative;
-    transition: box-shadow 0.3s ease; 
     cursor: pointer; 
   }
 
