@@ -1,0 +1,8 @@
+.categoriesContainer {
+  display: flex;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin-top: 3rem;
+  padding: 0;
+}

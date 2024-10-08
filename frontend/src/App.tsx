@@ -3,10 +3,10 @@ import "./App.css";
 import { Routes, Route } from "react-router-dom";
 
 // Pages
-import Home from "./pages/Welcome/Welcome";
-import Container from "./components/Container/Container";
 import Welcome from "./pages/Welcome/Welcome";
+import Container from "./components/Container/Container";
 import Categories from "./pages/Categories/Categories";
+import Home from "./pages/Home/Home";
 
 const App = () => {
   return (
