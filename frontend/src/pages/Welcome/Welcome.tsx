@@ -8,13 +8,13 @@ import icons from "../../utils/icons";
 const Welcome = () => {
   return (
     <Page title="Welcome" subtitle="to Comfort Store" isWelcomePage>
-      <div style={{ justifyContent: "center" }}>
+      <div className={classes.contentWelcome}>
         {/* NOTE - animation to one step */}
         <div className={classes.commentContainer}>
-          <span>
+          {/* <span>
             <span className={classes.oneStep}>One step</span> before your
             inspiration begins.
-          </span>
+          </span> */}
           <span>Please, let us know how you would like to continue:</span>
         </div>
         <div className={classes.cardsContainer}>

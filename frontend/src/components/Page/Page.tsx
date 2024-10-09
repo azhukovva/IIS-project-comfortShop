@@ -26,7 +26,7 @@ const Page = ({
   return (
     <section className={classes.container}>
       {isHeader && <Header />}
-      {isNavigation && <Breadcrumbs items={breadcrumbItems} />}
+
       <div
         className={
           isWelcomePage ? classes.titleContainerWelcome : classes.titleContainer
@@ -35,6 +35,7 @@ const Page = ({
         <h2 className={isWelcomePage ? classes.titleWelcome : classes.title}>
           {title}
         </h2>
+        {isNavigation && <Breadcrumbs items={breadcrumbItems} />}
         {subtitle && <p className={classes.subtitle}>{subtitle}</p>}
       </div>
       {children}

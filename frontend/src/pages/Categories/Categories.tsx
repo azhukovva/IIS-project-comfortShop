@@ -13,7 +13,7 @@ const Categories = () => {
       <div className={classes.categoriesContainer}>
         <CategoryCard title="Home&Cozyness" image={images.home} link="/categories/home"/>
         <CategoryCard title="Hobby" image={images.hobby} link="/categories/home"/>
-        <CategoryCard title="Sweets" image={images.sweets} link="/categories/home"/>
+        <CategoryCard title="Sweets" image={images.sweets} link="/categories/sweets"/>
         <CategoryCard title="Beauty&Care" image={images.beauty} link="/categories/home"/>
         <AddCategory />
       </div>

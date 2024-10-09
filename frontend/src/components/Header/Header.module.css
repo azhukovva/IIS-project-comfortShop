@@ -10,3 +10,8 @@
     display: flex;
     gap: 1rem;
 }
+
+.rightSideContainer {
+    display: flex;
+    gap: 2rem;
+}
