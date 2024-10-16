@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import classes from "./Page.module.css";
 import Header from "../Header/Header";
 import useBreadcrumb from "../../hooks/UseBreadcrumb";
 import Breadcrumbs from "../Breadcrumbs/Breadcrumbs";
+import { Context } from "../../utils/Context";
+import Modal from "../Modal/Modal";
+import LoginModal from "../Login/LoginModal/LoginModal";
 
 type PropsType = {
   children: React.ReactNode;
@@ -23,6 +26,8 @@ const Page = ({
 }: PropsType) => {
   const breadcrumbItems = useBreadcrumb();
 
+  const {isLoginClicked} = useContext(Context);
+
   return (
     <section className={classes.container}>
       {isHeader && <Header />}
@@ -39,6 +44,7 @@ const Page = ({
         {subtitle && <p className={classes.subtitle}>{subtitle}</p>}
       </div>
       {children}
+     {isLoginClicked && <LoginModal />}
     </section>
   );
 };

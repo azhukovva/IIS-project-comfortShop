@@ -1,16 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import classes from "./Header.module.css";
 
 import Button from "../Button/Button";
 import { Link, useLocation } from "react-router-dom";
 import LoginCircle from "../Login/LoginCircle/LoginCircle";
+import { Icon } from "@iconify/react";
+import icons from "../../utils/icons";
+import { Context } from "../../utils/Context";
 
 const Header = () => {
   const [activeAction, setActiveAction] = useState("buy");
   const [activeCategory, setActiveCategory] = useState("all");
 
   const location = useLocation();
+
+  const { handleLoginClick, isLoginClicked} = useContext(Context)
 
   useEffect(() => {
     if (location.pathname === "/categories") {
@@ -25,8 +30,6 @@ const Header = () => {
       setActiveCategory("beauty");
     }
   });
-
-  console.log(activeCategory);
 
   return (
     <header className={classes.header}>
@@ -68,9 +71,11 @@ const Header = () => {
           <Link to="/categories/beauty" style={{ textDecoration: "none" }}>
             <Button isActive={activeCategory === "beauty"}>Beauty&Care</Button>
           </Link>
+
+          <Button onClick={handleLoginClick}> <Icon icon={icons.guest}/></Button>
         </div>
         <div>
-          <LoginCircle isGuest />
+          {/* <LoginCircle isGuest /> */}
         </div>
       </div>
     </header>
