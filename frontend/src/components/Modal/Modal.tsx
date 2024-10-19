@@ -15,6 +15,7 @@ type PropsType = {
   textCancel: string;
   onClose: () => void;
   onSubmit: () => void;
+  comment?: string;
 };
 
 /*
@@ -31,26 +32,34 @@ const Modal = ({
   textCancel,
   onClose,
   onSubmit,
+  comment = "",
 }: PropsType) => {
-    const {handleLoginClick} = useContext(Context);
+  const { handleLoginClick } = useContext(Context);
   return (
     <FloatingPortal root={floatingRoot}>
       <div className={classes.outer}>
-        <div onClick={stopPropagation}>
-          <header>
+        <div onClick={stopPropagation} className={classes.modalContainer}>
+          <header className={classes.header}>
             <div className={classes.headerTitle}>
               <Icon icon={icons.user} height={25} width={25} />
               {title}
             </div>
-            <button onClick={handleLoginClick}>
-              <Icon icon={icons.add} height={25} width={25} />
-            </button>
+            <Icon
+              icon={icons.close}
+              height={25}
+              width={25}
+              onClick={handleLoginClick}
+              style={{ cursor: "pointer" }}
+            />
           </header>
+          {comment && <span className={classes.comment}>{comment}</span>}
           <div className={classes.content}>{children}</div>
           <footer className={classes.footer}>
             <div className={classes.actions}>
-              <Button onClick={onClose}>{textCancel}</Button>
-              <Button onClick={onSubmit}>{textOk}</Button>
+              <Button onClick={handleLoginClick}>{textCancel}</Button>
+              <Button onClick={onSubmit} isActive>
+                {textOk}
+              </Button>
             </div>
           </footer>
         </div>

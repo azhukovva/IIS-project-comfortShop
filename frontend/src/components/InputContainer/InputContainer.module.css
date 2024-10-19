@@ -1,0 +1,23 @@
+.hint{
+    font-size: .7rem;
+    font-weight: 400;
+}
+
+.label{
+    display: flex;
+    font-size: 18;
+    margin-bottom: .3rem;
+    font-weight: 500;
+    width: fit-content;
+    opacity: .8;
+}
+
+.required{
+    color: #741102;
+}
+
+.flex{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

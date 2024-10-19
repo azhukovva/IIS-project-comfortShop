@@ -3,6 +3,7 @@ enum icons {
     guest = "mingcute:user-question-fill",
     
     add = "mingcute:add-fill",
+    close = "eva:close-fill"
 }
 
 export default icons;
