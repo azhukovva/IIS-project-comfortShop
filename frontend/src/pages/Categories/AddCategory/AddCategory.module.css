@@ -1,6 +1,6 @@
 .cardContainer {
   width: 100%;
-  flex: 0 1 calc(50% - 2.5rem);
+  flex: 0 1 calc(25% - 2.5rem);
   height: 17rem;
   border-radius: 12px;
   overflow: hidden;

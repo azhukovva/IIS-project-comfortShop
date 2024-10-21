@@ -1,13 +1,9 @@
-import React, { useCallback, ChangeEvent, useState } from "react";
+import React, { useCallback, ChangeEvent, useState, useContext } from "react";
 import Modal from "../../Modal/Modal";
 
 import classes from "./LoginModal.module.css";
 import Input from "../../Input/Input";
-
-type PropsType = {
-  onSubmit: () => void;
-  onClose: () => void;
-};
+import { Context } from "../../../utils/Context";
 
 //REVIEW - need?
 // type LoginStateType = {
@@ -23,6 +19,8 @@ const initialState = {
 const LoginModal = () => {
   const [state, setState] = useState(initialState);
 
+  const { handleLoginClick } = useContext(Context);
+
   const handleInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       setState((prev) => ({
@@ -33,7 +31,7 @@ const LoginModal = () => {
     []
   );
 
-  const comment = "Buy, Sell and Trade your items with us!";
+  const comment = "Buy, Sell and Share your items with us!";
 
   return (
     <Modal
@@ -41,8 +39,9 @@ const LoginModal = () => {
       textOk="Log in"
       textCancel="Cancel"
       onSubmit={() => {}}
-      onClose={() => {}}
+      onClose={handleLoginClick}
       comment={comment}
+      iconName="user"
     >
       <div className={classes.container}>
         <Input

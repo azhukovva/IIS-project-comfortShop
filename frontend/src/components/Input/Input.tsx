@@ -9,7 +9,9 @@ type InputProps = {
   labelText: string;
   placeholder?: string;
   isRequired: boolean;
-  onChange?: ChangeEventHandler<HTMLInputElement>;
+  isBig?: boolean;
+  isSmall?: boolean;
+  onChange?: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
 };
 
 const Input = ({
@@ -18,18 +20,35 @@ const Input = ({
   value = "",
   placeholder = "",
   isRequired = false,
+  isBig = false,
+  isSmall = false,
   onChange = () => {},
 }: InputProps) => {
+  const inputStyles = isBig
+    ? classes.bigInput
+    : isSmall
+    ? classes.smallInput
+    : classes.input;
   return (
     <InputContainer labelText={labelText} isRequired={isRequired}>
-      <input
-        name={name}
-        value={value}
-        type="text"
-        placeholder={placeholder}
-        onChange={onChange}
-        className={classes.input}
-      />
+      {isBig ? (
+        <textarea
+          name={name}
+          value={value}
+          placeholder={placeholder}
+          onChange={onChange}
+          className={classes.bigInput}
+        />
+      ) : (
+        <input
+          name={name}
+          value={value}
+          type="text"
+          placeholder={placeholder}
+          onChange={onChange}
+          className={inputStyles}
+        />
+      )}
     </InputContainer>
   );
 };

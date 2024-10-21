@@ -4,6 +4,7 @@ import Page from "../../components/Page/Page";
 import classes from "./Home.module.css";
 import CategoryCard from "../../components/CategoryCard/CategoryCard";
 import images from "../../utils/images";
+import AddCategory from "../Categories/AddCategory/AddCategory";
 
 const Home = () => {
   return (
@@ -19,6 +20,7 @@ const Home = () => {
           image={images.candles}
           link="/categories/home/scent"
         />
+         <AddCategory />
       </div>
     </Page>
   );

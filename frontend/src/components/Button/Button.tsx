@@ -1,6 +1,8 @@
 import React, { MouseEventHandler, forwardRef } from "react";
 import classes from "./Button.module.css";
 import classNames from "classnames";
+import { Icon } from "@iconify/react";
+import icons from "../../utils/icons";
 
 type ButtonProps = {
   children: React.ReactNode;
@@ -8,6 +10,7 @@ type ButtonProps = {
   onClick?: MouseEventHandler<HTMLButtonElement>;
   isActive?: boolean;
   isOnMouse?: boolean;
+  iconName?: keyof typeof icons;
 };
 
 /*
@@ -22,6 +25,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       onClick = (e) => {},
       isActive = false,
       isOnMouse = false,
+      iconName,
     },
     ref
   ) => {
@@ -33,6 +37,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button ref={ref} onClick={onClick} className={buttonStyles}>
         {children}
+        {iconName && (
+          <Icon icon={icons[iconName]} style={{ marginLeft: ".5rem" }} />
+        )}
       </button>
     );
   }

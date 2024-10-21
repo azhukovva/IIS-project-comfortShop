@@ -16,6 +16,7 @@ type PropsType = {
   onClose: () => void;
   onSubmit: () => void;
   comment?: string;
+  iconName: keyof typeof icons;
 };
 
 /*
@@ -33,22 +34,22 @@ const Modal = ({
   onClose,
   onSubmit,
   comment = "",
+  iconName,
 }: PropsType) => {
-  const { handleLoginClick } = useContext(Context);
   return (
     <FloatingPortal root={floatingRoot}>
       <div className={classes.outer}>
         <div onClick={stopPropagation} className={classes.modalContainer}>
           <header className={classes.header}>
             <div className={classes.headerTitle}>
-              <Icon icon={icons.user} height={25} width={25} />
+              <Icon icon={icons[iconName]} height={25} width={25} />
               {title}
             </div>
             <Icon
               icon={icons.close}
               height={25}
               width={25}
-              onClick={handleLoginClick}
+              onClick={onClose}
               style={{ cursor: "pointer" }}
             />
           </header>
@@ -56,7 +57,7 @@ const Modal = ({
           <div className={classes.content}>{children}</div>
           <footer className={classes.footer}>
             <div className={classes.actions}>
-              <Button onClick={handleLoginClick}>{textCancel}</Button>
+              <Button onClick={onClose}>{textCancel}</Button>
               <Button onClick={onSubmit} isActive>
                 {textOk}
               </Button>

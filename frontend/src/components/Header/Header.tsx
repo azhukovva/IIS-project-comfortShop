@@ -15,7 +15,13 @@ const Header = () => {
 
   const location = useLocation();
 
-  const { handleLoginClick, isLoginClicked} = useContext(Context)
+  const { handleLoginClick, handleSelling, isAuth } = useContext(Context);
+
+  const handleSellClick = () => {
+    handleSelling(true);
+    setActiveAction("sell");
+    {!isAuth && handleLoginClick()};
+  };
 
   useEffect(() => {
     if (location.pathname === "/categories") {
@@ -41,7 +47,7 @@ const Header = () => {
           Buy
         </Button>
         <Button
-          onClick={() => setActiveAction("sell")}
+          onClick={() => handleSellClick()}
           isActive={activeAction === "sell"}
         >
           Sell
@@ -72,11 +78,11 @@ const Header = () => {
             <Button isActive={activeCategory === "beauty"}>Beauty&Care</Button>
           </Link>
 
-          <Button onClick={handleLoginClick}> <Icon icon={icons.guest}/></Button>
+          <Button onClick={handleLoginClick}>
+            <Icon icon={icons.guest} />
+          </Button>
         </div>
-        <div>
-          {/* <LoginCircle isGuest /> */}
-        </div>
+        <div>{/* <LoginCircle isGuest /> */}</div>
       </div>
     </header>
   );

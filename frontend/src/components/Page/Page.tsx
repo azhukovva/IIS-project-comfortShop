@@ -6,6 +6,7 @@ import Breadcrumbs from "../Breadcrumbs/Breadcrumbs";
 import { Context } from "../../utils/Context";
 import Modal from "../Modal/Modal";
 import LoginModal from "../Login/LoginModal/LoginModal";
+import AddNewItemModal from "../Modal/AddNewItemModal/AddNewItemModal";
 
 type PropsType = {
   children: React.ReactNode;
@@ -26,7 +27,9 @@ const Page = ({
 }: PropsType) => {
   const breadcrumbItems = useBreadcrumb();
 
-  const {isLoginClicked} = useContext(Context);
+  const {isLoginClicked, isAddNewItemClicked} = useContext(Context);
+
+console.log(isLoginClicked, isAddNewItemClicked);
 
   return (
     <section className={classes.container}>
@@ -45,6 +48,7 @@ const Page = ({
       </div>
       {children}
      {isLoginClicked && <LoginModal />}
+     {isAddNewItemClicked === true && <AddNewItemModal />}
     </section>
   );
 };

@@ -13,7 +13,7 @@
 
   .cardOverlay {
     position: absolute; 
-    padding: 1rem;
+    padding: 1.5rem;
     justify-content: flex-start;
     align-items: flex-end;
     top: 0;
