@@ -11,12 +11,17 @@ import { Context } from "../../../utils/Context";
 //   password: string;
 // };
 
+type LoginModalProps = {
+  onSubmit: () => void;
+  onClose: () => void;
+};
+
 const initialState = {
   username: "",
   password: "",
 };
 
-const LoginModal = () => {
+const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
   const [state, setState] = useState(initialState);
 
   const { handleLoginClick } = useContext(Context);
@@ -38,8 +43,8 @@ const LoginModal = () => {
       title="Log in"
       textOk="Log in"
       textCancel="Cancel"
-      onSubmit={() => {}}
-      onClose={handleLoginClick}
+      onSubmit={onSubmit}
+      onClose={onClose}
       comment={comment}
       iconName="user"
     >

@@ -20,7 +20,9 @@ const Header = () => {
   const handleSellClick = () => {
     handleSelling(true);
     setActiveAction("sell");
-    {!isAuth && handleLoginClick()};
+    {
+      !isAuth && handleLoginClick();
+    }
   };
 
   useEffect(() => {
@@ -78,8 +80,18 @@ const Header = () => {
             <Button isActive={activeCategory === "beauty"}>Beauty&Care</Button>
           </Link>
 
+          <Link to="/basket" style={{ textDecoration: "none" }}>
+            <Button isActive iconName="basket">
+              My Basket
+            </Button>
+          </Link>
+
           <Button onClick={handleLoginClick}>
-            <Icon icon={icons.guest} />
+            {isAuth ? (
+              <Icon icon={icons.user} />
+            ) : (
+              <Icon icon={icons.guest} width={24} />
+            )}
           </Button>
         </div>
         <div>{/* <LoginCircle isGuest /> */}</div>

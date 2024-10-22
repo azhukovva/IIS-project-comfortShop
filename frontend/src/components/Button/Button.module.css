@@ -23,3 +23,15 @@
 .active:hover {
     background-color: black;
 }
+
+.basket {
+    color: #fff;
+    background-color: #929079;
+}
+
+.isAttention {
+    background-color: #E73D00;
+    color: #fff;
+    font-size: 1.2rem;
+    font-family: "Unbounded";
+}

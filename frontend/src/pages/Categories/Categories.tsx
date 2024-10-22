@@ -17,12 +17,12 @@ const Categories = () => {
         <CategoryCard
           title="Home&Cozyness"
           image={images.home}
-          link="/categories/home"
+          link="/categories/home&Cozyness"
         />
         <CategoryCard
           title="Hobby"
           image={images.hobby}
-          link="/categories/home"
+          link="/categories/hobby&Leisure"
         />
         <CategoryCard
           title="Sweets"
@@ -32,7 +32,7 @@ const Categories = () => {
         <CategoryCard
           title="Beauty&Care"
           image={images.beauty}
-          link="/categories/home"
+          link="/categories/beauty&Care"
         />
         <AddCategory />
         <AddNewItem onClick={() => handleAddNewItem(true)} />

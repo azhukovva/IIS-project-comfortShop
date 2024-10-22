@@ -6,6 +6,7 @@ import RoleCard from "../../components/RoleCard/RoleCard";
 import icons from "../../utils/icons";
 
 const Welcome = () => {
+
   return (
     <Page title="Welcome" subtitle="to Comfort Store" isWelcomePage>
       <div className={classes.contentWelcome}>
@@ -18,7 +19,7 @@ const Welcome = () => {
           <span>Please, let us know how you would like to continue:</span>
         </div>
         <div className={classes.cardsContainer}>
-          <RoleCard title="User" description="continue as" icon={icons.user} page="/"/>
+          <RoleCard title="User" description="continue as" icon={icons.user} page="/categories" isUser/>
           <RoleCard title="Guest" description="continue as" icon={icons.guest} page="/categories"/>
         </div>
       </div>

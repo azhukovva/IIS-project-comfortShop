@@ -13,12 +13,12 @@ const Sweets = () => {
       <CategoryCard
         title="Painting"
         image={images.painting}
-        link="/categories/painting"
+        link="/categories/hobby&Leisure/Painting"
       />
       <CategoryCard
         title="Beading"
         image={images.beading}
-        link="/categories/beading"
+        link="/categories/hobby&Leisure/Beading"
       />
     </div>
   </Page>

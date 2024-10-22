@@ -10,6 +10,7 @@ type ButtonProps = {
   onClick?: MouseEventHandler<HTMLButtonElement>;
   isActive?: boolean;
   isOnMouse?: boolean;
+  isAttention?: boolean;
   iconName?: keyof typeof icons;
 };
 
@@ -25,6 +26,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       onClick = (e) => {},
       isActive = false,
       isOnMouse = false,
+      isAttention = false,
       iconName,
     },
     ref
@@ -32,6 +34,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const buttonStyles = classNames(classes.container, className, {
       [classes.active]: isActive,
       [classes.isOnMouse]: isOnMouse,
+      [classes.basket]: iconName === "basket",
+      [classes.isAttention]: isAttention,
     });
 
     return (

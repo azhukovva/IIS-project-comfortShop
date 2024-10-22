@@ -19,6 +19,7 @@ const AddNewItemModal = () => {
   const { handleAddNewItem } = useContext(Context);
 
   const currencies = ["CZK", "EUR"];
+  const categories = ["Home&Cozyness", "Hobby", "Sweets", "Beauty&Care"];
 
   return (
     <Modal
@@ -31,7 +32,7 @@ const AddNewItemModal = () => {
     >
       <div className={classes.container}>
         <Input labelText="Product Name" placeholder="Name" isRequired />
-        <Dropdown options={[]} placeholder="Category" labelText="Category" />
+        <Dropdown options={categories} placeholder="Category" labelText="Category" />
         <div
           style={{
             display: "flex",

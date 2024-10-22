@@ -8,17 +8,17 @@ import AddCategory from "../Categories/AddCategory/AddCategory";
 
 const Home = () => {
   return (
-    <Page title="Home" isHeader isNavigation>
+    <Page title="Home&Cozyness" isHeader isNavigation>
       <div className={classes.categoriesContainer}>
         <CategoryCard
           title="Plants"
           image={images.plants}
-          link="/categories/home/plants"
+          link="/categories/home&Cozyness/Plants"
         />
         <CategoryCard
           title="Scent&Ambience"
           image={images.candles}
-          link="/categories/home/scent"
+          link="/categories/home&Cozyness/Scent&Ambience"
         />
          <AddCategory />
       </div>

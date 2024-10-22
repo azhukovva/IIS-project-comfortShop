@@ -27,9 +27,10 @@ const Page = ({
 }: PropsType) => {
   const breadcrumbItems = useBreadcrumb();
 
-  const {isLoginClicked, isAddNewItemClicked} = useContext(Context);
+  const { isLoginClicked, handleLoginClick, isAddNewItemClicked } =
+    useContext(Context);
 
-console.log(isLoginClicked, isAddNewItemClicked);
+  console.log(isLoginClicked, isAddNewItemClicked);
 
   return (
     <section className={classes.container}>
@@ -47,8 +48,10 @@ console.log(isLoginClicked, isAddNewItemClicked);
         {subtitle && <p className={classes.subtitle}>{subtitle}</p>}
       </div>
       {children}
-     {isLoginClicked && <LoginModal />}
-     {isAddNewItemClicked === true && <AddNewItemModal />}
+      {isLoginClicked && (
+        <LoginModal onClose={handleLoginClick} onSubmit={handleLoginClick} />
+      )}
+      {isAddNewItemClicked === true && <AddNewItemModal />}
     </section>
   );
 };

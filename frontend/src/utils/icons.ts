@@ -9,6 +9,8 @@ enum icons {
   down = "mingcute:down-line",
   left = "mingcute:left-line",
   right = "mingcute:right-line",
+
+  basket = "mage:basket"
 }
 
 export default icons;
