@@ -6,6 +6,7 @@ import InputContainer from "../InputContainer/InputContainer";
 type InputProps = {
   name?: string;
   value?: string;
+  type?: string;
   labelText: string;
   placeholder?: string;
   isRequired: boolean;
@@ -18,6 +19,7 @@ const Input = ({
   name = "",
   labelText = "",
   value = "",
+  type = "",
   placeholder = "",
   isRequired = false,
   isBig = false,
@@ -43,7 +45,7 @@ const Input = ({
         <input
           name={name}
           value={value}
-          type="text"
+          type={type || "text"}
           placeholder={placeholder}
           onChange={onChange}
           className={inputStyles}

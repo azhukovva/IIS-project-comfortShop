@@ -60,6 +60,7 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
         <Input
           name="password"
           value={state.password}
+          type="password"
           labelText="Password"
           isRequired
           placeholder="Enter your Password"
