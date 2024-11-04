@@ -20,7 +20,6 @@ const Home = () => {
           image={images.candles}
           link="/categories/home&Cozyness/Scent&Ambience"
         />
-         <AddCategory />
       </div>
     </Page>
   );

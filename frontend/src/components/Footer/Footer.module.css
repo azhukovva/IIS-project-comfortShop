@@ -1,0 +1,13 @@
+.container {
+  display: flex;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  padding: 1rem;
+  padding-bottom: 3rem;
+  bottom: 0;
+  position: sticky;
+  background-color: #F1EDE2;
+  border-radius: 1rem 1rem 0rem 0rem;
+  margin-top: auto;
+}

@@ -36,10 +36,15 @@ const Modal = ({
   comment = "",
   iconName,
 }: PropsType) => {
+  const handleOutsideClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.target === event.currentTarget) {
+      onClose();
+    }
+  };
   return (
     <FloatingPortal root={floatingRoot}>
-      <div className={classes.outer}>
-        <div onClick={stopPropagation} className={classes.modalContainer}>
+      <div className={classes.outer} onClick={handleOutsideClick}>
+        <div className={classes.modalContainer}>
           <header className={classes.header}>
             <div className={classes.headerTitle}>
               <Icon icon={icons[iconName]} height={25} width={25} />

@@ -10,14 +10,15 @@ const Basket = () => {
   return (
     <Page title="My basket">
       <div className={classes.basketContentContainer}>
-        <div className={classes.topRow}>
+        {/* //REVIEW - need it? */}
+        {/* <div className={classes.topRow}>
           <Link
             to="/categories"
             style={{ textDecoration: "none", width: "fit-content" }}
           >
             <Button iconName="left">Back to Store</Button>
           </Link>
-        </div>
+        </div> */}
         {isEmpty ? (
           <div className={classes.isEmpty}>
             <span className={classes.isEmptyText}>Basket is empty</span>

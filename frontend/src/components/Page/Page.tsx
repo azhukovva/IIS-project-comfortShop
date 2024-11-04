@@ -4,9 +4,10 @@ import Header from "../Header/Header";
 import useBreadcrumb from "../../hooks/UseBreadcrumb";
 import Breadcrumbs from "../Breadcrumbs/Breadcrumbs";
 import { Context } from "../../utils/Context";
-import Modal from "../Modal/Modal";
 import LoginModal from "../Login/LoginModal/LoginModal";
 import AddNewItemModal from "../Modal/AddNewItemModal/AddNewItemModal";
+import AddNewCategoryModal from "../Modal/AddNewCategory/AddNewCategoryModal";
+import Footer from "../Footer/Footer";
 
 type PropsType = {
   children: React.ReactNode;
@@ -27,14 +28,20 @@ const Page = ({
 }: PropsType) => {
   const breadcrumbItems = useBreadcrumb();
 
-  const { isLoginClicked, handleLoginClick, isAddNewItemClicked } =
-    useContext(Context);
+  const {
+    isLoginClicked,
+    handleLoginClick,
+    isAddNewItemClicked,
+    isAddNewCategoryClicked,
+  } = useContext(Context);
 
   console.log(isLoginClicked, isAddNewItemClicked);
 
   return (
     <section className={classes.container}>
-      {isHeader && <Header />}
+      <div style={{ position: "sticky", top: "0", zIndex: 10 }}>
+        {isHeader && <Header />}
+      </div>
 
       <div
         className={
@@ -47,11 +54,15 @@ const Page = ({
         {isNavigation && <Breadcrumbs items={breadcrumbItems} />}
         {subtitle && <p className={classes.subtitle}>{subtitle}</p>}
       </div>
-      {children}
+      <div style={{ flex: "1", overflowY: "auto" }}> {children}</div>
+
+      <Footer />
+
       {isLoginClicked && (
         <LoginModal onClose={handleLoginClick} onSubmit={handleLoginClick} />
       )}
       {isAddNewItemClicked === true && <AddNewItemModal />}
+      {isAddNewCategoryClicked === true && <AddNewCategoryModal />}
     </section>
   );
 };

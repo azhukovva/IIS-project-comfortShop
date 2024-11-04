@@ -9,8 +9,10 @@ import AddCategory from "./AddCategory/AddCategory";
 import AddNewItem from "../../components/Item/AddNewItem/AddNewItem";
 import { Context } from "../../utils/Context";
 
+
 const Categories = () => {
-  const { handleAddNewItem } = useContext(Context);
+  const { handleAddNewItem, handleAddNewCategory, isAddNewCategoryClicked } = useContext(Context);
+  console.log(isAddNewCategoryClicked)
   return (
     <Page title="Categories" isHeader>
       <div className={classes.categoriesContainer}>
@@ -34,8 +36,8 @@ const Categories = () => {
           image={images.beauty}
           link="/categories/beauty&Care"
         />
-        <AddCategory />
-        <AddNewItem onClick={() => handleAddNewItem(true)} />
+        {/* <AddCategory onClick={() => handleAddNewCategory(true)}/>
+        <AddNewItem onClick={() => handleAddNewItem(true)} /> */}
       </div>
     </Page>
   );

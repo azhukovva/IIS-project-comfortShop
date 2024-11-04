@@ -28,13 +28,13 @@ const Header = () => {
   useEffect(() => {
     if (location.pathname === "/categories") {
       setActiveCategory("all");
-    } else if (location.pathname === "/categories/home") {
+    } else if (location.pathname === "/categories/home&Cozyness") {
       setActiveCategory("home");
-    } else if (location.pathname === "/categories/hobby") {
+    } else if (location.pathname === "/categories/hobby&Leisure") {
       setActiveCategory("hobby");
     } else if (location.pathname === "/categories/sweets") {
       setActiveCategory("sweets");
-    } else if (location.pathname === "/categories/beauty") {
+    } else if (location.pathname === "/categories/beauty&Care") {
       setActiveCategory("beauty");
     }
   });
@@ -62,11 +62,11 @@ const Header = () => {
             <Button isActive={activeCategory === "all"}>All Categories</Button>
           </Link>
 
-          <Link to="/categories/home" style={{ textDecoration: "none" }}>
+          <Link to="/categories/home&Cozyness" style={{ textDecoration: "none" }}>
             <Button isActive={activeCategory === "home"}>Home&Cozyness</Button>
           </Link>
 
-          <Link to="/categories/hobby" style={{ textDecoration: "none" }}>
+          <Link to="/categories/hobby&Leisure" style={{ textDecoration: "none" }}>
             <Button isActive={activeCategory === "hobby"}>Hobby</Button>
           </Link>
 
@@ -76,7 +76,7 @@ const Header = () => {
             </Button>
           </Link>
 
-          <Link to="/categories/beauty" style={{ textDecoration: "none" }}>
+          <Link to="/categories/beauty&Care" style={{ textDecoration: "none" }}>
             <Button isActive={activeCategory === "beauty"}>Beauty&Care</Button>
           </Link>
 
