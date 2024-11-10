@@ -5,6 +5,13 @@ import React, { Dispatch, createContext, useState } from "react";
  */
 export const floatingRoot = document.getElementById("portal");
 
+export const categoriesMap: Record<string, string[]> = {
+  "home-cozyness": ["Plants", "Candles", "Blankets", "Decor"],
+  "hobby-leisure": ["Books", "Board Games", "Sports Gear", "Art Supplies"],
+  "sweets": ["Chocolates", "Candies", "Gourmet Snacks"],
+  "beauty-care": ["Skincare", "Makeup", "Hair Care", "Fragrances"]
+};
+
 type ContextType = {
   isLoading: boolean;
   isAuth: boolean;

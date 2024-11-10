@@ -1,19 +1,19 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import classes from "./Page.module.css";
-import Header from "../Header/Header";
 import useBreadcrumb from "../../hooks/UseBreadcrumb";
 import Breadcrumbs from "../Breadcrumbs/Breadcrumbs";
 import { Context } from "../../utils/Context";
 import LoginModal from "../Login/LoginModal/LoginModal";
 import AddNewItemModal from "../Modal/AddNewItemModal/AddNewItemModal";
 import AddNewCategoryModal from "../Modal/AddNewCategory/AddNewCategoryModal";
-import Footer from "../Footer/Footer";
+import Sidebar from "../Sidebar/Sidebar";
 
 type PropsType = {
   children: React.ReactNode;
-  title: string;
+  title?: string;
   subtitle?: string;
   isWelcomePage?: boolean;
+  isBasketPage?: boolean;
   isHeader?: boolean;
   isNavigation?: boolean;
 };
@@ -23,46 +23,27 @@ const Page = ({
   title,
   subtitle,
   isWelcomePage,
-  isHeader,
+  isBasketPage,
   isNavigation,
 }: PropsType) => {
   const breadcrumbItems = useBreadcrumb();
 
-  const {
-    isLoginClicked,
-    handleLoginClick,
-    isAddNewItemClicked,
-    isAddNewCategoryClicked,
-  } = useContext(Context);
-
-  console.log(isLoginClicked, isAddNewItemClicked);
-
   return (
     <section className={classes.container}>
-      <div style={{ position: "sticky", top: "0", zIndex: 10 }}>
-        {isHeader && <Header />}
-      </div>
-
       <div
         className={
           isWelcomePage ? classes.titleContainerWelcome : classes.titleContainer
         }
       >
+        {isNavigation && <Breadcrumbs items={breadcrumbItems} />}
         <h2 className={isWelcomePage ? classes.titleWelcome : classes.title}>
           {title}
         </h2>
-        {isNavigation && <Breadcrumbs items={breadcrumbItems} />}
+
         {subtitle && <p className={classes.subtitle}>{subtitle}</p>}
       </div>
-      <div style={{ flex: "1", overflowY: "auto" }}> {children}</div>
 
-      <Footer />
-
-      {isLoginClicked && (
-        <LoginModal onClose={handleLoginClick} onSubmit={handleLoginClick} />
-      )}
-      {isAddNewItemClicked === true && <AddNewItemModal />}
-      {isAddNewCategoryClicked === true && <AddNewCategoryModal />}
+      <div className={isWelcomePage ? "" : classes.content}> {children}</div>
     </section>
   );
 };

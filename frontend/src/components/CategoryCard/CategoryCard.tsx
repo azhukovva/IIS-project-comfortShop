@@ -9,21 +9,19 @@ type PropsType = {
   link: string;
 };
 
-const CategoryCard = ({ title, image, link }: PropsType) => {
+const CategoryCard = ({ title, link, image }: PropsType) => {
   return (
-
-    <div
-      className={classes.cardContainer}
-      style={{ backgroundImage: `url(${image})` }} 
-    >
-      <Link to={link}>
+    // <div className={classes.cardContainer} style={{ backgroundImage: `url(${image})` }}>
+    <div className={classes.cardContainer} >
+    <Link to={link} className={classes.cardLink}>
       <div className={classes.cardOverlay}>
-        <h2 className={classes.title}>{title}</h2>
+        <h2 className={classes.cardTitle}>{title}</h2>
       </div>
-      </Link>
-    </div>
-
+    </Link>
+  </div>
+  
   );
 };
+
 
 export default CategoryCard;

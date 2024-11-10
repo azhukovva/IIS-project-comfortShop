@@ -1,12 +1,13 @@
 .cardContainer {
     width: 100%;
-    flex: 0 1 calc(25% - 2.5rem);
-    height: 11rem;
+    flex: 0 1 calc(50% - 2.5rem);
+    height: 7rem;
     border-radius: 10px;
     overflow: hidden;
     position: relative;
     cursor: pointer;
-    color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.3); 
+    color: #4A4A4A;
   }
   
   .cardOverlay {
@@ -20,13 +21,13 @@
     right: 0;
     bottom: 0;
     display: flex;
-    background: #E73D00;
     opacity: 1;
     transition: 0.3s ease;
   }
   
   .cardContainer:hover .cardOverlay {
-    background: #9c1601;
+    background: white;
+    border: none;
   }
   
   .titleContainer {

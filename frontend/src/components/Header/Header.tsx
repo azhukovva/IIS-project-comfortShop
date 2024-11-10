@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import classes from "./Header.module.css";
 
 import Button from "../Button/Button";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import LoginCircle from "../Login/LoginCircle/LoginCircle";
 import { Icon } from "@iconify/react";
 import icons from "../../utils/icons";
@@ -15,6 +15,7 @@ const Header = () => {
 
   const location = useLocation();
 
+  const navigate = useNavigate();
   const { handleLoginClick, handleSelling, isAuth } = useContext(Context);
 
   const handleSellClick = () => {
@@ -22,19 +23,20 @@ const Header = () => {
     setActiveAction("sell");
     {
       !isAuth && handleLoginClick();
+      setActiveAction("buy");
     }
   };
 
   useEffect(() => {
     if (location.pathname === "/categories") {
       setActiveCategory("all");
-    } else if (location.pathname === "/categories/home&Cozyness") {
+    } else if (location.pathname === "/categories/home-cozyness") {
       setActiveCategory("home");
-    } else if (location.pathname === "/categories/hobby&Leisure") {
+    } else if (location.pathname === "/categories/hobby-leisure") {
       setActiveCategory("hobby");
     } else if (location.pathname === "/categories/sweets") {
       setActiveCategory("sweets");
-    } else if (location.pathname === "/categories/beauty&Care") {
+    } else if (location.pathname === "/categories/beauty-care") {
       setActiveCategory("beauty");
     }
   });
@@ -55,8 +57,18 @@ const Header = () => {
           Sell
         </Button>
       </div>
-      {/* Categories */}
+      <div className={classes.title} onClick={() => navigate("/")}>Comfort Store</div>
       <div className={classes.rightSideContainer}>
+      <Link to="/basket" style={{ textDecoration: "none" }}>
+          <Button>Account</Button>
+        </Link>
+        <Link to="/basket" style={{ textDecoration: "none" }}>
+          <Button iconName="basket">My Basket</Button>
+        </Link>
+     
+      </div>
+      {/* Categories */}
+      {/* <div className={classes.rightSideContainer}>
         <div className={classes.categoriesContainer}>
           <Link to="/categories" style={{ textDecoration: "none" }}>
             <Button isActive={activeCategory === "all"}>All Categories</Button>
@@ -81,7 +93,7 @@ const Header = () => {
           </Link>
 
           <Link to="/basket" style={{ textDecoration: "none" }}>
-            <Button isActive iconName="basket">
+            <Button iconName="basket">
               My Basket
             </Button>
           </Link>
@@ -94,8 +106,8 @@ const Header = () => {
             )}
           </Button>
         </div>
-        <div>{/* <LoginCircle isGuest /> */}</div>
-      </div>
+      </div> */}
+
     </header>
   );
 };

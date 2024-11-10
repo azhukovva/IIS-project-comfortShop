@@ -12,10 +12,10 @@ const AddCategory = ({onClick}: PropsType) => {
   return (
     <div className={classes.cardContainer}>
       <div className={classes.cardOverlay} onClick={onClick}>
-        <span className={classes.text}>
+        {/* <span className={classes.text}>
           Want to sell products that do
           not fit into existing categories? Add your own!
-        </span>
+        </span> */}
         <div className={classes.titleContainer}><h2 className={classes.title}>Add Category</h2><Icon icon={icons.add} width={36}/></div>
         
       </div>

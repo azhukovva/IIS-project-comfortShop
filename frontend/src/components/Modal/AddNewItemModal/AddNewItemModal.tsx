@@ -31,12 +31,15 @@ const AddNewItemModal = () => {
     []
   );
 
+  //TODO 
+  const handleSubmitAddNewItem = () => {}
+
   return (
     <Modal
       title="Add New Product"
       textOk="Add"
       textCancel="Cancel"
-      onSubmit={() => {}}
+      onSubmit={handleSubmitAddNewItem}
       onClose={() => handleAddNewItem(false)}
       iconName="add"
     >
@@ -68,6 +71,7 @@ const AddNewItemModal = () => {
             labelText="Price"
             placeholder="Price"
             isRequired
+            onChange={handleInputChange}
             isSmall
           />
           <Dropdown
@@ -82,6 +86,7 @@ const AddNewItemModal = () => {
           labelText="Product Description"
           placeholder="Add description"
           isRequired={false}
+          onChange={handleInputChange}
           isBig
         />
       </div>

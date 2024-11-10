@@ -1,3 +1,7 @@
+import background from "../assets/images/bg.png"
+
+import main from "../assets/images/main.jpg";
+
 import home from "../assets/images/home.png";
 import plants from "../assets/images/houseplants.png";
 import candles from "../assets/images/candles.png";
@@ -16,6 +20,8 @@ import face from "../assets/images/face.jpeg";
 import body from "../assets/images/body.jpeg";
 
 const images = {
+  background: background,
+  main: main,
   // Main categories
   home: home,
   hobby: hobby,

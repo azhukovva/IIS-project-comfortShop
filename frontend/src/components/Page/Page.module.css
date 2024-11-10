@@ -2,9 +2,7 @@
   color: black;
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  /* if there is extra space available in the parent container, this .container will take it up proportionally. */
-  flex: 1;
+  padding: 0 2rem;
 }
 
 .titleContainer {
@@ -12,6 +10,7 @@
   flex-direction: column;
   font-family: "Unbounded", sans-serif;
   margin-top: 0;
+  padding: 0 2rem;
 }
 
 .titleContainerWelcome {
@@ -23,10 +22,10 @@
 }
 
 .title {
-  margin-bottom: 0;
-  margin-top: .5rem;
+  margin-top: 1rem;
   display: flex;
-  font-size: 80px;
+  font-size: 60px;
+  font-family: "League Script", cursive;
 }
 
 .titleWelcome {
@@ -40,4 +39,11 @@
   align-items: center;
   font-size: 30px;
   margin-top: 0.8rem;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
 }
