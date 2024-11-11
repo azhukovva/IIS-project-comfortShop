@@ -19,6 +19,17 @@ import beauty from "../assets/images/beauty.jpeg";
 import face from "../assets/images/face.jpeg";
 import body from "../assets/images/body.jpeg";
 
+// Home
+import desk from "../assets/images/desk.jpg";
+import dishFlower from "../assets/images/dishFlower.jpg";
+import dishFruit from "../assets/images/dishFruit.jpg";
+
+// Plants
+import plant1 from "../assets/images/plant1.jpg";
+
+// Beauty
+import hairCare from "../assets/images/hairCare.jpg";
+
 const images = {
   background: background,
   main: main,
@@ -42,4 +53,17 @@ const images = {
   bakery: bakery,
 };
 
-export default images;
+const productImages = {
+// plants
+plant1: plant1,
+
+//home
+desk: desk,
+dishFlower: dishFlower,
+dishFruit: dishFruit,
+
+// beauty
+hairCare: hairCare,
+}
+
+export {images, productImages};

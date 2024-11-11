@@ -46,4 +46,26 @@
       padding: 10px; /* Less padding on mobile */
     }
   }
+
+  /* ProductList.module.css */
+.items {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 items per row */
+  gap: 20px; /* Space between the items */
+  justify-items: center; /* Optional: centers the items horizontally */
+  padding: 20px;
+}
+
+@media (max-width: 1024px) {
+  .items {
+    grid-template-columns: repeat(2, 1fr); /* 2 items per row on medium screens */
+  }
+}
+
+@media (max-width: 600px) {
+  .items {
+    grid-template-columns: 1fr; /* 1 item per row on small screens */
+  }
+}
+
   

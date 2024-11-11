@@ -1,10 +1,52 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import Sidebar from "../Sidebar/Sidebar";
+
+import Sidebar from "../../../components/Sidebar/Sidebar";
 import classes from "./Category.module.css";
-import Container from "../Container/Container";
-import Breadcrumbs from "../Breadcrumbs/Breadcrumbs";
-import useBreadcrumb from "../../hooks/UseBreadcrumb";
+import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
+import useBreadcrumb from "../../../hooks/UseBreadcrumb";
+import Product from "../../../components/Item/Product";
+
+
+import { ProductType } from "../../../utils/axios";
+
+const products: ProductType[] = [
+  {
+    id: "1",
+    name: "Cozy Blanket",
+    description: "A soft and warm blanket to keep you cozy all day long.",
+    price: 29.99,
+    image: "https://via.placeholder.com/150?text=Cozy+Blanket",
+  },
+  {
+    id: "2",
+    name: "Scented Candle",
+    description: "Lavender scented candle for a calming atmosphere.",
+    price: 15.99,
+    image: "https://via.placeholder.com/150?text=Scented+Candle",
+  },
+  {
+    id: "3",
+    name: "Comfortable Pillow",
+    description: "A soft pillow for ultimate comfort and relaxation.",
+    price: 19.99,
+    image: "https://via.placeholder.com/150?text=Comfortable+Pillow",
+  },
+  {
+    id: "4",
+    name: "Art Print",
+    description: "A beautiful art print to decorate your living room.",
+    price: 39.99,
+    image: "https://via.placeholder.com/150?text=Art+Print",
+  },
+  {
+    id: "5",
+    name: "Decorative Vase",
+    description: "A stylish vase to add elegance to any room.",
+    price: 24.99,
+    image: "https://via.placeholder.com/150?text=Decorative+Vase",
+  },
+];
 
 // Define the category-subcategory mapping
 const categoriesMap: Record<string, string[]> = {
@@ -55,7 +97,11 @@ const Category = () => {
           </h2>
 
           <p>Display products for this category here...</p>
-          <div className={classes.items}></div>
+          <div className={classes.items}>
+          {products.map((product) => (
+          <Product key={product.id} product={product} />
+        ))}
+          </div>
         </div>
       </div>
     </div>

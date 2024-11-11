@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import classes from "./Container.module.css";
 
-import images from "../../utils/images";
+import { images } from "../../utils/images";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 import Sidebar from "../Sidebar/Sidebar";
@@ -65,7 +65,10 @@ const Container = ({ children }: PropsType) => {
     <div className={classes.container}>
       {!isWelcomePage && <Header />}
 
-      <div className={isWelcomePage ? "" : classes.content}>{children}</div>
+      <div className={isWelcomePage ? "" : classes.content}>
+        {children}
+        
+      </div>
       {isLoginClicked && (
         <LoginModal onClose={handleLoginClick} onSubmit={handleLoginClick} />
       )}

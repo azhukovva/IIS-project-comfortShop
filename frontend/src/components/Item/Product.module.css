@@ -1,0 +1,94 @@
+/* Product.module.css */
+.productCard {
+    border: 1px solid #ccc;
+    padding: 16px;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+  }
+  
+  .productImage img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+  
+  .productDetails {
+    margin-top: 16px;
+  }
+  
+  .productPrice {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  
+  .quickAddButton {
+    background-color: #ff6347;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .productGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  
+  .modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal {
+    background-color: white;
+    padding: 32px;
+    border-radius: 8px;
+    max-width: 600px;
+    width: 100%;
+    position: relative;
+  }
+  
+  .closeButton {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  
+  .modalContent {
+    display: flex;
+  }
+  
+  .modalImage img {
+    width: 200px;
+    height: auto;
+    margin-right: 20px;
+  }
+  
+  .modalDetails {
+    flex: 1;
+  }
+  
+  .addToCartButton {
+    background-color: #ff6347;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
