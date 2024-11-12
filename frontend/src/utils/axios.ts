@@ -13,7 +13,7 @@ import axios from "axios";
 
 export type ProductType = {
     id: string;
-    title: string; // name
+    name: string; // name
     description: string;
     price: number;
     image: string;

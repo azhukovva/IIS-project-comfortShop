@@ -1,10 +1,25 @@
-/* 
-* Styles for all app 
-*/
+/* Container - Main Layout */
 .container {
   display: flex;
-  height: 100%;
-  overflow: visible;
-  margin: 50px;
-  font-family: "Montserrat", sans-serif;
+  flex-direction: column; /* Stack header and footer with content */
+  min-height: 100vh; /* Ensure full page height */
 }
+
+.content {
+  flex: 1; 
+  padding: 1rem;
+}
+
+/* Ensure the layout is responsive - Stack sidebar and content on small screens */
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column; /* Stack sidebar and content vertically */
+  }
+
+  .sidebar {
+    width: 100%; /* Sidebar takes full width on small screens */
+    margin-bottom: 1rem;
+  }
+}
+
+

@@ -42,6 +42,8 @@ const RoleCard = ({
     setIsLoginClicked(false);
   };
 
+  console.log(icon)
+
   return (
     <>
       <Link

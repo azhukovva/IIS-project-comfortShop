@@ -1,0 +1,21 @@
+.container {
+  display: flex;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+  padding: 1.5rem;
+  padding-bottom: 3rem;
+  bottom: 0;
+  position: sticky;
+  background-color: rgba(245, 245, 245, 1); /* Soft, neutral background */
+  margin-top: auto;
+  justify-content: flex-start;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  z-index: 1000;
+}
+
+.content {
+  width: 50%;
+  display: flex;
+  gap: 2rem;
+}

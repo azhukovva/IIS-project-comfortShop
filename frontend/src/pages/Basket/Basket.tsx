@@ -8,21 +8,13 @@ import { Link } from "react-router-dom";
 const Basket = () => {
   const [isEmpty, setIsEmpty] = useState(true);
   return (
-    <Page title="My basket">
+    <Page title="My basket" isBasketPage isHeader>
       <div className={classes.basketContentContainer}>
-        <div className={classes.topRow}>
-          <Link
-            to="/categories"
-            style={{ textDecoration: "none", width: "fit-content" }}
-          >
-            <Button iconName="left">Back to Store</Button>
-          </Link>
-        </div>
         {isEmpty ? (
           <div className={classes.isEmpty}>
             <span className={classes.isEmptyText}>Basket is empty</span>
             <Link to="/categories" style={{ textDecoration: "none" }}>
-              <Button isAttention isActive iconName="right">
+              <Button isActive iconName="right">
                 Let's have some joy!
               </Button>
             </Link>
@@ -31,7 +23,7 @@ const Basket = () => {
           <div className={classes.mainContent}>
             <div className={classes.basketSummary}>
               <span>Total: </span>
-              <Button isAttention isActive>
+              <Button isActive>
                 Proceed to Checkout
               </Button>
             </div>

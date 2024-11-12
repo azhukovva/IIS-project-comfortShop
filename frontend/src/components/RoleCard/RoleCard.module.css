@@ -1,13 +1,14 @@
 .cardContainer {
   display: flex;
   flex-direction: column;
-  border-radius: 16px;
+  border-radius: 1rem;
   padding: 50px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   justify-content: center;
   align-items: center;
   transition: transform 0.4s, box-shadow 0.2s;
+  background-color: #ffe7cf2d;
 }
 
 .cardContainer:hover {
@@ -18,7 +19,7 @@
 .textContainer {
   margin-top: 2rem;
   justify-content: center;
-    align-items: center;
+  align-items: center;
   display: flex;
   flex-direction: column;
 }

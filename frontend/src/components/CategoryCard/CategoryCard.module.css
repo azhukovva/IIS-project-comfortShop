@@ -1,36 +1,82 @@
+/* Card Container */
 .cardContainer {
-    width: 100%; 
-    flex: 0 1 calc(25% - 2.5rem);
-    height: 17rem; 
-    margin: 0;
-    border-radius: 12px; 
-    overflow: hidden; 
-    background-size: cover; /* Cover the entire card with the image */
-    background-position: center; 
-    position: relative;
-    cursor: pointer; 
-  }
+  position: relative;
+  width: 100%;
+  flex: 0 1 calc(25% - 2rem);
+  height: 20rem;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #f0f0f0; /* Default background when image is hidden */
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+}
 
-  .cardOverlay {
-    position: absolute; 
-    padding: 1.5rem;
-    justify-content: flex-start;
-    align-items: flex-end;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0; 
-    background: rgba(0, 0, 0, 0.4);
-    display: flex; 
-    transition: opacity 0.3s ease;
-  }
+/* Hover effect - Only for card scaling and shadow */
+.cardContainer:hover {
+  transform: scale(1.03); /* Slightly increase the size on hover */
+  border: none;
+}
 
-  .cardContainer:hover .cardOverlay {
-    opacity: 0; 
-  }
-  
-  .title {
-    color: #fff; 
-    font-size: 2.2rem; 
-    margin: 0; 
-  }
+/* Hide the image by default */
+.cardContainer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover; /* Ensure the image covers the entire card */
+  background-position: center; /* Center the image within the card */
+  opacity: 0; /* Make the image invisible by default */
+  transition: opacity 0.3s ease; /* Smooth transition when the image fades in */
+  z-index: -1; /* Ensure the image is behind the overlay */
+}
+
+/* Show the image on hover */
+.cardContainer:hover::before {
+  opacity: 1; /* Make the image visible on hover */
+}
+
+/* Card Link */
+.cardLink {
+  display: block;
+  height: 100%; /* Ensure link covers the entire card */
+}
+
+/* Card Overlay - Title at the bottom */
+.cardOverlay {
+  position: absolute;
+  top: 0; /* Position the overlay at the top */
+  left: 0;
+  right: 0;
+  bottom: 0; /* Stretch the overlay to cover the entire card */
+  padding: 1rem;
+  background: white;
+  color: #4a4a4a;
+  text-align: center; /* Center the title */
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.3s ease, opacity 0.3s ease; /* Transition for background and opacity */
+  z-index: 1; /* Ensure the overlay is above the image */
+}
+
+/* Darker overlay on hover */
+.cardContainer:hover .cardOverlay {
+  background-color: #4a4a4a;
+  border: none;
+  color: white;
+}
+
+/* Card Title */
+.cardTitle {
+  font-size: 1.6rem;
+  font-weight: 300;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px; /* Optional: space out the letters */
+}

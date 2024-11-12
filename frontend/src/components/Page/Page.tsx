@@ -1,18 +1,19 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import classes from "./Page.module.css";
-import Header from "../Header/Header";
 import useBreadcrumb from "../../hooks/UseBreadcrumb";
 import Breadcrumbs from "../Breadcrumbs/Breadcrumbs";
 import { Context } from "../../utils/Context";
-import Modal from "../Modal/Modal";
 import LoginModal from "../Login/LoginModal/LoginModal";
 import AddNewItemModal from "../Modal/AddNewItemModal/AddNewItemModal";
+import AddNewCategoryModal from "../Modal/AddNewCategory/AddNewCategoryModal";
+import Sidebar from "../Sidebar/Sidebar";
 
 type PropsType = {
   children: React.ReactNode;
-  title: string;
+  title?: string;
   subtitle?: string;
   isWelcomePage?: boolean;
+  isBasketPage?: boolean;
   isHeader?: boolean;
   isNavigation?: boolean;
 };
@@ -22,36 +23,27 @@ const Page = ({
   title,
   subtitle,
   isWelcomePage,
-  isHeader,
+  isBasketPage,
   isNavigation,
 }: PropsType) => {
   const breadcrumbItems = useBreadcrumb();
 
-  const { isLoginClicked, handleLoginClick, isAddNewItemClicked } =
-    useContext(Context);
-
-  console.log(isLoginClicked, isAddNewItemClicked);
-
   return (
     <section className={classes.container}>
-      {isHeader && <Header />}
-
       <div
         className={
           isWelcomePage ? classes.titleContainerWelcome : classes.titleContainer
         }
       >
+        {isNavigation && <Breadcrumbs items={breadcrumbItems} />}
         <h2 className={isWelcomePage ? classes.titleWelcome : classes.title}>
           {title}
         </h2>
-        {isNavigation && <Breadcrumbs items={breadcrumbItems} />}
+
         {subtitle && <p className={classes.subtitle}>{subtitle}</p>}
       </div>
-      {children}
-      {isLoginClicked && (
-        <LoginModal onClose={handleLoginClick} onSubmit={handleLoginClick} />
-      )}
-      {isAddNewItemClicked === true && <AddNewItemModal />}
+
+      <div className={isWelcomePage ? "" : classes.content}> {children}</div>
     </section>
   );
 };

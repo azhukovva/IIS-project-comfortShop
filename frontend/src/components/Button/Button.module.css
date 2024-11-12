@@ -1,9 +1,9 @@
 .container {
     padding: .8rem 2.2rem;
-    color: black;
+    color: #4A4A4A;
     background-color: #fff;
     font-size: 18px;
-    border: transparent;
+    border: 1px solid transparent; 
     border-radius: 20px;
     cursor: pointer;
     display: flex;
@@ -12,25 +12,24 @@
 }
 
 .container:hover {
-    background-color: #F2EDE2;
+    border: 1px solid rgba(0, 0, 0, 0.3); 
 }
 
 .active {
-    background-color: black;
-    color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.3); 
 }
 
 .active:hover {
-    background-color: black;
+    color: #fff;
+    background-color: #4A4A4A;
 }
 
 .basket {
-    color: #fff;
-    background-color: #929079;
+    color: #4A4A4A;
+    /* background-color: #FECD95; */
 }
 
 .isAttention {
-    background-color: #E73D00;
     color: #fff;
     font-size: 1.2rem;
     font-family: "Unbounded";

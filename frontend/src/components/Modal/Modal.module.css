@@ -1,8 +1,8 @@
 .modalContainer {
   background-color: #fff;
-  padding: 2.5rem;
+  padding: 2.5rem 4rem;
   border-radius: .5rem;
-  max-width: 30rem;
+  max-width: 40rem;
   width: 100%;
   box-shadow: 0rem .3rem 1rem rgba(0, 0, 0, 0.3); 
 }
@@ -19,7 +19,7 @@
     bottom: 0;
     left: 0;
     top: 0;
-    z-index: 1;
+    z-index: 1000;
   }
 
 .header {

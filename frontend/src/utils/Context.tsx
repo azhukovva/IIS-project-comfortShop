@@ -5,6 +5,13 @@ import React, { Dispatch, createContext, useState } from "react";
  */
 export const floatingRoot = document.getElementById("portal");
 
+export const categoriesMap: Record<string, string[]> = {
+  "home-cozyness": ["Plants", "Candles", "Blankets", "Decor"],
+  "hobby-leisure": ["Books", "Board Games", "Sports Gear", "Art Supplies"],
+  "sweets": ["Chocolates", "Candies", "Gourmet Snacks"],
+  "beauty-care": ["Skincare", "Makeup", "Hair Care", "Fragrances"]
+};
+
 type ContextType = {
   isLoading: boolean;
   isAuth: boolean;
@@ -17,6 +24,9 @@ type ContextType = {
 
   isAddNewItemClicked: boolean;
   handleAddNewItem: (state: boolean) => void;
+
+  isAddNewCategoryClicked: boolean;
+  handleAddNewCategory: (state: boolean) => void;
 };
 
 type PropsType = {
@@ -35,6 +45,9 @@ const initialState: ContextType = {
 
   isAddNewItemClicked: false,
   handleAddNewItem: () => {},
+
+  isAddNewCategoryClicked: false,
+  handleAddNewCategory: () => {},
 };
 
 export const Context = createContext<ContextType>(initialState);
@@ -44,7 +57,9 @@ const ContextProvider = ({ children }: PropsType) => {
   const [isAuth, setIsAuth] = useState(false);
   const [isLoginClicked, setIsLoginClicked] = useState(false);
   const [isSelling, setIsSelling] = useState(false);
+  // Modals
   const [isAddNewItemClicked, setIsAddNewItemClicked] = useState(false);
+  const [isAddNewCategoryClicked, setIsAddNewCategoryClicked] = useState(false);
 
   const handleLoginClick = () => {
     setIsLoginClicked((prev) => !prev);
@@ -59,6 +74,10 @@ const ContextProvider = ({ children }: PropsType) => {
     setIsAddNewItemClicked(state);
   }
 
+  const handleAddNewCategory = (state: boolean) => {
+    setIsAddNewCategoryClicked(state);
+  }
+
   const value: ContextType = {
     isLoading,
     isAuth,
@@ -70,6 +89,9 @@ const ContextProvider = ({ children }: PropsType) => {
 
     isAddNewItemClicked,
     handleAddNewItem,
+
+    isAddNewCategoryClicked,
+    handleAddNewCategory,
   };
 
   return (
