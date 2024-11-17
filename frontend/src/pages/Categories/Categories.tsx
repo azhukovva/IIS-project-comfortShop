@@ -49,7 +49,7 @@ const Categories = () => {
           ></div>
         </section>
 
-        <section className={classes.container}>
+        <section className={classes.container} id="categories">
           <div className={classes.sectionTitle}>Shop By Category</div>
           <div className={classes.sectionContainer}>
             <CategoryCard

@@ -11,10 +11,23 @@
 
 import axios from "axios";
 
+interface getRequestType {}
+
+const {
+  get,
+  post,
+  delete: del,
+} = axios.create({
+  baseURL: "http://localhost:8000",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
 export type ProductType = {
-    id: string;
-    name: string; // name
-    description: string;
-    price: number;
-    image: string;
-}
+  id: string; // unique id
+  name: string; // name
+  description: string;
+  price: number;
+  image: string;
+};
