@@ -11,6 +11,8 @@ import Product from "./components/Item/Product";
 import Items from "./pages/Items/Items";
 import Category from "./pages/Categories/Category/Category";
 import ScrollToTop from "./hooks/ScrollToTop";
+import Subcategory from "./pages/Categories/Subcategory/Subcategory";
+import ProductPage from "./pages/Product/ProductPage";
 
 const App = () => {
   return (
@@ -28,7 +30,10 @@ const App = () => {
         <Route path="/categories/sweets" element={<Sweets />} />
         <Route path="/categories/beauty-care" element={<Beauty />} /> */}
 
-        <Route path="/categories/:category/:subcategory" element={<Items />} />
+        <Route path="/categories/:category/:subcategory" element={<Subcategory />} />
+
+        <Route path="/categories/:category/product/:id" element={<ProductPage />} />
+
       </Routes>
     </Container>
   );

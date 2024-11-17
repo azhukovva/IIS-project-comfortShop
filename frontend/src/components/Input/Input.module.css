@@ -1,8 +1,7 @@
 .input {
-  background-color: #f2ede2;
   color: black;
   padding: 12px 30px 12px 12px;
-  border: none;
+  border: 1px solid rgba(0, 0, 0, 0.3);
   border-radius: 0.5rem;
   font-size: 1rem;
   font-weight: 400;
@@ -10,11 +9,11 @@
 }
 
 .bigInput {
-  background-color: #f2ede2;
   color: black;
   padding: 12px 30px 12px 12px;
   border: none;
   border-radius: 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.3);
   font-size: 1rem;
   font-weight: 400;
   width: 100%;
@@ -24,13 +23,13 @@
 }
 
 .smallInput {
-    background-color: #f2ede2;
-    color: black;
-    padding: 12px 30px 12px 12px;
-    border: none;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    font-weight: 400;
-    width: 50%;
-    position: relative;
-  }
+  color: black;
+  padding: 12px 30px 12px 12px;
+  border: none;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  font-size: 1rem;
+  font-weight: 400;
+  width: 50%;
+  position: relative;
+}

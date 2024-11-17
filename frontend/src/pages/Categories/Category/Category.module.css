@@ -4,6 +4,7 @@
     flex-direction: column; /* Stack elements vertically on smaller screens */
     height: 100vh;
     width: 100%;
+    margin-bottom: 8rem;
   }
   
   .content {
@@ -17,12 +18,13 @@
   .categoryContent {
     flex-grow: 1; 
     background-color: white; 
+    padding: 0;
   }
   
   .categoryHeading {
     font-size: 2rem;
     font-weight: bold;
-    margin: 1.5rem 0 3rem 0rem;
+    margin: 1.5rem 0 1rem 0rem;
   }
   
   /* Styling for category content area */
@@ -50,10 +52,10 @@
   /* ProductList.module.css */
 .items {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 items per row */
-  gap: 20px; /* Space between the items */
-  justify-items: center; /* Optional: centers the items horizontally */
-  padding: 20px;
+  grid-template-columns: repeat(4, 1fr); /* 3 items per row */
+  gap: 1rem; /* Space between the items */
+  padding: 1rem;
+
 }
 
 @media (max-width: 1024px) {

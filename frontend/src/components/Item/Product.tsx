@@ -4,8 +4,7 @@ import classes from "./Product.module.css";
 import { useParams } from "react-router-dom";
 import { ProductType } from "../../utils/axios";
 
-
-const Product = ({product}: { product: ProductType }) => {
+const Product = ({ product }: { product: ProductType }) => {
   const [showModal, setShowModal] = useState(false);
 
   const handleModalToggle = () => {
@@ -13,22 +12,18 @@ const Product = ({product}: { product: ProductType }) => {
   };
 
   const { category, subcategory } = useParams();
-  console.log(category, subcategory);
+  // console.log(category, subcategory);
 
   return (
-    <div className={classes.productCard} onClick={handleModalToggle}>
-      <div className={classes.productImage}>
-        <img src={product.image} alt={product.name} />
+    <div className={classes.cardContainer}>
+      <div
+        className={classes.photoContainer}
+        style={{ backgroundImage: `url(${product.image})` }}
+      ></div>
+      <div className={classes.textContainer}>
+        <span style={{ textTransform: "uppercase"}}>{product.name}</span>
+        <span>{product.price}</span>
       </div>
-      <div className={classes.productDetails}>
-        <h3>{product.name}</h3>
-        <p className={classes.productPrice}>${product.price}</p>
-        <button className={classes.quickAddButton}>Quick Add</button>
-      </div>
-      {showModal && (
-        <div>Ahoj!</div>
-        // <ProductModal product={product} onClose={handleModalToggle} />
-      )}
     </div>
   );
 };

@@ -57,7 +57,7 @@ const Header = () => {
           Sell
         </Button>
       </div>
-      <div className={classes.title} onClick={() => navigate("/")}>Comfort Store</div>
+      <div className={classes.title} onClick={() => navigate("/categories")}>Comfort Store</div>
       <div className={classes.rightSideContainer}>
       <Link to="/basket" style={{ textDecoration: "none" }}>
           <Button>Account</Button>
