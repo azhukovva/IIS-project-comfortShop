@@ -3,13 +3,13 @@ from rest_framework import routers
 from rest_framework.authtoken import views
 
 from .views import (
-    CategoryViewSet,
-    ProductViewSet,
-    OrderViewSet,
+    AttributeValueViewSet,
     AttributeViewSet,
-    AttributeValueViewSet, 
-    BasketViewSet, 
-    BasketProductViewSet
+    BasketProductViewSet,
+    BasketViewSet,
+    CategoryViewSet,
+    OrderViewSet,
+    ProductViewSet,
 )
 
 router = routers.DefaultRouter()

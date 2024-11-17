@@ -23,16 +23,32 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    def get_all_parents_and_self(self) -> list["Category"]:
+        parents = [self]
+        parent = self.parent
+        while parent is not None:
+            parents.append(parent)
+            parent = parent.parent
+
+        return parents
+
+    def get_all_children(self, include_self=False) -> list["Category"]:
+        children = list(self.children.all())
+        for child in children:
+            children.extend(child.get_all_children())
+
+        if include_self:
+            children.append(self)
+
+        return children
+
 
 class Product(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    category = models.ForeignKey(
-        Category, related_name="products", on_delete=models.CASCADE
-    )
+    category = models.ForeignKey(Category, related_name="products", on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name="products", on_delete=models.CASCADE)
-    available = models.BooleanField(default=True)
     stock = models.PositiveIntegerField()
 
     def __str__(self):
@@ -44,9 +60,10 @@ class Product(models.Model):
 
 class Attribute(models.Model):
     name = models.CharField(max_length=200)
-    category = models.ForeignKey(
-        Category, related_name="attributes", on_delete=models.CASCADE
-    )
+    category = models.ForeignKey(Category, related_name="attributes", on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ["name", "category"]
 
     def __str__(self):
         return self.name
@@ -54,21 +71,14 @@ class Attribute(models.Model):
 
 class AttributeValue(models.Model):
     value = models.CharField(max_length=200)
-    attribute = models.ForeignKey(
-        Attribute, related_name="values", on_delete=models.CASCADE
-    )
+    attribute = models.ForeignKey(Attribute, related_name="values", on_delete=models.CASCADE)
+    products = models.ManyToManyField(Product)
+
+    class Meta:
+        unique_together = ["value", "attribute"]
 
     def __str__(self):
         return self.value
-
-
-class ProductAttributeValue(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    attribute = models.ForeignKey(Attribute, on_delete=models.CASCADE)
-    value = models.ForeignKey(AttributeValue, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.product.title} - {self.attribute.name}: {self.value.value}"
 
 
 # ORDER MODELS
@@ -125,3 +135,9 @@ class Review(models.Model):
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_user_basket(sender, instance=None, created=False, **kwargs):
+    if created:
+        Basket.objects.create(user=instance)
