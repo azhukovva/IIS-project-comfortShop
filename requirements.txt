@@ -3,3 +3,5 @@ Pillow
 djangorestframework
 django-filter
 django-cors-headers
+drf-yasg
+
