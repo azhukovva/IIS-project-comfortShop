@@ -22,12 +22,22 @@
 
 .categoryItem {
   padding: 1rem;
-  margin-bottom: .5rem;
+  margin-bottom: .7rem;
   font-size: 1.2rem;
   cursor: pointer;
   border-radius: 12px;
   transition: background-color 0.2s ease;
   border: 1px solid transparent;
+}
+
+.active {
+  padding: 1rem;
+  margin-bottom: .7rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: background-color 0.2s ease;
+  border: 1px solid rgba(0, 0, 0, 0.3); 
 }
 
 .categoryItem:hover {

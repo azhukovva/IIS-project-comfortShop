@@ -1,9 +1,11 @@
 import React, { Dispatch, createContext, useState } from "react";
 
+import Request from "./axios";
+
 /*
  * Root element where floating elements are generated
  */
-export const floatingRoot = document.getElementById("portal");
+export const floatingRoot = document.getElementById("root");
 
 export const categoriesMap: Record<string, string[]> = {
   "home-cozyness": ["Plants", "Candles", "Blankets", "Decor"],
@@ -49,6 +51,8 @@ const initialState: ContextType = {
   isAddNewCategoryClicked: false,
   handleAddNewCategory: () => {},
 };
+// Request protocol
+export const request = new Request()
 
 export const Context = createContext<ContextType>(initialState);
 

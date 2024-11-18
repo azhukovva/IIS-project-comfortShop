@@ -1,11 +1,11 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import Page from "../../components/Page/Page";
 
 import classes from "./Categories.module.css";
 import CategoryCard from "../../components/CategoryCard/CategoryCard";
 
 import { images, productImages } from "../../utils/images";
-import { Context } from "../../utils/Context";
+import { Context, request } from "../../utils/Context";
 import Button from "../../components/Button/Button";
 import { Link } from "react-router-dom";
 import PhotoCard from "../../components/PhotoCard/PhotoCard";
@@ -16,6 +16,22 @@ const photos = [];
 const Categories = () => {
   const { handleAddNewItem, handleAddNewCategory, isAddNewCategoryClicked } =
     useContext(Context);
+
+
+const fetchCategories = async () => {
+    try {
+      const response = await request.get.categories();
+      console.log(response);
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    fetchCategories();
+  })
+
   console.log(isAddNewCategoryClicked);
   return (
     <Page isHeader>
@@ -49,7 +65,7 @@ const Categories = () => {
           ></div>
         </section>
 
-        <section className={classes.container}>
+        <section className={classes.container} id="categories">
           <div className={classes.sectionTitle}>Shop By Category</div>
           <div className={classes.sectionContainer}>
             <CategoryCard

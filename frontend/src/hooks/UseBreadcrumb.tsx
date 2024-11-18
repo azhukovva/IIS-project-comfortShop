@@ -13,7 +13,7 @@ const useBreadcrumb = () => {
 
   const breadcrumbItems = pathSegments.map((segment, index) => {
     // Create URL for each segment
-    const url = `/${pathSegments.slice(0, index + 1).join("/")}`;
+    const url = segment === "categories" ? "/categories/#categories" : `/${pathSegments.slice(0, index + 1).join("/")}`;
     const title = segment
       .replace(/-/g, "&") // Replace hyphens with space
       .replace(/\b\w/g, (char) => char.toUpperCase());
