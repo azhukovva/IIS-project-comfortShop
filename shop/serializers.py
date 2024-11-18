@@ -13,25 +13,28 @@ from .models import (
 )
 
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username", "first_name", "last_name"]
+        fields = ["id", "username"]
 
 
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
     parent = serializers.SerializerMethodField()
     children = serializers.SerializerMethodField()
+    image = serializers.ImageField(required=False, allow_null=True)
 
     def get_children(self, obj):
         return CategorySerializer(obj.children.all(), many=True).data
 
     def get_parent(self, obj):
         return obj.parent.slug if obj.parent else None
+    
 
     class Meta:
         model = Category
-        fields = ["slug", "name", "parent", "children"]
+        fields = ["slug", "name", "parent", "children", "image"]
         read_only_fields = ["children"]
 
         extra_kwargs = {"url": {"lookup_field": "slug"}}
@@ -67,10 +70,11 @@ class ProductViewSerializer(serializers.ModelSerializer):
     )  # Show the category in the product
     user = UserSerializer(read_only=True)
     attribute_values = AttributeValueSerializer(many=True, source="attributevalue_set")
+    image = serializers.ImageField(read_only=True, allow_null=True)
 
     class Meta:
         model = Product
-        fields = ["id", "title", "description", "price", "category", "user", "stock", "attribute_values"]
+        fields = ["id", "title", "description", "price", "category", "user", "stock", "attribute_values", "image"]
 
 
 class ProductWriteSerializer(serializers.ModelSerializer):
@@ -82,13 +86,14 @@ class ProductWriteSerializer(serializers.ModelSerializer):
     attribute_values = serializers.ListField(
         child=serializers.DictField(child=serializers.CharField()), write_only=True, required=False
     )
+    image = serializers.ImageField(required=False, allow_null=True)
 
     class Meta:
         model = Product
-        fields = ["id", "title", "description", "price", "category", "user", "stock", "attribute_values"]
+        fields = ["id", "title", "description", "price", "category", "user", "stock", "attribute_values", "image"]
 
     def validate_attribute_values(self, attribute_values):
-        category_slug = self.initial_data.get("category")
+        category_slug = self.initial_data.get("category", None)
         if not category_slug:
             raise serializers.ValidationError("Category is required to validate attribute values.")
 

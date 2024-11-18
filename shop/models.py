@@ -16,7 +16,7 @@ class Category(models.Model):
         related_name="children",
         on_delete=models.CASCADE,
         blank=True,
-        null=True,
+        null=True,  
     )
     image = models.ImageField(upload_to="category_images/", blank=True, null=True)
 
@@ -50,6 +50,7 @@ class Product(models.Model):
     category = models.ForeignKey(Category, related_name="products", on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name="products", on_delete=models.CASCADE)
     stock = models.PositiveIntegerField()
+    image = models.ImageField(upload_to="products/", blank=True, null=True)
 
     def __str__(self):
         return self.title
