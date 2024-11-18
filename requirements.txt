@@ -4,4 +4,4 @@ djangorestframework
 django-filter
 django-cors-headers
 drf-yasg
-
+psycopg2-binary
