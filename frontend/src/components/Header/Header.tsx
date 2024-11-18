@@ -4,9 +4,6 @@ import classes from "./Header.module.css";
 
 import Button from "../Button/Button";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import LoginCircle from "../Login/LoginCircle/LoginCircle";
-import { Icon } from "@iconify/react";
-import icons from "../../utils/icons";
 import { Context } from "../../utils/Context";
 
 const Header = () => {
@@ -21,8 +18,9 @@ const Header = () => {
   const handleSellClick = () => {
     handleSelling(true);
     setActiveAction("sell");
-    {
-      !isAuth && handleLoginClick();
+
+    if (!isAuth) {
+      handleLoginClick();
       setActiveAction("buy");
     }
   };
@@ -57,57 +55,17 @@ const Header = () => {
           Sell
         </Button>
       </div>
-      <div className={classes.title} onClick={() => navigate("/categories")}>Comfort Store</div>
+      <div className={classes.title} onClick={() => navigate("/categories")}>
+        Comfort Store
+      </div>
       <div className={classes.rightSideContainer}>
-      <Link to="/basket" style={{ textDecoration: "none" }}>
+        <Link to="/account" style={{ textDecoration: "none" }}>
           <Button>Account</Button>
         </Link>
         <Link to="/basket" style={{ textDecoration: "none" }}>
           <Button iconName="basket">My Basket</Button>
         </Link>
-     
       </div>
-      {/* Categories */}
-      {/* <div className={classes.rightSideContainer}>
-        <div className={classes.categoriesContainer}>
-          <Link to="/categories" style={{ textDecoration: "none" }}>
-            <Button isActive={activeCategory === "all"}>All Categories</Button>
-          </Link>
-
-          <Link to="/categories/home&Cozyness" style={{ textDecoration: "none" }}>
-            <Button isActive={activeCategory === "home"}>Home&Cozyness</Button>
-          </Link>
-
-          <Link to="/categories/hobby&Leisure" style={{ textDecoration: "none" }}>
-            <Button isActive={activeCategory === "hobby"}>Hobby</Button>
-          </Link>
-
-          <Link to="/categories/sweets" style={{ textDecoration: "none" }}>
-            <Button isActive={activeCategory === "sweets"}>
-              Sweets&Pastries
-            </Button>
-          </Link>
-
-          <Link to="/categories/beauty&Care" style={{ textDecoration: "none" }}>
-            <Button isActive={activeCategory === "beauty"}>Beauty&Care</Button>
-          </Link>
-
-          <Link to="/basket" style={{ textDecoration: "none" }}>
-            <Button iconName="basket">
-              My Basket
-            </Button>
-          </Link>
-
-          <Button onClick={handleLoginClick}>
-            {isAuth ? (
-              <Icon icon={icons.user} />
-            ) : (
-              <Icon icon={icons.guest} width={24} />
-            )}
-          </Button>
-        </div>
-      </div> */}
-
     </header>
   );
 };

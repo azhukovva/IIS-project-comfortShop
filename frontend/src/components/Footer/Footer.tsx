@@ -8,6 +8,14 @@ import Button from "../Button/Button";
 
 const Footer = () => {
   const { handleAddNewItem, handleAddNewCategory } = useContext(Context);
+
+  const addCategory = async () => {
+    try {
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <footer className={classes.container}>
       <div className={classes.content}>
@@ -24,6 +32,7 @@ const Footer = () => {
           Add New Category
         </Button>
       </div>
+      
     </footer>
   );
 };

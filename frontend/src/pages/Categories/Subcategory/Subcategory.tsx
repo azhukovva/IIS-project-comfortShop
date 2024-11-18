@@ -60,7 +60,6 @@ const Subcategory = () => {
             {subcategory && subcategory.replace("-", "&").toUpperCase()}
           </h2>
 
-          <p>Display products for this category here...</p>
           <div className={classes.items}>
             {products.map((product) => (
               <Product key={product.id} product={product} />

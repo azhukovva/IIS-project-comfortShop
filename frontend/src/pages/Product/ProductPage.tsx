@@ -23,7 +23,12 @@ const ProductPage = () => {
   const [product, setProduct] = useState<ProductType>();
 
   // Fetch product info
-  const fetch = async () => {};
+  const fetch = async () => {
+    try {
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     setProduct(productTest);
@@ -32,8 +37,8 @@ const ProductPage = () => {
   return (
     <Page>
       <div className={classes.rowTop}>
-        <Button isBack isActive onClick={() => navigate(-1)} >
-          <Icon icon={icons.left} width={20}/>
+        <Button isBack isActive onClick={() => navigate(-1)}>
+          <Icon icon={icons.left} width={20} />
         </Button>
       </div>
       {product && (

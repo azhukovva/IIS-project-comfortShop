@@ -13,6 +13,7 @@ import Category from "./pages/Categories/Category/Category";
 import ScrollToTop from "./hooks/ScrollToTop";
 import Subcategory from "./pages/Categories/Subcategory/Subcategory";
 import ProductPage from "./pages/Product/ProductPage";
+import Account from "./pages/Account/Account";
 
 const App = () => {
   return (
@@ -20,6 +21,8 @@ const App = () => {
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<Welcome />} />
+        <Route path="/account" element={<Account />} />
+
         <Route path="/basket" element={<Basket />} />
         <Route path="/categories" element={<Categories />} />
 

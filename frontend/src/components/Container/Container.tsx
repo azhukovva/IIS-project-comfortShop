@@ -24,6 +24,7 @@ const Container = ({ children }: PropsType) => {
     handleLoginClick,
     isAddNewItemClicked,
     isAddNewCategoryClicked,
+    isAuth,
   } = useContext(Context);
 
   const isWelcomePage = location.pathname === "/";
@@ -65,10 +66,7 @@ const Container = ({ children }: PropsType) => {
     <div className={classes.container}>
       {!isWelcomePage && <Header />}
 
-      <div className={isWelcomePage ? "" : classes.content}>
-        {children}
-        
-      </div>
+      <div className={isWelcomePage ? "" : classes.content}>{children}</div>
       {isLoginClicked && (
         <LoginModal onClose={handleLoginClick} onSubmit={handleLoginClick} />
       )}
