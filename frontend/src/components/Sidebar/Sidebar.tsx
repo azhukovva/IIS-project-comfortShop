@@ -19,7 +19,12 @@ const Sidebar: React.FC<FilterProps> = ({ categories, onFilterChange }) => {
     <div className={classes.sidebar}>
       <h3 className={classes.filterTitle}>Filters</h3>
       <ul className={classes.categoryList}>
-        {categories.map((category, index) => (
+        {categories.length === 0 && (
+          <li>
+            <div>No categories found</div>
+          </li>
+        )}
+        {categories?.map((category, index) => (
           <li key={index} onClick={() => handleCategoryClick(category)}>
             <div className={isActiveCategory === category ? classes.active : classes.categoryItem}>{category}</div>
           </li>

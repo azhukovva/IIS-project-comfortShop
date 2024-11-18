@@ -9,7 +9,7 @@ import Product from "../../../components/Item/Product";
 
 import { images } from "../../../utils/images";
 
-import { ProductType } from "../../../utils/axios";
+import { CategoryType, ProductType, request } from "../../../utils/axios";
 
 export const products: ProductType[] = [
   {
@@ -59,27 +59,53 @@ export const categoriesMap: Record<string, string[]> = {
 
 const Category = () => {
   const { category } = useParams<{ category: string }>();
-
-  console.log("Category:", category); // Debugging
+  const [categoryName, categoryId] = category ? category.split("+") : ["", ""];
 
   const navigate = useNavigate();
   const breadcrumbItems = useBreadcrumb();
 
   // State to store the subcategories
-  const [subCategories, setSubCategories] = useState<string[]>([]);
+  const [subCategories, setSubCategories] = useState<CategoryType[]>([]);
+  const [subcategoriesNames, setSubcategoriesNames] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
+  const fetchChildren = async () => {
+    try {
+      const response = await request.get.getSubcategories(categoryId);
+      setSubCategories(response.data);
+
+      setSubCategories(response.data);
+      setSubcategoriesNames(
+        response.data.map((category: CategoryType) => category.name)
+      );
+    } catch (error) {
+      console.error("Failed to fetch children:", error);
+    }
+  };
+
+  console.log("Subcategories:", subCategories); // Debugging
+  console.log("Subcategories names:", subcategoriesNames); // Debugging
 
   // Check if category exists in the mapping
   useEffect(() => {
-    if (category && categoriesMap[category]) {
-      setSubCategories(categoriesMap[category]);
+    if (categoryName && categoriesMap[categoryName]) {
+      const transformedSubCategories: CategoryType[] = categoriesMap[
+        categoryName
+      ].map((name) => ({
+        slug: name.toLowerCase().replace(/\s+/g, "-"),
+        name,
+        parent: categoryName,
+        children: [],
+        image: "", // Provide a default image or fetch the image if available
+      }));
+      setSubCategories(transformedSubCategories);
     } else {
-      setSubCategories([]);
+      fetchChildren();
     }
-  }, [category]);
+  }, [categoryName, categoryId]);
 
   const handleSubcategoryClick = (subcategory: string) => {
-    navigate(`/categories/${category}/${subcategory}`);
+    navigate(`/categories/${categoryName}+${categoryId}/${subcategory}`);
     setActiveCategory(subcategory);
   };
 
@@ -88,7 +114,7 @@ const Category = () => {
       {/* Main content area */}
       <div className={classes.content}>
         <Sidebar
-          categories={subCategories}
+          categories={subcategoriesNames}
           onFilterChange={handleSubcategoryClick}
         />
 
@@ -96,13 +122,16 @@ const Category = () => {
         <div className={classes.categoryContent}>
           <Breadcrumbs items={breadcrumbItems} />
           <h2 className={classes.categoryHeading}>
-            {category && category.replace("-", "&").toUpperCase()}
+            {categoryName && categoryName.replace("-", "&").toUpperCase()}
           </h2>
 
-          <p>Display products for this category here...</p>
           <div className={classes.items}>
             {products.map((product) => (
-              <Link to={`/categories/${category}/product/${product.id}`} key={product.id} style={{textDecoration: "none"}}>
+              <Link
+                to={`/categories/${category}/product/${product.id}`}
+                key={product.id}
+                style={{ textDecoration: "none" }}
+              >
                 <Product key={product.id} product={product} />
               </Link>
             ))}

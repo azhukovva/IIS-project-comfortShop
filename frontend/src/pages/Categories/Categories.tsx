@@ -1,11 +1,12 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Page from "../../components/Page/Page";
 
 import classes from "./Categories.module.css";
 import CategoryCard from "../../components/CategoryCard/CategoryCard";
 
 import { images, productImages } from "../../utils/images";
-import { Context, request } from "../../utils/Context";
+import { Context } from "../../utils/Context";
+import { CategoryType, request } from "../../utils/axios";
 import Button from "../../components/Button/Button";
 import { Link } from "react-router-dom";
 import PhotoCard from "../../components/PhotoCard/PhotoCard";
@@ -14,25 +15,25 @@ import PhotoCard from "../../components/PhotoCard/PhotoCard";
 const photos = [];
 
 const Categories = () => {
+  const [categories, setCategories] = useState<CategoryType[]>([]);
   const { handleAddNewItem, handleAddNewCategory, isAddNewCategoryClicked } =
     useContext(Context);
 
-
-const fetchCategories = async () => {
+  const fetchCategories = async () => {
     try {
       const response = await request.get.categories();
-      console.log(response);
+      setCategories(response.data);
+      console.log(response.data);
       return response;
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
     fetchCategories();
-  })
+  }, []);
 
-  console.log(isAddNewCategoryClicked);
   return (
     <Page isHeader>
       <div className={classes.categoriesContainer}>
@@ -45,7 +46,6 @@ const fetchCategories = async () => {
               Discover a world of cozy, comforting essentials designed to make
               every corner of your home a sanctuary.
               <div>
-                {" "}
                 From plush blankets and ambient lighting to delightful scents
                 and decor that calms body and mind
               </div>
@@ -68,7 +68,18 @@ const fetchCategories = async () => {
         <section className={classes.container} id="categories">
           <div className={classes.sectionTitle}>Shop By Category</div>
           <div className={classes.sectionContainer}>
-            <CategoryCard
+            {categories?.map(
+              (category) =>
+                !category.parent && (
+                  <CategoryCard
+                    key={category.slug}
+                    title={category.name}
+                    link={`/categories/${category.name}+${category.slug}`}
+                    image={category.image ?? images.home}
+                  />
+                )
+            )}
+            {/* <CategoryCard
               title="Home & Cozyness"
               link="/categories/home-cozyness"
               image={images.home}
@@ -87,7 +98,7 @@ const fetchCategories = async () => {
               title="Beauty & Care"
               link="/categories/beauty-care"
               image={images.beauty}
-            />
+            /> */}
           </div>
         </section>
 
@@ -146,10 +157,7 @@ const fetchCategories = async () => {
         {/* <section className={classes.bottomSection}>
           <div ></div>
         </section> */}
-
- 
       </div>
-      
     </Page>
   );
 };
