@@ -2,12 +2,22 @@
     "sqltools.connections": [
         {
             "previewLimit": 50,
-            "server": "192.168.1.197",
+            "server": "localhost",
             "port": 5432,
             "driver": "PostgreSQL",
-            "name": "IIS",
             "database": "mydatabase",
-            "username": "friend"
+            "username": "postgres",
+            "name": "data"
+        },
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "database": "mydatabase",
+            "username": "postgres",
+            "name": "database",
+            "password": "postgres"
         }
     ]
 }
