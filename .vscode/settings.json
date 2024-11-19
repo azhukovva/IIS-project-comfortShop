@@ -1,0 +1,13 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "192.168.1.197",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "IIS",
+            "database": "mydatabase",
+            "username": "friend"
+        }
+    ]
+}
