@@ -1,9 +1,9 @@
-version: '3.8'
+version: '3.9'
 
 services:
   db:
     image: postgres
-    container_name: postgres-db
+    container_name: postgres-db-new
     ports:
       - "5432:5432"
     environment:
@@ -20,6 +20,8 @@ services:
     volumes:
       - .:/code
     ports:
+      - "8000:8000"
+    expose:
       - "8000:8000"
     depends_on:
       - db
