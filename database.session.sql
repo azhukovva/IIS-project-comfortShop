@@ -28,3 +28,8 @@ VALUES ('bread', 'Bread', 'bakery');
 
 INSERT INTO categories (slug, name, parent_slug)
 VALUES ('pastries', 'Pastries', 'bakery');
+
+
+CREATE USER friend WITH PASSWORD 'friend';
+GRANT ALL PRIVILEGES ON DATABASE mydatabase TO friend;
+
