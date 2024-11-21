@@ -2,11 +2,6 @@ import React, { useContext, useState } from "react";
 import classes from "./Page.module.css";
 import useBreadcrumb from "../../hooks/UseBreadcrumb";
 import Breadcrumbs from "../Breadcrumbs/Breadcrumbs";
-import { Context } from "../../utils/Context";
-import LoginModal from "../Login/LoginModal/LoginModal";
-import AddNewItemModal from "../Modal/AddNewItemModal/AddNewItemModal";
-import AddNewCategoryModal from "../Modal/AddNewCategory/AddNewCategoryModal";
-import Sidebar from "../Sidebar/Sidebar";
 
 type PropsType = {
   children: React.ReactNode;

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from rest_framework import permissions
 
 
@@ -46,3 +47,25 @@ class DynamicRolePermission(permissions.BasePermission):
             return True
 
         return False    
+=======
+from rest_framework import permissions
+
+
+class IsAdminUserOrReadOnly(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        # check if user is in group "admin"
+        return request.user.groups.filter(name="admin").exists()
+
+
+class IsModeratorUserOrReadOnly(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        # check if user is in group "moderator"
+        return request.user.groups.filter(name="moderator").exists()
+    
+>>>>>>> 846a202fc435f045d807c57c9d7e7588e267979d

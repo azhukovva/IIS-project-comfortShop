@@ -9,21 +9,22 @@ import Modal from "../Modal";
 
 import classes from "./AddNewCategoryModal.module.css";
 import { Context } from "../../../utils/Context";
-import { request } from "../../../utils/axios";
+import { axiosAuth } from "../../../utils/axios";
 import Input from "../../Input/Input";
 import Button from "../../Button/Button";
 import LoginModal from "../../Login/LoginModal/LoginModal";
+import { AxiosError } from "axios";
 
 const initialState = {
-  name: "",
-  id: 0,
+  name: '',
+  slug: '',
 };
 
 const AddNewCategory = () => {
   const [categoryData, setCategoryData] = useState(initialState);
-  const { handleAddNewCategory, handleLoginClick, isAuth } =
+  const { handleAddNewCategory, handleIsAuth, isAuth, handleLoginClick, isLoginClicked } =
     useContext(Context);
-  const [showLoginModal, setShowLoginModal] = useState(false); // State to show login modal
+  const [showLoginModal, ] = useState(false); // State to show login modal
 
   const handleInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -35,44 +36,50 @@ const AddNewCategory = () => {
     []
   );
 
+  const generateSlug = (name: string) => {
+    return name
+    .toLowerCase()
+    .replace(/ /g, '-')
+    .replace(/[^\w-]+/g, '');
+  }
+
   const addCategory = async () => {
     if (!isAuth) {
-      setShowLoginModal(true);
+      handleLoginClick(true);
       return;
     }
+    const categoryWithSlug = {
+      ...categoryData,
+      slug: generateSlug(categoryData.name), // Generate a UUID for the slug
+    };
     try {
-      if (categoryData.name === "") {
+      if (categoryData.name === '') {
+        alert('Category name is required');
         return;
       }
-      await request.post.addCategory(categoryData);
+      const response = await axiosAuth.post('/api/categories/', categoryWithSlug); // Use the authenticated Axios instance
+      console.log('Category added:', response.data);
       handleAddNewCategory(false);
     } catch (error) {
-      console.log(error);
-    } finally {
-      console.log("Category added");
+      if (error instanceof AxiosError) {
+        console.log('Error adding category:', error.response?.data || error.message);
+      } else {
+        console.log('Error adding category:', error);
+      }
     }
   };
-
-  const generateUniqueId = () => {
-    const id = Math.floor(Math.random() * 1000000);
-    setCategoryData((prev) => ({
-      ...prev,
-      id: id,
-    }));
-  };
-
-  useEffect(() => {
-    if (!isAuth) {
-      setShowLoginModal(true);
-      return;
-    }
-    generateUniqueId();
-  }, []);
 
   return (
     <>
-      {showLoginModal && (
-        <LoginModal onClose={() => setShowLoginModal(false)} />
+       {isLoginClicked && (
+        <LoginModal
+          onClose={() => handleLoginClick(false)}
+          onSubmit={() => {
+            handleLoginClick(false);
+            handleIsAuth(true);
+          }}
+          handleIsAuth={handleIsAuth}
+        />
       )}
       <Modal
         title="Add New Category"
@@ -92,10 +99,10 @@ const AddNewCategory = () => {
             onChange={handleInputChange}
           />
           {/* <Input
-          name="description"
-          value={categoryData.description}
-          labelText="Category Description"
-          placeholder="Add description"
+          name="slug"
+          value={categoryData.slug}
+          labelText="Category short description"
+          placeholder="Add one word to describe Your category"
           isRequired={false}
           onChange={handleInputChange}
           isBig
@@ -107,3 +114,5 @@ const AddNewCategory = () => {
 };
 
 export default AddNewCategory;
+
+

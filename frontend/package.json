@@ -18,6 +18,8 @@
     "react-router-dom": "^6.26.2",
     "react-scripts": "5.0.1",
     "typescript": "^5.6.2",
+    "@types/uuid": "^8.3.3",
+    "uuid": "^8.3.2",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

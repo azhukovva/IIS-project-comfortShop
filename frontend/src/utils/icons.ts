@@ -2,7 +2,11 @@ enum icons {
   user = "mdi:user-heart",
   guest = "mingcute:user-question-fill",
 
+  login = "material-symbols:login",
+  logout = "material-symbols:logout",
+
   add = "mingcute:add-fill",
+  delete = "fluent:delete-16-filled",
   close = "eva:close-fill",
 
   up = "mingcute:up-line",

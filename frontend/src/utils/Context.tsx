@@ -5,13 +5,6 @@ import React, { Dispatch, createContext, useState } from "react";
  */
 export const floatingRoot = document.getElementById("root");
 
-export const categoriesMap: Record<string, string[]> = {
-  "home-cozyness": ["Plants", "Candles", "Blankets", "Decor"],
-  "hobby-leisure": ["Books", "Board Games", "Sports Gear", "Art Supplies"],
-  sweets: ["Chocolates", "Candies", "Gourmet Snacks"],
-  "beauty-care": ["Skincare", "Makeup", "Hair Care", "Fragrances"],
-};
-
 type ContextType = {
   isLoading: boolean;
   isAuth: boolean;
@@ -19,6 +12,9 @@ type ContextType = {
   setIsLoading?: Dispatch<React.SetStateAction<boolean>>;
   isLoginClicked: boolean;
   handleLoginClick: (state?: boolean) => void;
+
+  isLogoutClicked: boolean;
+  handleLogoutClick: (state?: boolean) => void;
 
   isSelling: boolean;
   handleSelling: (state: boolean) => void;
@@ -42,6 +38,9 @@ const initialState: ContextType = {
   isLoginClicked: false,
   handleLoginClick: () => {},
 
+  isLogoutClicked: false,
+  handleLogoutClick: () => {},
+
   isSelling: false,
   handleSelling: () => {},
 
@@ -59,6 +58,7 @@ const ContextProvider = ({ children }: PropsType) => {
   const [isAuth, setIsAuth] = useState(false);
 
   const [isLoginClicked, setIsLoginClicked] = useState(false);
+  const [isLogoutClicked, setIsLogoutClicked] = useState(false);
   const [isSelling, setIsSelling] = useState(false);
   // Modals
   const [isAddNewItemClicked, setIsAddNewItemClicked] = useState(false);
@@ -66,6 +66,10 @@ const ContextProvider = ({ children }: PropsType) => {
 
   const handleLoginClick = (state?: boolean) => {
     setIsLoginClicked((prev) => (state !== undefined ? state : !prev));
+  };
+
+  const handleLogoutClick = (state?: boolean) => {
+    setIsLogoutClicked((prev) => (state !== undefined ? state : !prev));
   };
 
   const handleIsAuth = (state: boolean) => {
@@ -91,6 +95,9 @@ const ContextProvider = ({ children }: PropsType) => {
     handleIsAuth,
     isLoginClicked,
     handleLoginClick,
+
+    isLogoutClicked,
+    handleLogoutClick,
 
     isSelling,
     handleSelling,

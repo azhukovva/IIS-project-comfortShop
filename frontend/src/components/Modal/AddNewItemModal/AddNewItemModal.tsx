@@ -57,9 +57,9 @@ const AddNewItemModal = () => {
 
   return (
     <>
-      {showLoginModal && (
+      {/* {showLoginModal && (
         <LoginModal onClose={() => setShowLoginModal(false)} />
-      )}
+      )} */}
       <Modal
         title="Add New Product"
         textOk="Add"

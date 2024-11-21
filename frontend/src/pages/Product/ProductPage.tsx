@@ -9,13 +9,12 @@ import { images } from "../../utils/images";
 import icons from "../../utils/icons";
 import { Icon } from "@iconify/react";
 
-const productTest: ProductType = {
-  id: "1",
-  name: "Cozy Blanket",
-  description: "A soft and warm blanket to keep you cozy all day long.",
-  price: 29.99,
-  image: images.beauty,
-};
+// const productTest: ProductType = {
+//   title: "Cozy Blanket",
+//   description: "A soft and warm blanket to keep you cozy all day long.",
+//   price: '29.99',
+//   image: images.beauty,
+// };
 
 const ProductPage = () => {
   const { id } = useParams();
@@ -30,9 +29,9 @@ const ProductPage = () => {
     }
   };
 
-  useEffect(() => {
-    setProduct(productTest);
-  });
+  // useEffect(() => {
+  //   setProduct(productTest);
+  // });
 
   return (
     <Page>
@@ -48,9 +47,9 @@ const ProductPage = () => {
           </div>
           <div className={classes.productInfo}>
             <div className={classes.text}>
-              <h1 className={classes.productTitle}>{product.name}</h1>
+              <h1 className={classes.productTitle}>{product.title}</h1>
               <p className={classes.productPrice}>
-                ${product.price.toFixed(2)}
+                ${product.price}
               </p>
               <p className={classes.productDescription}>
                 {product.description}

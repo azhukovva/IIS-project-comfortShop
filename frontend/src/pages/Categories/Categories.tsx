@@ -6,7 +6,7 @@ import CategoryCard from "../../components/CategoryCard/CategoryCard";
 
 import { images, productImages } from "../../utils/images";
 import { Context } from "../../utils/Context";
-import { CategoryType, request } from "../../utils/axios";
+import { CategoryType, get } from "../../utils/axios";
 import Button from "../../components/Button/Button";
 import { Link } from "react-router-dom";
 import PhotoCard from "../../components/PhotoCard/PhotoCard";
@@ -21,7 +21,7 @@ const Categories = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await request.get.categories();
+      const response = await get("api/categories"); // Use the get method from the configured Axios instance
       setCategories(response.data);
       console.log(response.data);
       return response;

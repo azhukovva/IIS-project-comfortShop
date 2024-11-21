@@ -10,10 +10,12 @@ const Header = () => {
   const [activeAction, setActiveAction] = useState("buy");
   const [activeCategory, setActiveCategory] = useState("all");
 
+  const [showLogoutModal, setShowLogoutModal] = useState(false)
+
   const location = useLocation();
 
   const navigate = useNavigate();
-  const { handleLoginClick, handleSelling, isAuth } = useContext(Context);
+  const { handleLoginClick, handleLogoutClick, handleSelling, isAuth, handleIsAuth } = useContext(Context);
 
   const handleSellClick = () => {
     handleSelling(true);
@@ -24,6 +26,18 @@ const Header = () => {
       setActiveAction("buy");
     }
   };
+
+  const handleAccountClick = () => {
+    console.log("isAuth", isAuth)
+    console.log(localStorage.getItem("authToken"))
+    if (isAuth === false){
+      handleLoginClick(true)
+    }
+    else {
+      handleLogoutClick(true)
+      console.log(isAuth, localStorage.getItem("authToken"))
+    }
+  }
 
   useEffect(() => {
     if (location.pathname === "/categories") {
@@ -59,9 +73,9 @@ const Header = () => {
         Comfort Store
       </div>
       <div className={classes.rightSideContainer}>
-        <Link to="/account" style={{ textDecoration: "none" }}>
-          <Button>Account</Button>
-        </Link>
+
+          <Button onClick={() => handleAccountClick()}>Account</Button>
+    
         <Link to="/basket" style={{ textDecoration: "none" }}>
           <Button iconName="basket">My Basket</Button>
         </Link>

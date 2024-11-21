@@ -6,10 +6,11 @@ import { images } from "../../utils/images";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 import Sidebar from "../Sidebar/Sidebar";
-import { categoriesMap, Context } from "../../utils/Context";
+import { Context } from "../../utils/Context";
 import LoginModal from "../Login/LoginModal/LoginModal";
 import AddNewItemModal from "../Modal/AddNewItemModal/AddNewItemModal";
 import AddNewCategoryModal from "../Modal/AddNewCategory/AddNewCategoryModal";
+import Modal from "../Modal/Modal";
 
 type PropsType = {
   children: React.ReactNode;
@@ -22,10 +23,37 @@ const Container = ({ children }: PropsType) => {
   const {
     isLoginClicked,
     handleLoginClick,
+    isLogoutClicked,
+    handleLogoutClick,
     isAddNewItemClicked,
     isAddNewCategoryClicked,
     isAuth,
+    handleIsAuth,
   } = useContext(Context);
+
+  const LogoutModal = () => {
+    const handleLogout = async () => {
+      try {
+        localStorage.setItem('authToken', "")
+        handleIsAuth(false)
+        handleLogoutClick(false)
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    return (
+      <Modal
+        title="Log out"
+        textOk="Log out"
+        textCancel="Cancel"
+        onSubmit={handleLogout}
+        onClose={() => handleLogoutClick(false)}
+        iconName="logout"
+      >
+        <div className={classes.modalContainer}><span>Are You sure You want to Log Out?</span></div>
+      </Modal>
+    );
+  };
 
   const isWelcomePage = location.pathname === "/";
   const isMainPage = location.pathname === "/categories";
@@ -34,17 +62,6 @@ const Container = ({ children }: PropsType) => {
   // Extract filter parameters from the URL (e.g., /categories?category=home)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [subCategories, setSubCategories] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (category && categoriesMap[category]) {
-      setSelectedCategory(category);
-      console.log("Selected Category:", category); // Debugging
-      setSubCategories(categoriesMap[category]); // Set subcategories based on the selected category
-    } else {
-      setSelectedCategory(null);
-      setSubCategories([]); // Reset if the category doesn't exist
-    }
-  }, [category]);
 
   // Disable scrolling when the modal is open
   useEffect(() => {
@@ -68,8 +85,13 @@ const Container = ({ children }: PropsType) => {
 
       <div className={isWelcomePage ? "" : classes.content}>{children}</div>
       {isLoginClicked && (
-        <LoginModal onClose={handleLoginClick} onSubmit={handleLoginClick} />
+        <LoginModal
+          onClose={() => handleLoginClick(false)}
+          onSubmit={handleLoginClick}
+          handleIsAuth={handleIsAuth}
+        />
       )}
+      {isLogoutClicked && <LogoutModal />}
       {isAddNewItemClicked && <AddNewItemModal />}
       {isAddNewCategoryClicked && <AddNewCategoryModal />}
       {!isBasketPage && !isWelcomePage && <Footer />}
