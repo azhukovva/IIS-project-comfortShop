@@ -24,6 +24,8 @@ const RoleCard = ({
   const [isLoginClicked, setIsLoginClicked] = useState(false);
   const navigate = useNavigate();
 
+  const {handleIsAuth} = useContext(Context)
+
   // Prevents the default link behavior and shows the login modal if isUser is true
   const handleUserClick = (event: React.MouseEvent) => {
     if (isUser) {
@@ -38,6 +40,7 @@ const RoleCard = ({
 
   // Closes the login modal and navigates to the specified page
   const handleLogin = () => {
+    handleIsAuth(true);
     navigate(page);
     setIsLoginClicked(false);
   };
@@ -60,7 +63,7 @@ const RoleCard = ({
         </div>
       </Link>
       {isLoginClicked && (
-        <LoginModal onClose={handleLoginClick} onSubmit={handleLogin} />
+        <LoginModal onClose={handleLoginClick} onSubmit={handleLogin} handleIsAuth={handleIsAuth}/>
       )}
     </>
   );

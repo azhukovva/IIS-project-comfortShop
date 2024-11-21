@@ -5,7 +5,7 @@ import useBreadcrumb from "../../../hooks/UseBreadcrumb";
 import classes from "./Subcategory.module.css";
 import Sidebar from "../../../components/Sidebar/Sidebar";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
-import { categoriesMap, products } from "../Category/Category";
+import { categoriesMap } from "../Category/Category";
 import Product from "../../../components/Item/Product";
 
 const Subcategory = () => {
@@ -61,9 +61,9 @@ const Subcategory = () => {
           </h2>
 
           <div className={classes.items}>
-            {products.map((product) => (
+            {/* {products.map((product) => (
               <Product key={product.id} product={product} />
-            ))}
+            ))} */}
           </div>
         </div>
       </div>

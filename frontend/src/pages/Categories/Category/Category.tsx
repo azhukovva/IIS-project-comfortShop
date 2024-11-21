@@ -11,43 +11,43 @@ import { images } from "../../../utils/images";
 
 import { CategoryType, ProductType, request } from "../../../utils/axios";
 
-export const products: ProductType[] = [
-  {
-    id: "1",
-    name: "Cozy Blanket",
-    description: "A soft and warm blanket to keep you cozy all day long.",
-    price: 29.99,
-    image: images.body,
-  },
-  {
-    id: "2",
-    name: "Scented Candle",
-    description: "Lavender scented candle for a calming atmosphere.",
-    price: 15.99,
-    image: images.cheesecake,
-  },
-  {
-    id: "3",
-    name: "Comfortable Pillow",
-    description: "A soft pillow for ultimate comfort and relaxation.",
-    price: 19.99,
-    image: images.lotus,
-  },
-  {
-    id: "4",
-    name: "Art Print",
-    description: "A beautiful art print to decorate your living room.",
-    price: 39.99,
-    image: images.beading,
-  },
-  {
-    id: "5",
-    name: "Decorative Vase",
-    description: "A stylish vase to add elegance to any room.",
-    price: 24.99,
-    image: images.face,
-  },
-];
+// export const products: ProductType[] = [
+//   {
+//     id: "1",
+//     name: "Cozy Blanket",
+//     description: "A soft and warm blanket to keep you cozy all day long.",
+//     price: 29.99,
+//     image: images.body,
+//   },
+//   {
+//     id: "2",
+//     name: "Scented Candle",
+//     description: "Lavender scented candle for a calming atmosphere.",
+//     price: 15.99,
+//     image: images.cheesecake,
+//   },
+//   {
+//     id: "3",
+//     name: "Comfortable Pillow",
+//     description: "A soft pillow for ultimate comfort and relaxation.",
+//     price: 19.99,
+//     image: images.lotus,
+//   },
+//   {
+//     id: "4",
+//     name: "Art Print",
+//     description: "A beautiful art print to decorate your living room.",
+//     price: 39.99,
+//     image: images.beading,
+//   },
+//   {
+//     id: "5",
+//     name: "Decorative Vase",
+//     description: "A stylish vase to add elegance to any room.",
+//     price: 24.99,
+//     image: images.face,
+//   },
+// ];
 
 // Define the category-subcategory mapping
 export const categoriesMap: Record<string, string[]> = {
@@ -126,7 +126,7 @@ const Category = () => {
           </h2>
 
           <div className={classes.items}>
-            {products.map((product) => (
+            {/* {products.map((product) => (
               <Link
                 to={`/categories/${category}/product/${product.id}`}
                 key={product.id}
@@ -134,7 +134,7 @@ const Category = () => {
               >
                 <Product key={product.id} product={product} />
               </Link>
-            ))}
+            ))} */}
           </div>
         </div>
       </div>

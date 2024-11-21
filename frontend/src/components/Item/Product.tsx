@@ -21,7 +21,7 @@ const Product = ({ product }: { product: ProductType }) => {
         style={{ backgroundImage: `url(${product.image})` }}
       ></div>
       <div className={classes.textContainer}>
-        <span style={{ textTransform: "uppercase"}}>{product.name}</span>
+        <span style={{ textTransform: "uppercase"}}>{product.title}</span>
         <span>{product.price}</span>
       </div>
     </div>
