@@ -30,7 +30,7 @@ from .serializers import (
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsModeratorUserOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     lookup_field = "slug"
     search_fields = ["name"]
 
