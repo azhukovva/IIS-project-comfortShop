@@ -1,0 +1,8 @@
+Django
+Pillow
+djangorestframework
+django-filter
+django-cors-headers
+drf-yasg
+gunicorn
+psycopg2-binary
