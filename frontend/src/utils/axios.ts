@@ -89,9 +89,9 @@ axiosAuthInstance.interceptors.request.use(
       config.headers.Authorization = `Token ${token}`;
       console.log(token);
     }
-    if (csrfToken) {
-      config.headers["X-CSRFTOKEN"] = csrfToken;
-    }
+    // if (csrfToken) {
+    //   config.headers["X-CSRFTOKEN"] = csrfToken;
+    // }
     console.log(config);
     return config;
   },

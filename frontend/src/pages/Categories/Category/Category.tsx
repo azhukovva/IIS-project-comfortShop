@@ -9,7 +9,7 @@ import Product from "../../../components/Item/Product";
 
 import { images } from "../../../utils/images";
 
-import { CategoryType, ProductType, request } from "../../../utils/axios";
+import { axiosAuth, CategoryType, get, ProductType, request } from "../../../utils/axios";
 
 // export const products: ProductType[] = [
 //   {
@@ -69,40 +69,39 @@ const Category = () => {
   const [subcategoriesNames, setSubcategoriesNames] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  const fetchChildren = async () => {
+  const fetchSubcategories = async (categoryId: string) => {
     try {
-      const response = await request.get.getSubcategories(categoryId);
+      const response = await get(`/api/categories/${categoryId}`);
       setSubCategories(response.data);
-
-      setSubCategories(response.data);
-      setSubcategoriesNames(
-        response.data.map((category: CategoryType) => category.name)
-      );
+      setSubcategoriesNames(response.data.map((subcategory: CategoryType) => subcategory.name));
     } catch (error) {
-      console.error("Failed to fetch children:", error);
+      if (error instanceof Error) {
+        console.error('Failed to fetch subcategories:', (error as any).response?.data || error.message);
+      } else {
+        console.error('Failed to fetch subcategories:', error);
+      }
     }
   };
 
-  console.log("Subcategories:", subCategories); // Debugging
-  console.log("Subcategories names:", subcategoriesNames); // Debugging
-
-  // Check if category exists in the mapping
-  useEffect(() => {
-    if (categoryName && categoriesMap[categoryName]) {
-      const transformedSubCategories: CategoryType[] = categoriesMap[
-        categoryName
-      ].map((name) => ({
-        slug: name.toLowerCase().replace(/\s+/g, "-"),
-        name,
-        parent: categoryName,
-        children: [],
-        image: "", // Provide a default image or fetch the image if available
-      }));
-      setSubCategories(transformedSubCategories);
-    } else {
-      fetchChildren();
+  const addSubcategory = async (categoryId: string) => {
+    try {
+      const response = await axiosAuth.post(`/api/categories/${categoryId}`);
     }
-  }, [categoryName, categoryId]);
+    catch (error) {
+      if (error instanceof Error) {
+        console.error('Failed to fetch subcategories:', (error as any).response?.data || error.message);
+      } else {
+        console.error('Failed to fetch subcategories:', error);
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (category) {
+      setActiveCategory(category);
+      fetchSubcategories(category);
+    }
+  }, [category]);
 
   const handleSubcategoryClick = (subcategory: string) => {
     navigate(`/categories/${categoryName}+${categoryId}/${subcategory}`);

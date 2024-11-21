@@ -22,9 +22,9 @@ const initialState = {
 
 const AddNewCategory = () => {
   const [categoryData, setCategoryData] = useState(initialState);
-  const { handleAddNewCategory, handleIsAuth, isAuth } =
+  const { handleAddNewCategory, handleIsAuth, isAuth, handleLoginClick, isLoginClicked } =
     useContext(Context);
-  const [showLoginModal, setShowLoginModal] = useState(false); // State to show login modal
+  const [showLoginModal, ] = useState(false); // State to show login modal
 
   const handleInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -35,18 +35,29 @@ const AddNewCategory = () => {
     },
     []
   );
+
+  const generateSlug = (name: string) => {
+    return name
+    .toLowerCase()
+    .replace(/ /g, '-')
+    .replace(/[^\w-]+/g, '');
+  }
+
   const addCategory = async () => {
     if (!isAuth) {
-      setShowLoginModal(true);
+      handleLoginClick(true);
       return;
     }
-    console.log(localStorage.getItem('authToken'));
+    const categoryWithSlug = {
+      ...categoryData,
+      slug: generateSlug(categoryData.name), // Generate a UUID for the slug
+    };
     try {
       if (categoryData.name === '') {
         alert('Category name is required');
         return;
       }
-      const response = await axiosAuth.post('/api/categories/', categoryData); // Use the authenticated Axios instance
+      const response = await axiosAuth.post('/api/categories/', categoryWithSlug); // Use the authenticated Axios instance
       console.log('Category added:', response.data);
       handleAddNewCategory(false);
     } catch (error) {
@@ -60,11 +71,11 @@ const AddNewCategory = () => {
 
   return (
     <>
-       {showLoginModal && (
+       {isLoginClicked && (
         <LoginModal
-          onClose={() => setShowLoginModal(false)}
+          onClose={() => handleLoginClick(false)}
           onSubmit={() => {
-            setShowLoginModal(false);
+            handleLoginClick(false);
             handleIsAuth(true);
           }}
           handleIsAuth={handleIsAuth}
@@ -87,7 +98,7 @@ const AddNewCategory = () => {
             isRequired
             onChange={handleInputChange}
           />
-          <Input
+          {/* <Input
           name="slug"
           value={categoryData.slug}
           labelText="Category short description"
@@ -95,7 +106,7 @@ const AddNewCategory = () => {
           isRequired={false}
           onChange={handleInputChange}
           isBig
-        />
+        /> */}
         </div>
       </Modal>
     </>
@@ -103,3 +114,5 @@ const AddNewCategory = () => {
 };
 
 export default AddNewCategory;
+
+

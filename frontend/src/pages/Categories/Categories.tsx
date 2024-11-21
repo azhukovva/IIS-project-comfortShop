@@ -19,16 +19,16 @@ const Categories = () => {
   const { handleAddNewItem, handleAddNewCategory, isAddNewCategoryClicked } =
     useContext(Context);
 
-    const fetchCategories = async () => {
-      try {
-        const response = await get('api/categories'); // Use the get method from the configured Axios instance
-        setCategories(response.data);
-        console.log(response.data);
-        return response;
-      } catch (error) {
-        console.log(error);
-      }
-    };
+  const fetchCategories = async () => {
+    try {
+      const response = await get("api/categories"); // Use the get method from the configured Axios instance
+      setCategories(response.data);
+      console.log(response.data);
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     fetchCategories();
