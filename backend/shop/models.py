@@ -93,6 +93,14 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order {self.id}"
+    
+    @property
+    def c_total_price(self):
+        return sum(item.price * item.quantity for item in self.orderproduct_set.all())
+    
+    def save(self, *args, **kwargs):
+        self.total_price = self.c_total_price  
+        super().save(*args, **kwargs)
 
 
 class OrderProduct(models.Model):

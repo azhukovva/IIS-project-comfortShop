@@ -4,4 +4,4 @@ VALUES (
     'books',
     NULL,
     NULL
-  );
+  ); 

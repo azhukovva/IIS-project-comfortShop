@@ -7,7 +7,7 @@ class IsAdminUserOrReadOnly(permissions.BasePermission):
             return True
 
         # check if user is in group "admin"
-        return request.user.groups.filter(name="admin").exists()
+        return request.user.groups.filter(name="admin").exists()   
 
 
 class IsModeratorUserOrReadOnly(permissions.BasePermission):
@@ -18,3 +18,31 @@ class IsModeratorUserOrReadOnly(permissions.BasePermission):
         # check if user is in group "moderator"
         return request.user.groups.filter(name="moderator").exists()
     
+
+class IsEnterepreneurOrReadOnly(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return request.user.groups.filter(name="entrepreneur").exists()
+
+    def has_object_permission(self, request, view, obj):
+        return obj.entrepreneur == request.user
+    
+
+class AllowUnauthenticatedReadOnly(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.method in permissions.SAFE_METHODS
+
+
+class DynamicRolePermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        if view.action == "create_moderator" and request.user.groups.filter(name="admin").exists():
+            return True
+
+        if view.action == "approve_category" and request.user.groups.filter(name="moderator").exists():
+            return True
+
+        return False    
