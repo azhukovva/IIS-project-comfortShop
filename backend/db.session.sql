@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 INSERT INTO shop_category (name, slug, image, parent_id)
 VALUES (
     'Books',
@@ -6,7 +5,6 @@ VALUES (
     NULL,
     NULL
   ); 
-=======
 INSERT INTO auth_group (id, name)
 VALUES (1, 'admin'), (2, 'user');
 
@@ -108,4 +106,3 @@ VALUES
 
 INSERT INTO shop_review (id)
 VALUES (1);
->>>>>>> 846a202fc435f045d807c57c9d7e7588e267979d
