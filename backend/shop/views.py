@@ -1,8 +1,9 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from rest_framework import exceptions, generics, mixins, permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
 from .models import (
     Attribute,
@@ -12,8 +13,9 @@ from .models import (
     Category,
     Order,
     Product,
+    OrderProduct,
 )
-from .permissions import IsAdminUserOrReadOnly, IsModeratorUserOrReadOnly
+from .permissions import IsAdminUserOrReadOnly, IsModeratorUserOrReadOnly, IsEnterepreneurOrReadOnly, DynamicRolePermission, AllowUnauthenticatedReadOnly
 from .serializers import (
     AttributeSerializer,
     AttributeValueSerializer,
@@ -30,7 +32,7 @@ from .serializers import (
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsModeratorUserOrReadOnly]
     lookup_field = "slug"
     search_fields = ["name"]
 
@@ -70,7 +72,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAdminUserOrReadOnly, IsModeratorUserOrReadOnly, IsEnterepreneurOrReadOnly]
     filterset_fields = ["category", "user", "title", "stock", "price"]
 
     def get_serializer_class(self):
@@ -91,25 +93,41 @@ class ProductViewSet(viewsets.ModelViewSet):
         instance.delete()
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [IsAdminUserOrReadOnly]
-
-    def get_permissions(self):
-        if self.action == "create":
-            return [permissions.AllowAny()]
-        return [permissions.IsAuthenticated()]
-
-
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated]
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+    def create(self, request, *args, **kwargs):
+        basket = get_object_or_404(Basket, user=request.user)
 
+        if not basket.basketproduct_set.exists():
+            return Response({'error': 'Basket is empty'})
+
+        order = Order.objects.create(user=request.user)
+        total_price = 0
+
+        for basket_product in basket.basketproduct_set.all():
+            OrderProduct.objects.create(
+                order=order,
+                product=basket_product.product,
+                quantity=basket_product.quantity,
+                price=basket_product.product.price * basket_product.quantity
+            )
+            total_price += basket_product.product.price * basket_product.quantity
+
+        basket.basketproduct_set.all().delete()
+
+        order.total_price = total_price
+        order.save()
+
+        serializer = OrderSerializer(order)
+        return Response(serializer.data)
+
+    def list(self, request):
+        orders = Order.objects.filter(user=request.user)
+        serializer = OrderSerializer(orders, many=True)
+        return Response(serializer.data)
 
 ### Attribute Views
 
@@ -186,3 +204,94 @@ class BasketProductViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(basket__user=self.request.user)
+
+#  USER VIEWS
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [DynamicRolePermission]  
+
+    @action(detail=True, methods=["post"])
+    def create_moderator(self, request, pk=None):
+        user = self.get_object()
+
+        if not request.user.groups.filter(name="admin").exists():
+            return Response({"error": "Only admin can create moderators."})
+
+        group, created = Group.objects.get_or_create(name="moderator")
+        user.groups.add(group)
+        return Response({"status": "ok"})
+
+    @action(detail=True, methods=["post"])
+    def delete_moderator(self, request, pk=None):
+        user = self.get_object()
+
+        if not request.user.groups.filter(name="admin").exists():
+            return Response({"error": "Only admin can delete moderators."})
+
+        group = Group.objects.get(name="moderator")
+        user.groups.remove(group)
+        return Response({"status": "ok"})
+
+    @action(detail=True, methods=["post"])
+    def delete_user(self, request, pk=None):
+        user = self.get_object()
+
+        if not request.user.groups.filter(name="admin").exists():
+            return Response({"error": "Only admin can delete users."})
+
+        user.delete()
+        return Response({"status": "ok"})
+
+    @action(detail=False, methods=["post"])
+    def create_user(self, request):
+       
+        if not request.user.groups.filter(name="admin").exists():
+            return Response({"error": "Only admin can create users."})
+
+        data = request.data
+        user = User.objects.create_user(
+            username=data["username"],
+            email=data.get("email", ""),
+            password=data["password"]
+        )
+        return Response({"status": "ok"})
+
+    @action(detail=True, methods=["patch"])
+    def update_user(self, request, pk=None):
+        user = self.get_object()
+
+        if not request.user.groups.filter(name="admin").exists():
+            return Response({"error": "Only admin can update users."})
+
+        if "username" in request.data:
+            user.username = request.data["username"]
+        if "email" in request.data:
+            user.email = request.data["email"]
+        if "first_name" in request.data:
+            user.first_name = request.data["first_name"]
+        if "last_name" in request.data:
+            user.last_name = request.data["last_name"]
+
+        user.save()
+
+        return Response({"status": "ok"})
+    
+
+class CategoryApprovalViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+    permission_classes = [IsModeratorUserOrReadOnly]  
+
+    @action(detail=True, methods=["post"])
+    def approve_category(self, request, pk=None):
+        category = self.get_object()
+    
+        if not request.user.groups.filter(name="moderator").exists():
+            return Response({"error": "Only moderators can approve categories."})
+
+        category.is_approved = True
+        category.save()
+        return Response({"status": "ok"})
