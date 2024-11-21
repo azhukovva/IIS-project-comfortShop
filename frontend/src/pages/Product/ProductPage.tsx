@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Page from "../../components/Page/Page";
 import { useNavigate, useParams } from "react-router-dom";
 
 import classes from "./ProductPage.module.css";
-import { ProductType } from "../../utils/axios";
+import { get, ProductType } from "../../utils/axios";
 import Button from "../../components/Button/Button";
 import { images } from "../../utils/images";
 import icons from "../../utils/icons";
 import { Icon } from "@iconify/react";
+import { Context } from "../../utils/Context";
 
 // const productTest: ProductType = {
 //   title: "Cozy Blanket",
@@ -21,17 +22,45 @@ const ProductPage = () => {
   const navigate = useNavigate();
   const [product, setProduct] = useState<ProductType>();
 
+  const {handleIsAuth} = useContext(Context)
+
   // Fetch product info
   const fetch = async () => {
     try {
+      const response = await get(`api/products/${id}`);
+      setProduct(response.data);
+      console.log(response.data);
+      return response;
     } catch (error) {
       console.log(error);
     }
   };
 
-  // useEffect(() => {
-  //   setProduct(productTest);
-  // });
+  //TODO 
+  const addToBasket = async () => {
+    try {
+      console.log('add to basket')
+      const authToken = localStorage.getItem('authToken');
+      if (!authToken){
+        handleIsAuth(true)
+      }
+      const user = { username: authToken };
+      // const response = axiosAuth.post(`/api/baskets/add_product`, {user})
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(
+          "Failed to add product:",
+          (error as any).response?.data || error.message
+        );
+      } else {
+        console.error("Failed to add product:", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetch()
+  }, []);
 
   return (
     <Page>
@@ -56,7 +85,7 @@ const ProductPage = () => {
               </p>
             </div>
             <div className={classes.actions}>
-              <Button isActive isOnAdd>
+              <Button isActive isOnAdd onClick={addToBasket}>
                 Add to Cart
               </Button>
             </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import useBreadcrumb from "../../../hooks/UseBreadcrumb";
 
 import classes from "./Subcategory.module.css";
@@ -61,9 +61,19 @@ const Subcategory = () => {
           </h2>
 
           <div className={classes.items}>
-            {/* {products.map((product) => (
-              <Product key={product.id} product={product} />
-            ))} */}
+          {products.length === 0 ? (
+              <p>No products available.</p>
+            ) : (
+              products.map((product) => (
+                <Link
+                  to={`/categories/${category}/product/${product.id}`}
+                  style={{ textDecoration: "none" }}
+                  key={product.id} // Add a unique key prop
+                >
+                  <Product item={product} isNotInBasket />
+                </Link>
+              ))
+            )}
           </div>
         </div>
       </div>

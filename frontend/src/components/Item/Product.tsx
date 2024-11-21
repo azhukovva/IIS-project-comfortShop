@@ -24,33 +24,13 @@ const Product = ({ item, isNotInBasket }: PropsType) => {
   const { category, subcategory } = useParams();
   // console.log(category, subcategory);
 
-  const addToBasket = async () => {
-    try {
-      const authToken = localStorage.getItem('authToken');
-      if (!authToken){
-        handleIsAuth(true)
-      }
-      const user = { username: authToken };
-      const response = axiosAuth.post(`/api/baskets/add_product`, {user})
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(
-          "Failed to add product:",
-          (error as any).response?.data || error.message
-        );
-      } else {
-        console.error("Failed to add product:", error);
-      }
-    }
-  };
-
   return (
     <div className={classes.cardContainer}>
       <div
         className={classes.photoContainer}
         style={{ backgroundImage: `url(${item.image})` }}
       >
-      <Icon icon={isNotInBasket ? icons.basket : icons.delete} className={classes.basketIcon} />
+      <Icon icon={isNotInBasket ? "" : icons.delete} className={classes.basketIcon}/>
       </div>
       <div className={classes.textContainer}>
         <span style={{ textTransform: "uppercase" }}>{item.title}</span>

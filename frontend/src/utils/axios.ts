@@ -120,6 +120,7 @@ export const axiosAuth = axiosAuthInstance;
 // --------------------------- API END ---------------------------
 
 export type ProductType = {
+  id: number;
   title: string;
   description: string;
   price: string;

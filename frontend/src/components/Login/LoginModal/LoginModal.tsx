@@ -6,11 +6,6 @@ import Input from "../../Input/Input";
 import { Context } from "../../../utils/Context";
 import { post } from "../../../utils/axios";
 
-//REVIEW - need?
-// type LoginStateType = {
-//   username: string;
-//   password: string;
-// };
 
 type LoginModalProps = {
   onSubmit?: () => void;

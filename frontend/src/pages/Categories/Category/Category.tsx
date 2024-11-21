@@ -9,7 +9,13 @@ import Product from "../../../components/Item/Product";
 
 import { images } from "../../../utils/images";
 
-import { axiosAuth, CategoryType, get, ProductType, request } from "../../../utils/axios";
+import {
+  axiosAuth,
+  CategoryType,
+  get,
+  ProductType,
+  request,
+} from "../../../utils/axios";
 
 // export const products: ProductType[] = [
 //   {
@@ -59,7 +65,26 @@ export const categoriesMap: Record<string, string[]> = {
 
 const Category = () => {
   const { category } = useParams<{ category: string }>();
-  const [categoryName, categoryId] = category ? category.split("+") : ["", ""];
+  let categoryName = "";
+  let categoryId = "";
+
+  if (category) {
+    const parts = category.split("+");
+
+    // Debugging the split parts
+    console.log("Split parts:", parts);
+
+    // Ensure there are exactly 2 parts
+    if (parts.length === 2) {
+      [categoryName, categoryId] = parts;
+    } else {
+      // Log if the split didn't work as expected
+      console.warn(
+        "Unexpected category format. Expected 'name+id'. Received:",
+        category
+      );
+    }
+  }
 
   const navigate = useNavigate();
   const breadcrumbItems = useBreadcrumb();
@@ -69,16 +94,41 @@ const Category = () => {
   const [subcategoriesNames, setSubcategoriesNames] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  const fetchSubcategories = async (categoryId: string) => {
+  const [products, setProducts] = useState<ProductType[]>([]);
+
+  const fetch = async (categoryId: string) => {
     try {
-      const response = await get(`/api/categories/${categoryId}`);
-      setSubCategories(response.data);
-      setSubcategoriesNames(response.data.map((subcategory: CategoryType) => subcategory.name));
+      const response = await get(`/api/categories/${categoryId}/products`); // products
+      console.log("Response:", response.data);
+      setProducts(response.data);
     } catch (error) {
       if (error instanceof Error) {
-        console.error('Failed to fetch subcategories:', (error as any).response?.data || error.message);
+        console.error(
+          "Failed to fetch subcategories:",
+          (error as any).response?.data || error.message
+        );
       } else {
-        console.error('Failed to fetch subcategories:', error);
+        console.error("Failed to fetch subcategories:", error);
+      }
+    }
+  };
+
+  const fetchSubcategories = async (categoryId: string) => {
+    try {
+      const response = await get(`/api/categories/${categoryId}/children/`);
+      console.log("Response:", response.data);
+      setSubCategories(response.data);
+      setSubcategoriesNames(
+        response.data.map((category: CategoryType) => category.name)
+      );
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(
+          "Failed to fetch subcategories:",
+          (error as any).response?.data || error.message
+        );
+      } else {
+        console.error("Failed to fetch subcategories:", error);
       }
     }
   };
@@ -86,23 +136,28 @@ const Category = () => {
   const addSubcategory = async (categoryId: string) => {
     try {
       const response = await axiosAuth.post(`/api/categories/${categoryId}`);
-    }
-    catch (error) {
+    } catch (error) {
       if (error instanceof Error) {
-        console.error('Failed to fetch subcategories:', (error as any).response?.data || error.message);
+        console.error(
+          "Failed to fetch subcategories:",
+          (error as any).response?.data || error.message
+        );
       } else {
-        console.error('Failed to fetch subcategories:', error);
+        console.error("Failed to fetch subcategories:", error);
       }
     }
-  }
+  };
 
   useEffect(() => {
-    if (category) {
-      setActiveCategory(category);
-      fetchSubcategories(category);
+    if (categoryId) {
+      category && setActiveCategory(category);
+      fetch(categoryId); // all products
+      fetchSubcategories(categoryId); // subcategories
+      console.log("Category:", category);
     }
   }, [category]);
 
+  console.log("Products:", products);
   const handleSubcategoryClick = (subcategory: string) => {
     navigate(`/categories/${categoryName}+${categoryId}/${subcategory}`);
     setActiveCategory(subcategory);
@@ -125,15 +180,19 @@ const Category = () => {
           </h2>
 
           <div className={classes.items}>
-            {/* {products.map((product) => (
-              <Link
-                to={`/categories/${category}/product/${product.id}`}
-                key={product.id}
-                style={{ textDecoration: "none" }}
-              >
-                <Product key={product.id} product={product} />
-              </Link>
-            ))} */}
+            {products.length === 0 ? (
+              <p>No products available.</p>
+            ) : (
+              products.map((product) => (
+                <Link
+                  to={`/categories/${category}/product/${product.id}`}
+                  style={{ textDecoration: "none" }}
+                  key={product.id} // Add a unique key prop
+                >
+                  <Product item={product} isNotInBasket />
+                </Link>
+              ))
+            )}
           </div>
         </div>
       </div>

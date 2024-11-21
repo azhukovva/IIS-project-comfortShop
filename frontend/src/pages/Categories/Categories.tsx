@@ -32,7 +32,7 @@ const Categories = () => {
 
   useEffect(() => {
     fetchCategories();
-  }, []);
+  }, [handleAddNewCategory]);
 
   return (
     <Page isHeader>
@@ -51,7 +51,7 @@ const Categories = () => {
               </div>
               <div className={classes.btnContainer}>
                 <Link
-                  to="/categories/home-cozyness"
+                  to="/categories/home"
                   style={{ textDecoration: "none" }}
                 >
                   <Button isActive>Discover cozyness</Button>
