@@ -20,6 +20,7 @@ class Category(models.Model):
         null=True,  
     )
     image = models.ImageField(upload_to="category_images/", blank=True, null=True)
+    is_approved = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -43,6 +44,15 @@ class Category(models.Model):
 
         return children
 
+class ProposedCategory(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    is_approved = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+
 
 class Product(models.Model):
     title = models.CharField(max_length=200)
@@ -52,10 +62,24 @@ class Product(models.Model):
     user = models.ForeignKey(User, related_name="products", on_delete=models.CASCADE)
     stock = models.PositiveIntegerField()
     image = models.ImageField(upload_to="products/", blank=True, null=True)
+    is_approved = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
 
+
+class ProposedProduct(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    category = models.ForeignKey(Category, related_name="proposed_products", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name="proposed_products", on_delete=models.CASCADE)
+    stock = models.PositiveIntegerField()
+    image = models.ImageField(upload_to="products/", blank=True, null=True)
+    is_approved = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title
 
 # ATTRIBUTE MODELS
 

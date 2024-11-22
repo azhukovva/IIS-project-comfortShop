@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 
 from .models import (
@@ -20,6 +20,14 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id", "username", "email", "first_name", "last_name"]
+
+    def create(self, validated_data):
+        user = super().create(validated_data)
+        
+        admin_group, created = Group.objects.get_or_create(name="admin")
+        user.groups.add(admin_group)
+        
+        return user    
 
 
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
@@ -76,7 +84,11 @@ class ProductViewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ["id", "title", "description", "price", "category", "user", "stock", "attribute_values", "image"]
+        fields = ["id", "title", "description", "price", "category", "user", "stock", "attribute_values", "image", "is_approved"]
+
+    def create(self, validated_data):
+        validated_data["is_approved"] = False
+        return super().create(validated_data)
 
 
 class ProductWriteSerializer(serializers.ModelSerializer):
