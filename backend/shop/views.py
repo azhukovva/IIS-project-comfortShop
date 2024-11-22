@@ -37,7 +37,7 @@ from .serializers import (
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsModeratorUserOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     lookup_field = "slug"
     search_fields = ["name"]
 
@@ -77,7 +77,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
-    permission_classes = [IsAdminUserOrReadOnly, IsModeratorUserOrReadOnly, IsEnterepreneurOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filterset_fields = ["category", "user", "title", "stock", "price"]
 
     def get_serializer_class(self):
@@ -140,7 +140,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 class AttributeViewSet(viewsets.ModelViewSet):
     queryset = Attribute.objects.all()
     serializer_class = AttributeSerializer
-    permission_classes = [IsModeratorUserOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 class AttributeValueViewSet(viewsets.ModelViewSet):
@@ -214,7 +214,7 @@ class BasketProductViewSet(viewsets.ModelViewSet):
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    
+
 
 class RatingViewSet(viewsets.ModelViewSet):
     queryset = Rating.objects.all()
