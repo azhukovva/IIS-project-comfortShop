@@ -32,6 +32,9 @@ type ContextType = {
 
   isAddNewCategoryClicked: boolean;
   handleAddNewCategory: (state: boolean) => void;
+
+  isAddUser: boolean;
+  handleAddUser: (state: boolean) => void;
 };
 
 type PropsType = {
@@ -63,6 +66,9 @@ const initialState: ContextType = {
 
   isAddNewCategoryClicked: false,
   handleAddNewCategory: () => {},
+
+  isAddUser: false,
+  handleAddUser: () => {}
 };
 
 export const Context = createContext<ContextType>(initialState);
@@ -80,6 +86,7 @@ const ContextProvider = ({ children }: PropsType) => {
   // Modals
   const [isAddNewItemClicked, setIsAddNewItemClicked] = useState(false);
   const [isAddNewCategoryClicked, setIsAddNewCategoryClicked] = useState(false);
+  const [isAddUser, setIsAddUser] = useState(false);
 
   const handleLoginClick = (state?: boolean) => {
     setIsLoginClicked((prev) => (state !== undefined ? state : !prev));
@@ -110,10 +117,14 @@ const ContextProvider = ({ children }: PropsType) => {
     setIsAddNewCategoryClicked(state);
   };
 
+  const handleAddUser = (state: boolean) => {
+    setIsAddUser(state);
+  };
+
   const value: ContextType = {
     user,
     setUser,
-    
+
     isLoading,
     isAuth,
     showPopup,
@@ -134,6 +145,9 @@ const ContextProvider = ({ children }: PropsType) => {
 
     isAddNewCategoryClicked,
     handleAddNewCategory,
+
+    isAddUser,
+    handleAddUser
   };
 
   return (
