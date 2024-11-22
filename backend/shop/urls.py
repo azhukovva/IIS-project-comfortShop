@@ -11,6 +11,8 @@ from .views import (
     OrderViewSet,
     ProductViewSet,
     UserViewSet,
+    RatingViewSet,
+    PostViewSet,
 )
 
 router = routers.DefaultRouter()
@@ -22,6 +24,10 @@ router.register(r"attribute-values", AttributeValueViewSet, basename="attribute-
 router.register(r"baskets", BasketViewSet, basename="basket")
 router.register(r"basket-products", BasketProductViewSet, basename="basket-product")
 router.register(r'users', UserViewSet, basename='user')
+router.register(r"reviews", RatingViewSet, basename="review")
+router.register(r'posts', PostViewSet, basename='post')
+
+
 
 urlpatterns = [
     path("", include(router.urls)),

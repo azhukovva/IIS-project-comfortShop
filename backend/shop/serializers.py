@@ -10,6 +10,8 @@ from .models import (
     Order,
     OrderProduct,
     Product,
+    Rating,
+    Post,
 )
 
 
@@ -17,7 +19,7 @@ from .models import (
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username", "email", "first_name", "last_name", "password"]
+        fields = ["id", "username", "email", "first_name", "last_name"]
 
 
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
@@ -189,3 +191,17 @@ class BasketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Basket
         fields = ["user", "products"]
+
+# Reviews
+class RatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rating
+        fields = ['user', 'post', 'rating']
+
+
+class PostSerializer(serializers.ModelSerializer):
+    average_rating = serializers.ReadOnlyField()  
+    ratings = RatingSerializer(many=True, read_only=True)  
+    class Meta:
+        model = Post
+        fields = ['id', 'header', 'text', 'average_rating', 'ratings'] 
