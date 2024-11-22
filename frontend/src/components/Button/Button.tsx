@@ -6,6 +6,7 @@ import icons from "../../utils/icons";
 
 type ButtonProps = {
   children: React.ReactNode;
+  type?: 'button' | 'submit' | 'reset';
   className?: string; // only for buttonStyles classNames feature
   onClick?: MouseEventHandler<HTMLButtonElement>;
   isActive?: boolean;
@@ -24,6 +25,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       children = null,
+      type = "button",
       className = "",
       onClick = (e) => {},
       isActive = false,
@@ -45,7 +47,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     });
 
     return (
-      <button ref={ref} onClick={onClick} className={buttonStyles}>
+      <button ref={ref} onClick={onClick} className={buttonStyles} type={type}>
         {children}
         {iconName && (
           <Icon icon={icons[iconName]} style={{ marginLeft: ".5rem" }} />

@@ -4,8 +4,7 @@ import Modal from "../../Modal/Modal";
 import classes from "./LoginModal.module.css";
 import Input from "../../Input/Input";
 import { Context } from "../../../utils/Context";
-import { post } from "../../../utils/axios";
-
+import { post, UserType } from "../../../utils/axios";
 
 type LoginModalProps = {
   onSubmit?: () => void;
@@ -19,9 +18,10 @@ const initialState = {
 };
 
 const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
-  const [state, setState] = useState(initialState);
+  const [state, setState] = useState(initialState); // user state
 
-  const { handleLoginClick, handleIsAuth } = useContext(Context);
+  const { setUser, handleLoginClick, handleIsAuth, showPopup, handlePopup } =
+    useContext(Context);
 
   const handleInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -40,16 +40,24 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
       }
 
       // axios without auth
-      const response = await post('/api/login/', {
+      const response = await post("/api/login/", {
         username: state.username,
         password: state.password,
       });
 
       if (response?.data?.token) {
-        console.log('Login response:', response.data);
-        localStorage.setItem('authToken', response.data.token); // Store the token in localStorage
+        console.log("Login response:", response.data);
+        localStorage.setItem("authToken", response.data.token); // Store the token in localStorage
+
+        const userData: UserType = {
+          id: "",
+          username: state.username,
+        };
+        setUser(userData); 
         onSubmit ? onSubmit() : onClose(); // Trigger the onSubmit callback if login is successful
         handleIsAuth(true);
+        handlePopup(true);
+        setTimeout(() => handlePopup(false), 2000);
       }
     } catch (error) {
       console.log(error);

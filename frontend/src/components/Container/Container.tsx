@@ -11,6 +11,7 @@ import LoginModal from "../Login/LoginModal/LoginModal";
 import AddNewItemModal from "../Modal/AddNewItemModal/AddNewItemModal";
 import AddNewCategoryModal from "../Modal/AddNewCategory/AddNewCategoryModal";
 import Modal from "../Modal/Modal";
+import Popup from "../Popup/Popup";
 
 type PropsType = {
   children: React.ReactNode;
@@ -29,6 +30,8 @@ const Container = ({ children }: PropsType) => {
     isAddNewCategoryClicked,
     isAuth,
     handleIsAuth,
+    showPopup,
+    handlePopup,
   } = useContext(Context);
 
   const LogoutModal = () => {
@@ -91,6 +94,7 @@ const Container = ({ children }: PropsType) => {
           handleIsAuth={handleIsAuth}
         />
       )}
+      {showPopup && isAuth && <Popup text="Logged in!" isGood/>}
       {isLogoutClicked && <LogoutModal />}
       {isAddNewItemClicked && <AddNewItemModal />}
       {isAddNewCategoryClicked && <AddNewCategoryModal />}

@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> ebaf45c1908f21ce1ba6217412d3bca31eed752b
 """
 Django settings for marketplace project.
 
