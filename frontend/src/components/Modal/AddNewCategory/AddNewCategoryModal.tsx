@@ -24,7 +24,6 @@ const AddNewCategory = () => {
   const [categoryData, setCategoryData] = useState(initialState);
   const { handleAddNewCategory, handleIsAuth, isAuth, handleLoginClick, isLoginClicked } =
     useContext(Context);
-  const [showLoginModal, ] = useState(false); // State to show login modal
 
   const handleInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -68,6 +67,14 @@ const AddNewCategory = () => {
       }
     }
   };
+
+  useEffect(() => {
+    if (!isAuth) {
+      handleLoginClick(true);
+      handleAddNewCategory(false);
+      return;
+    }
+  })
 
   return (
     <>

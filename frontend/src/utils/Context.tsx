@@ -1,4 +1,5 @@
 import React, { Dispatch, createContext, useState } from "react";
+import { UserType } from "./axios";
 
 /*
  * Root element where floating elements are generated
@@ -6,8 +7,15 @@ import React, { Dispatch, createContext, useState } from "react";
 export const floatingRoot = document.getElementById("root");
 
 type ContextType = {
+  user: UserType | null;
+  setUser: (user: UserType | null) => void;
+
   isLoading: boolean;
   isAuth: boolean;
+
+  showPopup: boolean;
+  handlePopup: (state: boolean) => void;
+
   handleIsAuth: (state: boolean) => void;
   setIsLoading?: Dispatch<React.SetStateAction<boolean>>;
   isLoginClicked: boolean;
@@ -31,8 +39,14 @@ type PropsType = {
 };
 
 const initialState: ContextType = {
+  user: null,
+  setUser: () => {},
+
   isLoading: false,
   isAuth: false,
+  showPopup: false,
+  handlePopup: () => {},
+
   handleIsAuth: () => {},
   setIsLoading: () => {},
   isLoginClicked: false,
@@ -54,8 +68,11 @@ const initialState: ContextType = {
 export const Context = createContext<ContextType>(initialState);
 
 const ContextProvider = ({ children }: PropsType) => {
+  const [user, setUser] = useState<UserType | null>(null);
+  
   const [isLoading, setIsLoading] = useState(false);
-  const [isAuth, setIsAuth] = useState(false);
+  const [isAuth, setIsAuth] = useState(false);  
+  const [showPopup, setShowPopup] = useState(false);
 
   const [isLoginClicked, setIsLoginClicked] = useState(false);
   const [isLogoutClicked, setIsLogoutClicked] = useState(false);
@@ -76,6 +93,10 @@ const ContextProvider = ({ children }: PropsType) => {
     setIsAuth(state);
   };
 
+  const handlePopup = (state: boolean) => {
+    setShowPopup(state);
+  }
+
   // Handle "sell" button(in header) click
   const handleSelling = (state: boolean) => {
     setIsSelling(state);
@@ -90,8 +111,14 @@ const ContextProvider = ({ children }: PropsType) => {
   };
 
   const value: ContextType = {
+    user,
+    setUser,
+    
     isLoading,
     isAuth,
+    showPopup,
+    handlePopup,
+
     handleIsAuth,
     isLoginClicked,
     handleLoginClick,

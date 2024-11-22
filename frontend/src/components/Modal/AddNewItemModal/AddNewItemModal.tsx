@@ -12,17 +12,24 @@ import { Context } from "../../../utils/Context";
 import Input from "../../Input/Input";
 import Dropdown from "../../Dropdown/Dropdown";
 import LoginModal from "../../Login/LoginModal/LoginModal";
+import Button from "../../Button/Button";
+import CategoryCard from "../../CategoryCard/CategoryCard";
+import { axiosAuth, ProductType } from "../../../utils/axios";
 
-const initialState = {
-  name: "",
-  category: "",
-  price: "",
+const initialState: ProductType = {
+  id: 0,
+  user: { id: "", username: "" }, // need username only
+  image: "",
+  title: "",
   description: "",
+  price: "",
+  category: "",
+  stock: 0,
+  attribute_values: [],
 };
 
 const AddNewItemModal = () => {
   const [itemData, setItemData] = useState(initialState);
-  const [showLoginModal, setShowLoginModal] = useState(false); // State to show login modal
 
   const { handleAddNewItem, isAuth, handleLoginClick, isLoginClicked } =
     useContext(Context);
@@ -40,26 +47,64 @@ const AddNewItemModal = () => {
     []
   );
 
+  const handleCategoryChange = (value: string) => {
+    setItemData((prev) => ({
+      ...prev,
+      category: value,
+    }));
+  };
+
+  const handleCurrencyChange = (value: string) => {
+    setItemData((prev) => ({
+      ...prev,
+      currency: value,
+    }));
+  };
+
   //TODO
-  const handleSubmitAddNewItem = () => {
+  const handleSubmitAddNewItem = async () => {
     if (!isAuth) {
-      setShowLoginModal(true);
+      handleLoginClick(true);
       return;
+    }
+    try {
+      const requestBody = {
+        title: itemData.title,
+        description: itemData.description,
+        price: itemData.price,
+        category: itemData.category,
+        stock: itemData.stock,
+        attribute_values: itemData.attribute_values,
+        user: {
+          username: "current_user_username", // Replace with the actual username
+        },
+      };
+      const response = await axiosAuth.post(`/api/products`, requestBody);
+
+      console.log('Product added:', response.data, requestBody);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(
+          "Failed to add product:",
+          (error as any).response?.data || error.message
+        );
+      } else {
+        console.error("Failed to add product:", error);
+      }
     }
   };
 
   useEffect(() => {
     if (!isAuth) {
-      setShowLoginModal(true);
+      handleLoginClick(true);
       return;
     }
   }, []);
 
+  console.log("Item data:", itemData);
+
   return (
     <>
-      {/* {showLoginModal && (
-        <LoginModal onClose={() => setShowLoginModal(false)} />
-      )} */}
       <Modal
         title="Add New Product"
         textOk="Add"
@@ -71,7 +116,7 @@ const AddNewItemModal = () => {
         <div className={classes.container}>
           <Input
             name="name"
-            value={itemData.name}
+            value={itemData.title}
             labelText="Product Name"
             placeholder="Name"
             isRequired
@@ -81,6 +126,7 @@ const AddNewItemModal = () => {
             options={categories}
             placeholder="Category"
             labelText="Category"
+            onChange={handleCategoryChange}
           />
           <div
             style={{
@@ -103,8 +149,31 @@ const AddNewItemModal = () => {
               options={currencies}
               placeholder="CZK"
               labelText="Currency"
+              onChange={handleCurrencyChange}
             />
           </div>
+          <Input
+            name="stock"
+            value={itemData.stock.toString()}
+            labelText="Stock"
+            placeholder="Stock"
+            isRequired
+            onChange={handleInputChange}
+          />
+          <div>
+            <form method="POST" encType="multipart/form-data">
+              <input
+                type="file"
+                name="image"
+                accept="image/*"
+                onChange={(e) => {
+                  (e.target as HTMLInputElement).form?.submit();
+                }}
+              />
+              {/* <Button type="submit">Upload</Button> */}
+            </form>
+          </div>
+
           <Input
             name="description"
             value={itemData.description}

@@ -31,7 +31,9 @@ const Header = () => {
     console.log("isAuth", isAuth)
     console.log(localStorage.getItem("authToken"))
     if (isAuth === false){
+      localStorage.setItem("authToken", "")
       handleLoginClick(true)
+      console.log(isAuth, localStorage.getItem("authToken"))
     }
     else {
       handleLogoutClick(true)

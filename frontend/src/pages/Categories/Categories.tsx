@@ -154,9 +154,7 @@ const Categories = () => {
           </div>
         </section>
 
-        {/* <section className={classes.bottomSection}>
-          <div ></div>
-        </section> */}
+
       </div>
     </Page>
   );
