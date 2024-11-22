@@ -210,7 +210,7 @@ class BasketProductViewSet(viewsets.ModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [DynamicRolePermission]  
+    permission_classes = [IsAuthenticated, DynamicRolePermission]  
 
     @action(detail=True, methods=["post"])
     def create_moderator(self, request, pk=None):
@@ -234,37 +234,36 @@ class UserViewSet(viewsets.ModelViewSet):
         user.groups.remove(group)
         return Response({"status": "ok"})
 
-    @action(detail=True, methods=["post"])
-    def delete_user(self, request, pk=None):
-        user = self.get_object()
-
-        if not request.user.groups.filter(name="admin").exists():
-            return Response({"error": "Only admin can delete users."})
-
-        user.delete()
-        return Response({"status": "ok"})
-
     @action(detail=False, methods=["post"])
     def create_user(self, request):
-       
-        if not request.user.groups.filter(name="admin").exists():
-            return Response({"error": "Only admin can create users."})
+        
+        if request.user.groups.filter(name="admin").exists():  
+            data = request.data
+            user = User.objects.create_user(
+                username=data["username"],
+                email=data.get("email", ""),
+                password=data["password"]
+            )
+            return Response({"status": "ok"})
 
-        data = request.data
-        user = User.objects.create_user(
-            username=data["username"],
-            email=data.get("email", ""),
-            password=data["password"]
-        )
-        return Response({"status": "ok"})
+        if request.user == request.data["username"]:
+            data = request.data
+            user = User.objects.create_user(
+                username=data["username"],
+                email=data.get("email", ""),
+                password=data["password"]
+            )
+            return Response({"status": "ok"})
+        
+        return Response({"error": "You are not allowed to create this user."})
 
     @action(detail=True, methods=["patch"])
     def update_user(self, request, pk=None):
         user = self.get_object()
-
-        if not request.user.groups.filter(name="admin").exists():
-            return Response({"error": "Only admin can update users."})
-
+        if not request.user.groups.filter(name="admin").exists():  
+            if request.user != user:
+                return Response({"error": "You can only update your own profile."})
+        
         if "username" in request.data:
             user.username = request.data["username"]
         if "email" in request.data:
@@ -276,15 +275,20 @@ class UserViewSet(viewsets.ModelViewSet):
 
         user.save()
 
+        return Response({"status": "User updated"})
+
+    @action(detail=True, methods=["post"])
+    def delete_user(self, request, pk=None):
+        user = self.get_object()
+
+        if not request.user.groups.filter(name="admin").exists():
+            if request.user != user:
+                return Response({"error": "You can only delete your own profile."})
+           
+
+        user.delete()
         return Response({"status": "ok"})
     
-
-class CategoryApprovalViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-
-    permission_classes = [IsModeratorUserOrReadOnly]  
-
     @action(detail=True, methods=["post"])
     def approve_category(self, request, pk=None):
         category = self.get_object()
@@ -295,3 +299,4 @@ class CategoryApprovalViewSet(viewsets.ModelViewSet):
         category.is_approved = True
         category.save()
         return Response({"status": "ok"})
+
