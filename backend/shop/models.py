@@ -4,7 +4,8 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
-
+from django.utils.timezone import now
+from django.db.models import Avg
 # MAIN MODELS
 
 
@@ -132,10 +133,24 @@ class BasketProduct(models.Model):
 
 # OTHER MODELS
 
+class Post(models.Model):
+    header = models.CharField(max_length=100, default="Header")
+    text = models.TextField()
 
-class Review(models.Model):
-    pass
+    def average_rating(self) -> float:
+        return Rating.objects.filter(post=self).aggregate(Avg("rating"))["rating__avg"] or 0
 
+    def __str__(self):
+        return f"{self.header}: {self.average_rating()}"
+
+
+class Rating(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    rating = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.post.header}: {self.rating}"
 
 # SIGNALS
 

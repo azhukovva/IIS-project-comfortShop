@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 
 from .models import (
     Attribute,
@@ -14,6 +15,8 @@ from .models import (
     Order,
     Product,
     OrderProduct,
+    Rating,
+    Post,
 )
 from .permissions import IsAdminUserOrReadOnly, IsModeratorUserOrReadOnly, IsEnterepreneurOrReadOnly, DynamicRolePermission, AllowUnauthenticatedReadOnly
 from .serializers import (
@@ -26,6 +29,8 @@ from .serializers import (
     ProductViewSerializer,
     ProductWriteSerializer,
     UserSerializer,
+    RatingSerializer,
+    PostSerializer,
 )
 
 
@@ -205,6 +210,24 @@ class BasketProductViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(basket__user=self.request.user)
 
+# Review Views
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    
+
+class RatingViewSet(viewsets.ModelViewSet):
+    queryset = Rating.objects.all()
+    serializer_class = RatingSerializer
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        post = serializer.validated_data['post']
+        if Rating.objects.filter(user=user, post=post).exists():
+            return Response("You have already rated this post.")
+        serializer.save(user=user) 
+
+
 #  USER VIEWS
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -293,10 +316,12 @@ class UserViewSet(viewsets.ModelViewSet):
     def approve_category(self, request, pk=None):
         category = self.get_object()
     
-        if not request.user.groups.filter(name="moderator").exists():
+        if not request.user.groups.filter(Q(name="moderator") | Q(name="admin")).exists():
             return Response({"error": "Only moderators can approve categories."})
 
         category.is_approved = True
         category.save()
         return Response({"status": "ok"})
+    
+
 
