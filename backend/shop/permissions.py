@@ -18,7 +18,7 @@ class IsModeratorUserOrReadOnly(permissions.BasePermission):
         # check if user is in group "moderator"
         return request.user.groups.filter(name="moderator").exists()
     
-
+"""
 class IsEnterepreneurOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
@@ -27,7 +27,7 @@ class IsEnterepreneurOrReadOnly(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return obj.entrepreneur == request.user
-    
+"""
 
 class AllowUnauthenticatedReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
