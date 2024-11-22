@@ -14,6 +14,10 @@ import axios from "axios";
 export type UserType = {
   id: string;
   username: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  password: string;
 };
 
 export type AuthTokenType = {

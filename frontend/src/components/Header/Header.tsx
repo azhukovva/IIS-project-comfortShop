@@ -5,17 +5,24 @@ import classes from "./Header.module.css";
 import Button from "../Button/Button";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Context } from "../../utils/Context";
+import SignInModal from "../Modal/SignInModal/SignInModal";
 
 const Header = () => {
   const [activeAction, setActiveAction] = useState("buy");
   const [activeCategory, setActiveCategory] = useState("all");
 
-  const [showLogoutModal, setShowLogoutModal] = useState(false)
+  const [isSighIn, setIsSignIn] = useState(false);
 
   const location = useLocation();
 
   const navigate = useNavigate();
-  const { handleLoginClick, handleLogoutClick, handleSelling, isAuth, handleIsAuth } = useContext(Context);
+  const {
+    handleLoginClick,
+    handleLogoutClick,
+    handleSelling,
+    isAuth,
+    handleIsAuth,
+  } = useContext(Context);
 
   const handleSellClick = () => {
     handleSelling(true);
@@ -28,18 +35,20 @@ const Header = () => {
   };
 
   const handleAccountClick = () => {
-    console.log("isAuth", isAuth)
-    console.log(localStorage.getItem("authToken"))
-    if (isAuth === false){
-      localStorage.setItem("authToken", "")
-      handleLoginClick(true)
-      console.log(isAuth, localStorage.getItem("authToken"))
+    console.log("isAuth", isAuth);
+    console.log(localStorage.getItem("authToken"));
+    if (isAuth === false) {
+      localStorage.setItem("authToken", "");
+      handleLoginClick(true);
+    } else {
+      handleLogoutClick(true);
+      console.log(isAuth, localStorage.getItem("authToken"));
     }
-    else {
-      handleLogoutClick(true)
-      console.log(isAuth, localStorage.getItem("authToken"))
-    }
-  }
+  };
+
+  const handleSignIn = async () => {
+    setIsSignIn(true);
+  };
 
   useEffect(() => {
     if (location.pathname === "/categories") {
@@ -76,12 +85,18 @@ const Header = () => {
       </div>
       <div className={classes.rightSideContainer}>
 
-          <Button onClick={() => handleAccountClick()}>Account</Button>
-    
+        {/* Registration create user */}
+        {isAuth == false && <Button onClick={() => setIsSignIn(true)}>Sign In</Button>}
+         {/* Login */}
+         <Button onClick={() => handleAccountClick()} isActive>
+          {isAuth === false ? "Log in" : "Log out"}
+        </Button>
+
         <Link to="/basket" style={{ textDecoration: "none" }}>
           <Button iconName="basket">My Basket</Button>
         </Link>
       </div>
+      {isSighIn && <SignInModal onClose={() => setIsSignIn(false)}/>}
     </header>
   );
 };

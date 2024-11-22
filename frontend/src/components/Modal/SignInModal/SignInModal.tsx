@@ -1,7 +1,7 @@
 import React, { useCallback, ChangeEvent, useState, useContext } from "react";
 import Modal from "../../Modal/Modal";
 
-import classes from "./LoginModal.module.css";
+import classes from "./SignInModal.module.css";
 import Input from "../../Input/Input";
 import { Context } from "../../../utils/Context";
 import { axiosAuth, post, UserType } from "../../../utils/axios";
@@ -9,11 +9,14 @@ import { axiosAuth, post, UserType } from "../../../utils/axios";
 type LoginModalProps = {
   onSubmit?: () => void;
   onClose: () => void;
-  handleIsAuth: (isAuth: boolean) => void;
+  handleIsAuth?: (isAuth: boolean) => void;
 };
 
 const initialState = {
   username: "",
+  email: "",
+  first_name: "",
+  last_name: "",
   password: "",
 };
 
@@ -33,21 +36,24 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
     []
   );
 
-  const handleLogin = async () => {
+  const handleSignin = async () => {
     try {
       if (state.username === "" || state.password === "") {
         return;
       }
+
       // axios without auth
-      const response = await post("/api/login/", {
+      const response = await post("/api/users/", {
         username: state.username,
+        email: state.email,
+        first_name: state.first_name,
+        last_name: state.last_name,
         password: state.password,
       });
 
       if (response?.data?.token) {
         console.log("Login response:", response.data);
         localStorage.setItem("authToken", response.data.token); // Store the token in localStorage
-        
         onSubmit ? onSubmit() : onClose(); // Trigger the onSubmit callback if login is successful
         handleIsAuth(true);
         handlePopup(true);
@@ -62,10 +68,10 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
 
   return (
     <Modal
-      title="Log in"
-      textOk="Log in"
+      title="Sign in"
+      textOk="Sign in"
       textCancel="Cancel"
-      onSubmit={handleLogin}
+      onSubmit={handleSignin}
       onClose={onClose}
       comment={comment}
       iconName="user"
@@ -81,11 +87,37 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
         />
         <Input
           name="password"
-          value={state.password}
           type="password"
+          value={state.password}
           labelText="Password"
           isRequired
           placeholder="Enter your Password"
+          onChange={handleInputChange}
+        />
+        <div style={{ display: "flex", gap: "1rem" }}>
+          <Input
+            name="first_name"
+            value={state.first_name}
+            labelText="First Name"
+            isRequired
+            placeholder="Enter your First Name"
+            onChange={handleInputChange}
+          />
+          <Input
+            name="last_name"
+            value={state.last_name}
+            labelText="Last Name"
+            isRequired
+            placeholder="Enter your Last Name"
+            onChange={handleInputChange}
+          />
+        </div>
+        <Input
+          name="email"
+          value={state.email}
+          labelText="Email"
+          isRequired
+          placeholder="Enter your Email"
           onChange={handleInputChange}
         />
       </div>
