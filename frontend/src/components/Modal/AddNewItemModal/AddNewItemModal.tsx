@@ -18,7 +18,14 @@ import { axiosAuth, ProductType } from "../../../utils/axios";
 
 const initialState: ProductType = {
   id: 0,
-  user: { id: "", username: "" }, // need username only
+  user: {
+    id: "",
+    username: "",
+    email: "",
+    first_name: "",
+    last_name: "",
+    password: "",
+  },
   image: "",
   title: "",
   description: "",
@@ -31,7 +38,7 @@ const initialState: ProductType = {
 const AddNewItemModal = () => {
   const [itemData, setItemData] = useState(initialState);
 
-  const { handleAddNewItem, isAuth, handleLoginClick, isLoginClicked } =
+  const { handleAddNewItem, isAuth, handleLoginClick, isLoginClicked, user } =
     useContext(Context);
 
   const currencies = ["CZK", "EUR"];
@@ -63,7 +70,7 @@ const AddNewItemModal = () => {
 
   //TODO
   const handleSubmitAddNewItem = async () => {
-    if (!isAuth) {
+    if (!isAuth || !user) {
       handleLoginClick(true);
       return;
     }
@@ -76,12 +83,17 @@ const AddNewItemModal = () => {
         stock: itemData.stock,
         attribute_values: itemData.attribute_values,
         user: {
-          username: "current_user_username", // Replace with the actual username
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          password: user.password,
         },
       };
       const response = await axiosAuth.post(`/api/products`, requestBody);
 
-      console.log('Product added:', response.data, requestBody);
+      console.log("Product added:", response.data, requestBody);
     } catch (error) {
       if (error instanceof Error) {
         console.error(
