@@ -12,6 +12,7 @@ import AddNewItemModal from "../Modal/AddNewItemModal/AddNewItemModal";
 import AddNewCategoryModal from "../Modal/AddNewCategory/AddNewCategoryModal";
 import Modal from "../Modal/Modal";
 import Popup from "../Popup/Popup";
+import AddUserModal from "../Modal/AddUser/AddUserModal";
 
 type PropsType = {
   children: React.ReactNode;
@@ -28,6 +29,7 @@ const Container = ({ children }: PropsType) => {
     handleLogoutClick,
     isAddNewItemClicked,
     isAddNewCategoryClicked,
+    isAddUser,
     isAuth,
     handleIsAuth,
     showPopup,
@@ -98,6 +100,7 @@ const Container = ({ children }: PropsType) => {
       {isLogoutClicked && <LogoutModal />}
       {isAddNewItemClicked && <AddNewItemModal />}
       {isAddNewCategoryClicked && <AddNewCategoryModal />}
+      {isAddUser && <AddUserModal />}
       {!isBasketPage && !isWelcomePage && <Footer />}
     </div>
   );
