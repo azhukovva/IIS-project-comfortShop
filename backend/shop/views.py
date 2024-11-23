@@ -9,8 +9,6 @@ from django.db import transaction
 from rest_framework.decorators import permission_classes
 from rest_framework import status
 from rest_framework.views import APIView
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.tokens import RefreshToken
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.authtoken.views import obtain_auth_token
@@ -25,9 +23,7 @@ from .models import (
     Product,
     OrderProduct,
     Rating,
-    Post,
     ProposedCategory,
-    ProposedProduct,
 )
 from .permissions import IsAdminOrReadOnly, IsModeratorOrReadOnly,  IsAdminOrModerator, IsEnterepreneurOrReadOnly
 from .serializers import (
@@ -41,14 +37,13 @@ from .serializers import (
     ProductWriteSerializer,
     UserSerializer,
     RatingSerializer,
-    PostSerializer,
     RegisterSerializer,
 )
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAdminOrReadOnly, IsModeratorOrReadOnly]
+    permission_classes = [IsAdminOrReadOnly|IsModeratorOrReadOnly]
     lookup_field = "slug"
     search_fields = ["name"]
 
@@ -85,16 +80,39 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class ProposedCategoryViewSet(viewsets.ModelViewSet):
     queryset = ProposedCategory.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminOrModerator|IsEnterepreneurOrReadOnly] # TODO: Change to is moderator or admin or entrepreneur
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    @action(detail=True, methods=["post"], permission_classes=[IsAdminOrModerator])
+    def approve(self, request, pk=None):
+        try:
+            proposed_category = ProposedCategory.objects.get(id=pk)
+            category = Category.objects.create(name=proposed_category.name, slug=proposed_category.slug, parent=proposed_category.parent, image=proposed_category.image) 
+            proposed_category.delete()
+
+            return Response(
+                {"status": "Category approved", "category_id": category.slug},
+                status=status.HTTP_201_CREATED,
+            )
+
+        except ProposedCategory.DoesNotExist:
+            return Response(
+                {"error": "Proposed category not found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        except Exception as e:
+            return Response(
+                {"error": f"Something went wrong: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
-    permission_classes = [IsEnterepreneurOrReadOnly, IsAdminOrReadOnly, IsModeratorOrReadOnly]
+    permission_classes = [IsEnterepreneurOrReadOnly| IsAdminOrModerator]
     filterset_fields = ["category", "user", "title", "stock", "price"]
 
     def get_queryset(self):
@@ -117,82 +135,46 @@ class ProductViewSet(viewsets.ModelViewSet):
         instance.delete()
 
 
-class ProposedProductViewSet(viewsets.ModelViewSet):
-    queryset = ProposedProduct.objects.all()
-    permission_classes = [IsAuthenticated]
-    serializer_class = ProductWriteSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)    
-
-
-class ProductManagementViewSet(viewsets.ModelViewSet):
-    serializer_class = ProductWriteSerializer
-    permission_classes = [IsAdminOrModerator]
-
-    def get_queryset(self):
-        if self.request.method in permissions.SAFE_METHODS:
-            return ProposedProduct.objects.filter(user=self.request.user)
-
-    def perform_update(self, serializer):
-        product = self.get_object()
-        if product.is_approved:
-            raise exceptions.PermissionDenied("Cannot modify approved products.")
-        serializer.save()            
-
-class OrderViewSet(viewsets.ModelViewSet):
+class OrderViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        queryset = Order.objects.all()
+        if not self.request.user.groups.filter(name__in=["moderator", "admin"]).exists():
+            queryset = queryset.filter(user=self.request.user)
+        return queryset
+
     def create(self, request, *args, **kwargs):
-        basket = get_object_or_404(Basket, user=request.user)
-        if not basket.basketproduct_set.exists():
-            return Response({"error": "Basket is empty"}, status=400)
-
         with transaction.atomic():
+            basket = Basket.objects.get(user=request.user)
             order = Order.objects.create(user=request.user)
-            total_price = 0
-
-            for basket_product in basket.basketproduct_set.select_related("product").all():
+            for basket_product in basket.products.all():
                 OrderProduct.objects.create(
                     order=order,
                     product=basket_product.product,
                     quantity=basket_product.quantity,
-                    price=basket_product.product.price * basket_product.quantity,
                 )
-                total_price += basket_product.product.price * basket_product.quantity
-
-            order.total_price = total_price
-            order.save()
-
-            basket.basketproduct_set.all().delete()
-
+            basket.products.all().delete()
         serializer = self.get_serializer(order)
-        return Response(serializer.data)
-
-    def list(self, request, *args, **kwargs):
-        orders = self.queryset.filter(user=request.user)
-        serializer = self.get_serializer(orders, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 ### Attribute Views
 
 
-class AttributeViewSet(viewsets.ModelViewSet):
+class AttributeViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     queryset = Attribute.objects.all()
     serializer_class = AttributeSerializer
-    permission_classes = [IsAdminOrReadOnly, IsModeratorOrReadOnly]
-
-
-class AttributeValueViewSet(viewsets.ModelViewSet):
-    queryset = AttributeValue.objects.all()
-    serializer_class = AttributeValueSerializer
-    permission_classes = [IsModeratorOrReadOnly, IsAdminOrReadOnly]
+    permission_classes = [IsAdminOrReadOnly|IsModeratorOrReadOnly]
 
 
 ### Basket Views
+
 
 class BasketViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = BasketSerializer
@@ -214,137 +196,98 @@ class BasketViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
-    @action(detail=False, methods=["post"])
-    def add_product(self, request):
-        basket = self.get_object()
-        product = get_object_or_404(Product, pk=request.data.get("product"))
-        quantity = int(request.data.get("quantity", 1))
 
-        if product.stock < quantity:
-            return Response({"error": "Not enough stock available"}, status=400)
+# add product to basket view
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def add_product_to_basket(request):
+    user = request.user
+    product_id = request.data.get("product_id")
+    quantity = request.data.get("quantity", 1)
 
-        basket_product, created = BasketProduct.objects.get_or_create(
-            basket=basket, product=product
-        )
-        if not created:
-            basket_product.quantity += quantity
-        basket_product.save()
+    try:
+        product = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return Response({"error": "Product not found"}, status=404)
 
-        return Response({"status": "Product added to basket"})
+    basket, created = Basket.objects.get_or_create(user=user)
+    basket_product, created = BasketProduct.objects.get_or_create(
+        basket=basket, product=product, quantity=0
+    )
+    basket_product.quantity += quantity
+    basket_product.save()
 
-    @action(detail=False, methods=["post"])
-    def remove_product(self, request):
-        basket = self.get_object()
-        product = get_object_or_404(Product, pk=request.data.get("product"))
-        quantity = int(request.data.get("quantity", 1))
-
-        try:
-            basket_product = BasketProduct.objects.get(basket=basket, product=product)
-            if basket_product.quantity <= quantity:
-                basket_product.delete()
-            else:
-                basket_product.quantity -= quantity
-                basket_product.save()
-        except BasketProduct.DoesNotExist:
-            return Response({"error": "Product not in basket"}, status=400)
-
-        return Response({"status": "Product removed from basket"})
+    return Response({"status": "Product added to basket"})
 
 
+# remove product from basket view
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def remove_product_from_basket(request):
+    user = request.user
+    product_id = request.data.get("product_id")
+    quantity = request.data.get("quantity", 1)
 
-class BasketProductViewSet(viewsets.ModelViewSet):
-    queryset = BasketProduct.objects.all()
-    serializer_class = BasketProductSerializer
-    permission_classes = [IsAuthenticated]
+    try:
+        product = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return Response({"error": "Product not found"}, status=404)
 
-    def get_queryset(self):
-        if self.request.user.is_authenticated:
-            if self.request.method in permissions.SAFE_METHODS: 
-                return BasketProduct.objects.filter(basket__user=self.request.user)
-        return BasketProduct.objects.none()
+    try:
+        basket = Basket.objects.get(user=user)
+    except Basket.DoesNotExist:
+        return Response({"error": "Basket not found"}, status=404)
 
-    def perform_create(self, serializer):
-        if not self.request.user.is_authenticated:
-            raise PermissionDenied("You must be authenticated to add products to basket.")
-        serializer.save(basket__user=self.request.user)
+    try:
+        basket_product = BasketProduct.objects.get(basket=basket, product=product)
+        if basket_product.quantity <= quantity:
+            basket_product.delete()
+        else:
+            basket_product.quantity -= quantity
+            basket_product.save()
+    except BasketProduct.DoesNotExist:
+        return Response({"error": "Product not in basket"}, status=404)
+
+    return Response({"status": "Product removed from basket"})
+
 
 # Review Views
-class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
-
-
 class RatingViewSet(viewsets.ModelViewSet):
     queryset = Rating.objects.all()
-    serializer_class = RatingSerializer
-
-    def perform_create(self, serializer):
-        user = self.request.user
-        post = serializer.validated_data['post']
-        if Rating.objects.filter(user=user, post=post).exists():
-            return Response("You have already rated this post.")
-        serializer.save(user=user) 
+    serializer_class = RatingSerializer 
 
 
 #  USER VIEWS
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAdminOrModerator]
 
-    @action(detail=False, methods=["post"], permission_classes=[IsAdminOrModerator])
-    def create_user(self, request):
-        data = request.data
-        user = User.objects.create_user(
-            username=data["username"],
-            email=data.get("email", ""),
-            password=data["password"],
-        )
-        return Response({"status": "User created successfully"})
-
-    @action(detail=True, methods=["delete"], permission_classes=[IsAdminOrModerator])
-    def delete_user(self, request, pk=None):
+    def get_queryset(self):
+        queryset = User.objects.all()
+        if not self.request.user.groups.filter(name__in=["moderator", "admin"]).exists() and not self.request.method in permissions.SAFE_METHODS:
+            queryset = queryset.filter(id=self.request.user.id)
+        return queryset
+    
+    @action(detail=True, methods=["post"], permission_classes=[IsAdminOrReadOnly])
+    def promote_to_moderator(self, request, pk=None):
         user = self.get_object()
-        user.delete()
-        return Response({"status": "User deleted successfully"})
+        group, created = Group.objects.get_or_create(name="moderator")
+        user.groups.add(group)
+        return Response({"status": "User promoted to moderator"})
+    
+    @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])
+    def me(self, request):
+        serializer = self.get_serializer(request.user)
+        return Response(serializer.data)
+    
 
-    @action(detail=True, methods=["post"], permission_classes=[IsAdminOrModerator])
-    def approve_category(self, request, pk=None):
-        category = get_object_or_404(ProposedCategory, pk=pk)
-        category.is_approved = True
-        category.save()
-        return Response({"status": "Category approved"})
-
-    @action(detail=True, methods=["post"], permission_classes=[IsAdminOrModerator])
-    def approve_product(self, request, pk=None):
-        product = get_object_or_404(ProposedProduct, pk=pk)
-        product.is_approved = True
-        product.save()
-        return Response({"status": "Product approved"})
-""""
-    @action(detail=True, methods=["patch"])
-    def update_user(self, request, pk=None):
-        user = self.get_object()
-        if not request.user.groups.filter(name="admin").exists():  
-            if request.user != user:
-                return Response({"error": "You can only update your own profile."})
-        
-        if "username" in request.data:
-            user.username = request.data["username"]
-        if "email" in request.data:
-            user.email = request.data["email"]
-        if "first_name" in request.data:
-            user.first_name = request.data["first_name"]
-        if "last_name" in request.data:
-            user.last_name = request.data["last_name"]
-
-        user.save()
-
-        return Response({"status": "User updated"})"""
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
+
     @swagger_auto_schema(
         request_body=RegisterSerializer,
         responses={
@@ -352,126 +295,15 @@ class RegisterView(APIView):
             400: "Validation Error"
         },
     )
-
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save() 
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            refresh = RefreshToken.for_user(user)
-            access_token = str(refresh.access_token)
+        user = serializer.save() 
 
-            return Response({
-                'message': 'User created successfully',
-                'token': access_token,  
-                'refresh token': str(refresh)  
-            }, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-"""   
-class LoginView(TokenObtainPairView):
-    permission_classes = [AllowAny]  
-
-class ProtectedView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        return Response({'message': 'Access granted'}, status=status.HTTP_200_OK)      
-"""
-
-@swagger_auto_schema(
-    method='post',
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'group_name': openapi.Schema(type=openapi.TYPE_STRING, description='Name of the group'),
-            'user_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='ID of the user'),
-        },
-        required=['group_name', 'user_id'],
-    ),
-    responses={
-        200: openapi.Response('Success', openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                'status': openapi.Schema(type=openapi.TYPE_STRING, description='Success message')
-            }
-        )),
-        400: openapi.Response('Error', openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                'error': openapi.Schema(type=openapi.TYPE_STRING, description='Error message')
-            }
-        )),
-    }
-)
-@api_view(["POST"])
-@permission_classes([IsAdminOrReadOnly])
-def add_user_to_group(request):
-    group_name = request.data.get("group_name")
-    user_id = request.data.get("user_id")
-
-    try:
-        group = Group.objects.get(name=group_name)
-        user = User.objects.get(id=user_id)
-        user.groups.add(group)
-        return Response({"status": "User added to group"}, status=200)
-    except Group.DoesNotExist:
-        return Response({"error": "Group not found"}, status=400)
-    except User.DoesNotExist:
-        return Response({"error": "User not found"}, status=400)
-    
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def user_info_from_jwt(request):
-    user = request.user
-    return Response({
-        "id": user.id,
-        "username": user.username,
-        "email": user.email,
-        "groups": [group.name for group in user.groups.all()],
-    })    
-
-
-@api_view(['GET'])
-def get_user_by_id(request, user_id):
-    try:
-        user = User.objects.get(id=user_id)
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
-    except User.DoesNotExist:
-        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-    
-@swagger_auto_schema(
-    method="get",
-    manual_parameters=[
-        openapi.Parameter(
-            "username",
-            openapi.IN_PATH,
-            description="Username of the user to retrieve",
-            type=openapi.TYPE_STRING,
-            required=True,
-        )
-    ],
-    responses={
-        200: UserSerializer,
-        404: openapi.Response(
-            description="User not found",
-            schema=openapi.Schema(
-                type=openapi.TYPE_OBJECT,
-                properties={
-                    "error": openapi.Schema(type=openapi.TYPE_STRING)
-                }
-            ),
-        ),
-    },
-)
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def get_user_by_username(request, username):
-
-    try:
-        user = User.objects.get(username=username)
-        serializer = UserSerializer(user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    except User.DoesNotExist:
-        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({
+            'message': 'User created successfully',
+            'token': user.auth_token.key  
+        }, status=status.HTTP_201_CREATED)
+        

@@ -2,7 +2,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save, post_migrate
 from django.dispatch import receiver
-from .models import ProposedCategory, ProposedProduct
+from .models import ProposedCategory
 
 User = get_user_model()
 
@@ -23,10 +23,9 @@ def assign_default_role(sender, instance, created, **kwargs):
             print("Default group 'user' does not exist. Please check group creation.")
 
 @receiver(post_save, sender=ProposedCategory)
-@receiver(post_save, sender=ProposedProduct)
-def add_to_interpreneur_group(sender, instance, created, **kwargs):
+def add_to_entrepreneur_group(sender, instance, created, **kwargs):
     if created:
         user = instance.user
-        group, created = Group.objects.get_or_create(name="interpreneur")
-        if not user.groups.filter(name="interpreneur").exists():
+        group, created = Group.objects.get_or_create(name="entrepreneur")
+        if not user.groups.filter(name="entrepreneur").exists():
             user.groups.add(group)            
