@@ -9,6 +9,8 @@ from django.db import transaction
 from rest_framework.decorators import permission_classes
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import (
     Attribute,
@@ -93,7 +95,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     filterset_fields = ["category", "user", "title", "stock", "price"]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = Product.objects.all()
         if not self.request.user.groups.filter(name__in=["moderator", "admin"]).exists():
             queryset = queryset.filter(is_approved=True)
         return queryset
@@ -118,8 +120,7 @@ class ProposedProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductWriteSerializer
 
     def perform_create(self, serializer):
-        if self.request.method in permissions.SAFE_METHODS:
-            serializer.save(user=self.request.user)    
+        serializer.save(user=self.request.user)    
 
 
 class ProductManagementViewSet(viewsets.ModelViewSet):
@@ -344,20 +345,29 @@ class UserViewSet(viewsets.ModelViewSet):
 class RegisterView(APIView):
     permission_classes = [AllowAny]
 
-    def post(self, request, *args, **kwargs):
-        email = request.data.get("email")
-        if User.objects.filter(email=email).exists():
-            return Response({"error": "Email already exists"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        username = request.data.get("username")
-        if User.objects.filter(username=username).exists():
-            return Response({"error": "Username already exists"}, status=status.HTTP_400_BAD_REQUEST)
-
-        serializer = UserSerializer(data=request.data)
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.save()
-            return Response({"message": "User created successfully"}, status=status.HTTP_201_CREATED)
+            user = serializer.save() 
+
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+
+            return Response({
+                'message': 'User created successfully',
+                'access': access_token,  
+                'refresh': str(refresh)  
+            }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class LoginView(TokenObtainPairView):
+    permission_classes = [AllowAny]  
+
+class ProtectedView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({'message': 'Access granted'}, status=status.HTTP_200_OK)      
 
 
 @api_view(["POST"])

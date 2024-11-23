@@ -6,3 +6,5 @@ django-cors-headers
 drf-yasg
 gunicorn
 psycopg2-binary
+djangorestframework-simplejwt
+

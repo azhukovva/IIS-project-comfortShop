@@ -13,6 +13,8 @@ from .views import (
     UserViewSet,
     RatingViewSet,
     PostViewSet,
+    RegisterView,
+    LoginView,
 )
 
 router = routers.DefaultRouter()
@@ -32,5 +34,6 @@ router.register(r'posts', PostViewSet, basename='post')
 urlpatterns = [
     path("", include(router.urls)),
     # USER AUTHENTICATION
-    path("login/", views.obtain_auth_token),
+    #path("login/", views.obtain_auth_token),
+    
 ]
