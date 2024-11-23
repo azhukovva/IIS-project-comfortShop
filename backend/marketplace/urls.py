@@ -45,6 +45,7 @@ urlpatterns = [
     path("swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
     path('add-user-to-group/', views.add_user_to_group, name='add_user_to_group'),
+    path('register/', views.RegisterView.as_view(), name='register'),
 ]
 
 

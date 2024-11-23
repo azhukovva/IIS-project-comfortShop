@@ -7,6 +7,8 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.db import transaction
 from rest_framework.decorators import permission_classes
+from rest_framework import status
+from rest_framework.views import APIView
 
 from .models import (
     Attribute,
@@ -35,6 +37,7 @@ from .serializers import (
     UserSerializer,
     RatingSerializer,
     PostSerializer,
+    RegisterSerializer,
 )
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -262,7 +265,7 @@ class BasketProductViewSet(viewsets.ModelViewSet):
         if not self.request.user.is_authenticated:
             raise PermissionDenied("You must be authenticated to add products to basket.")
         serializer.save(basket__user=self.request.user)
-        
+
 # Review Views
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
@@ -337,6 +340,24 @@ class UserViewSet(viewsets.ModelViewSet):
         user.save()
 
         return Response({"status": "User updated"})"""
+
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        email = request.data.get("email")
+        if User.objects.filter(email=email).exists():
+            return Response({"error": "Email already exists"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        username = request.data.get("username")
+        if User.objects.filter(username=username).exists():
+            return Response({"error": "Username already exists"}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({"message": "User created successfully"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["POST"])
