@@ -14,7 +14,7 @@ import Dropdown from "../../Dropdown/Dropdown";
 import LoginModal from "../../Login/LoginModal/LoginModal";
 import Button from "../../Button/Button";
 import CategoryCard from "../../CategoryCard/CategoryCard";
-import { axiosAuth, ProductType } from "../../../utils/axios";
+import { axiosAuth, get, ProductType } from "../../../utils/axios";
 
 const initialState: ProductType = {
   id: 0,
@@ -37,12 +37,13 @@ const initialState: ProductType = {
 
 const AddNewItemModal = () => {
   const [itemData, setItemData] = useState(initialState);
+  const [categories, setCategories] = useState<string[]>([]);  
 
   const { handleAddNewItem, isAuth, handleLoginClick, isLoginClicked, user } =
     useContext(Context);
 
   const currencies = ["CZK", "EUR"];
-  const categories = ["Home&Cozyness", "Hobby", "Sweets", "Beauty&Care"];
+
 
   const handleInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -68,9 +69,22 @@ const AddNewItemModal = () => {
     }));
   };
 
+  const fetchCategories = async () => {
+    try {
+      const response = await get("/api/categories");
+      const categories = response.data.map((category: any) => category.name);
+      setCategories(categories);
+    } catch (error) {
+      console.error("Failed to fetch categories:", error);
+    }
+  }
+  console.log(isAuth)
+
   //TODO
   const handleSubmitAddNewItem = async () => {
     if (!isAuth || !user) {
+      console.log(user)
+      console.log("User not authenticated");
       handleLoginClick(true);
       return;
     }
@@ -111,6 +125,7 @@ const AddNewItemModal = () => {
       handleLoginClick(true);
       return;
     }
+    fetchCategories();
   }, []);
 
   console.log("Item data:", itemData);
@@ -127,7 +142,7 @@ const AddNewItemModal = () => {
       >
         <div className={classes.container}>
           <Input
-            name="name"
+            name="title"
             value={itemData.title}
             labelText="Product Name"
             placeholder="Name"

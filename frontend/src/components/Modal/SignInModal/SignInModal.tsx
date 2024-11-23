@@ -40,9 +40,9 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
     try {
       if (state.username === "" || state.password === "") {
         return;
-      }
+      }   
+      console.log(state)
 
-      // axios without auth
       const response = await post("/api/users/", {
         username: state.username,
         email: state.email,
@@ -50,6 +50,7 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
         last_name: state.last_name,
         password: state.password,
       });
+
 
       if (response?.data?.token) {
         console.log("Login response:", response.data);
