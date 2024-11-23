@@ -34,6 +34,7 @@ const Container = ({ children }: PropsType) => {
     handleIsAuth,
     showPopup,
     setToken,
+    setUser,
     handlePopup,
   } = useContext(Context);
 
@@ -41,6 +42,7 @@ const Container = ({ children }: PropsType) => {
     const handleLogout = async () => {
       try {
         setToken(null);
+        setUser(null);
         handleIsAuth(false)
         handleLogoutClick(false)
       } catch (error) {

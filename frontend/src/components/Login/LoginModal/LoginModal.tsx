@@ -53,9 +53,13 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
         setToken(response.data.token);
         
         //TODO 
-        // const currentUserInfo = await axiosAuth.get(`/api/user/${state.username}`);
-        // setUser(currentUserInfo);
-        // console.log("User logged in:", currentUserInfo);
+        const axiosAuthInstance = axiosAuth(response.data.token);
+        
+        const responseUser = await axiosAuthInstance.get(`/api/user/${state.username}`);
+        const currentUserInfo: UserType = responseUser.data;
+        
+        setUser(currentUserInfo);
+        console.log("User logged in:", currentUserInfo);
         
         onSubmit ? onSubmit() : onClose(); // Trigger the onSubmit callback if login is successful
         handleIsAuth(true);
