@@ -6,7 +6,8 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from django.utils.timezone import now
 from django.db.models import Avg
-
+from django.contrib.auth.models import AbstractUser
+from django.db import models
 from django.contrib.auth.models import Group
 # MAIN MODELS
 

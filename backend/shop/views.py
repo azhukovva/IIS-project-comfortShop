@@ -13,6 +13,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from rest_framework.authtoken.views import obtain_auth_token
 
 from .models import (
     Attribute,
@@ -404,3 +405,13 @@ def user_info_from_jwt(request):
         "email": user.email,
         "groups": [group.name for group in user.groups.all()],
     })    
+
+
+@api_view(['GET'])
+def get_user_by_id(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
