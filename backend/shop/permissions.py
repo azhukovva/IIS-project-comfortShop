@@ -23,9 +23,10 @@ class IsAdminOrModerator(permissions.BasePermission):
 
 class IsEnterepreneurOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
-        if request.method in permissions.SAFE_METHODS:
+        if request.method in ["GET", "HEAD", "OPTIONS"]:  
             return True
-        return request.user.groups.filter(name="entrepreneur").exists()
+        return request.user.groups.filter(name="interpreneur").exists()
 
     def has_object_permission(self, request, view, obj):
-        return obj.entrepreneur == request.user
+        return obj.entrepreneur == request.user 
+    
