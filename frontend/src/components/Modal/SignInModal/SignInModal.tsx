@@ -43,7 +43,7 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
       }   
       console.log(state)
 
-      const response = await post("/api/users/", {
+      const response = await post("/api/register", {
         username: state.username,
         email: state.email,
         first_name: state.first_name,

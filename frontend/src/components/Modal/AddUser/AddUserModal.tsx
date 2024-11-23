@@ -27,7 +27,7 @@ const AddUserModal = () => {
   );
   const handleAddUserSubmit = async () => {
     try {
-      const response = await axiosAuth.post("/api/users/", newUser);
+      const response = await axiosAuth.post("/api/users/create_user", newUser);
       setNewUser({ username: "", password: "" });
       handleAddUser(false);
     } catch (error) {

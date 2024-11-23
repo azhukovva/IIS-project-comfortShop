@@ -37,7 +37,7 @@ const Users = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [isAddUser]);
 
   const handleDeleteClick = (user: UserType) => {
     if (!isAuth) {
