@@ -21,9 +21,6 @@ const Product = ({ item, isNotInBasket }: PropsType) => {
     setShowModal(!showModal);
   };
 
-  const { category, subcategory } = useParams();
-  // console.log(category, subcategory);
-
   return (
     <div className={classes.cardContainer}>
       <div

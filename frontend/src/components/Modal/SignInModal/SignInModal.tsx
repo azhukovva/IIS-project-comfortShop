@@ -40,10 +40,10 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
     try {
       if (state.username === "" || state.password === "") {
         return;
-      }
+      }   
+      console.log(state)
 
-      // axios without auth
-      const response = await post("/api/users/", {
+      const response = await post("/api/register", {
         username: state.username,
         email: state.email,
         first_name: state.first_name,
@@ -51,10 +51,15 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
         password: state.password,
       });
 
+
       if (response?.data?.token) {
         console.log("Login response:", response.data);
         localStorage.setItem("authToken", response.data.token); // Store the token in localStorage
+
+        setUser(response.data.user as UserType); //TODO 
+        
         onSubmit ? onSubmit() : onClose(); // Trigger the onSubmit callback if login is successful
+
         handleIsAuth(true);
         handlePopup(true);
         setTimeout(() => handlePopup(false), 2000);

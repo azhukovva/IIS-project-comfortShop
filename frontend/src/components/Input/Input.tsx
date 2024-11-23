@@ -9,7 +9,7 @@ type InputProps = {
   type?: string;
   labelText: string;
   placeholder?: string;
-  isRequired: boolean;
+  isRequired?: boolean;
   isBig?: boolean;
   isSmall?: boolean;
   onChange?: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
