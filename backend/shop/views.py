@@ -48,7 +48,7 @@ from .serializers import (
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAdminOrModerator]
+    permission_classes = [IsAdminOrReadOnly]
     lookup_field = "slug"
     search_fields = ["name"]
 
@@ -363,8 +363,8 @@ class RegisterView(APIView):
 
             return Response({
                 'message': 'User created successfully',
-                'access': access_token,  
-                'refresh': str(refresh)  
+                'token': access_token,  
+                'refresh token': str(refresh)  
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -379,8 +379,33 @@ class ProtectedView(APIView):
         return Response({'message': 'Access granted'}, status=status.HTTP_200_OK)      
 """
 
+@swagger_auto_schema(
+    method='post',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'group_name': openapi.Schema(type=openapi.TYPE_STRING, description='Name of the group'),
+            'user_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='ID of the user'),
+        },
+        required=['group_name', 'user_id'],
+    ),
+    responses={
+        200: openapi.Response('Success', openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'status': openapi.Schema(type=openapi.TYPE_STRING, description='Success message')
+            }
+        )),
+        400: openapi.Response('Error', openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'error': openapi.Schema(type=openapi.TYPE_STRING, description='Error message')
+            }
+        )),
+    }
+)
 @api_view(["POST"])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAdminOrReadOnly])
 def add_user_to_group(request):
     group_name = request.data.get("group_name")
     user_id = request.data.get("user_id")
