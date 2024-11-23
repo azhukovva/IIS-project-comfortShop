@@ -18,6 +18,8 @@ export type UserType = {
   first_name: string;
   last_name: string;
   password: string;
+
+  role: string;
 };
 
 export type AuthTokenType = {
@@ -66,7 +68,6 @@ axiosAuthInstance.interceptors.request.use(
     const csrfToken = getCsrfToken();
     if (token) {
       config.headers.Authorization = `Token ${token}`;
-      console.log(token);
     }
     // if (csrfToken) {
     //   config.headers["X-CSRFTOKEN"] = csrfToken;

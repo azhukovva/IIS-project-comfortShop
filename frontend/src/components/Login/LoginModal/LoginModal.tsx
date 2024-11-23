@@ -5,6 +5,7 @@ import classes from "./LoginModal.module.css";
 import Input from "../../Input/Input";
 import { Context } from "../../../utils/Context";
 import { axiosAuth, post, UserType } from "../../../utils/axios";
+import { useAuth } from "../../../utils/Authentification/AuthProvider";
 
 type LoginModalProps = {
   onSubmit?: () => void;
@@ -23,6 +24,8 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
   const { setUser, handleLoginClick, handleIsAuth, showPopup, handlePopup } =
     useContext(Context);
 
+  const { authToken } = useAuth();
+
   const handleInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       setState((prev) => ({
@@ -38,16 +41,17 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
       if (state.username === "" || state.password === "") {
         return;
       }
-      // axios without auth
+
       const response = await post("/api/login/", {
         username: state.username,
         password: state.password,
       });
 
       if (response?.data?.token) {
-        console.log("Login response:", response.data);
         localStorage.setItem("authToken", response.data.token); // Store the token in localStorage
-        
+
+        setUser(response.data.user as UserType); //TODO
+
         onSubmit ? onSubmit() : onClose(); // Trigger the onSubmit callback if login is successful
         handleIsAuth(true);
         handlePopup(true);
