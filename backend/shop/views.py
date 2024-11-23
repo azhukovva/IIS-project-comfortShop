@@ -291,7 +291,7 @@ class RatingViewSet(viewsets.ModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAdminOrReadOnly, IsModeratorOrReadOnly]
+    permission_classes = [IsAdminOrModerator]
 
     @action(detail=False, methods=["post"], permission_classes=[IsAdminOrModerator])
     def create_user(self, request):
@@ -441,19 +441,37 @@ def get_user_by_id(request, user_id):
     except User.DoesNotExist:
         return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
     
+@swagger_auto_schema(
+    method="get",
+    manual_parameters=[
+        openapi.Parameter(
+            "username",
+            openapi.IN_PATH,
+            description="Username of the user to retrieve",
+            type=openapi.TYPE_STRING,
+            required=True,
+        )
+    ],
+    responses={
+        200: UserSerializer,
+        404: openapi.Response(
+            description="User not found",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    "error": openapi.Schema(type=openapi.TYPE_STRING)
+                }
+            ),
+        ),
+    },
+)
 @api_view(["GET"])
-@permission_classes([IsAuthenticated])  
+@permission_classes([IsAuthenticated])
 def get_user_by_username(request, username):
+
     try:
         user = User.objects.get(username=username)
-        return Response({
-            "id": user.id,
-            "username": user.username,
-            "email": user.email,
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "is_active": user.is_active,
-            "date_joined": user.date_joined
-        }, status=status.HTTP_200_OK)
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     except User.DoesNotExist:
-        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)    
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
