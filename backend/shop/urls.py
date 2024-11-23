@@ -38,6 +38,6 @@ urlpatterns = [
     # USER AUTHENTICATION
     path("login/", views.obtain_auth_token),
     path('token/user/', user_info_from_jwt, name='user_info_from_jwt'),
-    path('api/users/<int:user_id>/', get_user_by_id, name='get_user_by_id')
+    
     
 ]
