@@ -2,6 +2,7 @@ from django.contrib.auth.models import User, Group
 from django.test import TestCase
 from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
+from shop.models import Category
 
 
 class CategoryPermissionTests(TestCase):
