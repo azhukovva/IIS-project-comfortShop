@@ -51,7 +51,7 @@ urlpatterns = [
     path('add-user-to-group/', shop_views.add_user_to_group, name='add_user_to_group'),
 
     path('register/', shop_views.RegisterView.as_view(), name='register'),
-    path('login/', shop_views.LoginView.as_view(), name='login'),
+    #path('login/', shop_views.LoginView.as_view(), name='login'),
     path('api-token-auth/', views.obtain_auth_token, name='api_token_auth'),
 ]
 

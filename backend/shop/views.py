@@ -359,7 +359,8 @@ class RegisterView(APIView):
                 'refresh': str(refresh)  
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+"""   
 class LoginView(TokenObtainPairView):
     permission_classes = [AllowAny]  
 
@@ -368,7 +369,7 @@ class ProtectedView(APIView):
 
     def get(self, request):
         return Response({'message': 'Access granted'}, status=status.HTTP_200_OK)      
-
+"""
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
