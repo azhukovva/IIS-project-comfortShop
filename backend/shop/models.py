@@ -6,6 +6,8 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from django.utils.timezone import now
 from django.db.models import Avg
+
+from django.contrib.auth.models import Group
 # MAIN MODELS
 
 
@@ -64,6 +66,13 @@ class Product(models.Model):
     stock = models.PositiveIntegerField()
     image = models.ImageField(upload_to="products/", blank=True, null=True)
     is_approved = models.BooleanField(default=False)
+    entrepreneur = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="products_entrepreneur",
+        null=True,  
+        blank=True 
+    )
 
     def __str__(self):
         return self.title

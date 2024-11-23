@@ -14,6 +14,7 @@ from .views import (
     RatingViewSet,
     PostViewSet,
     RegisterView,
+    user_info_from_jwt,
     #LoginView,
 )
 
@@ -35,5 +36,6 @@ urlpatterns = [
     path("", include(router.urls)),
     # USER AUTHENTICATION
     path("login/", views.obtain_auth_token),
+    path('token/user/', user_info_from_jwt, name='user_info_from_jwt'),
     
 ]

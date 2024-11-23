@@ -11,6 +11,8 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 from .models import (
     Attribute,
@@ -45,7 +47,7 @@ from .serializers import (
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAdminOrModerator | AllowAny]
+    permission_classes = [IsAdminOrModerator]
     lookup_field = "slug"
     search_fields = ["name"]
 
@@ -91,7 +93,7 @@ class ProposedCategoryViewSet(viewsets.ModelViewSet):
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsEnterepreneurOrReadOnly, IsAdminOrModerator]
     filterset_fields = ["category", "user", "title", "stock", "price"]
 
     def get_queryset(self):
@@ -125,7 +127,7 @@ class ProposedProductViewSet(viewsets.ModelViewSet):
 
 class ProductManagementViewSet(viewsets.ModelViewSet):
     serializer_class = ProductWriteSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminOrModerator]
 
     def get_queryset(self):
         if self.request.method in permissions.SAFE_METHODS:
@@ -180,7 +182,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 class AttributeViewSet(viewsets.ModelViewSet):
     queryset = Attribute.objects.all()
     serializer_class = AttributeSerializer
-    permission_classes = [IsAdminOrModerator, IsAdminOrReadOnly]
+    permission_classes = [IsAdminOrModerator]
 
 
 class AttributeValueViewSet(viewsets.ModelViewSet):
@@ -196,13 +198,11 @@ class BasketViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        if getattr(self, 'swagger_fake_view', False):
+        user = self.request.user
+        if user.is_authenticated:
+            return Basket.objects.filter(user=user)
+        else:
             return Basket.objects.none()
-
-        if isinstance(self.request.user, AnonymousUser):
-            raise PermissionDenied("You must be logged in to access this resource.")
-        
-        return Basket.objects.filter(user=self.request.user)
 
     def get_object(self):
         basket, created = Basket.objects.get_or_create(user=self.request.user)
@@ -254,7 +254,7 @@ class BasketViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 class BasketProductViewSet(viewsets.ModelViewSet):
     queryset = BasketProduct.objects.all()
     serializer_class = BasketProductSerializer
-    permission_classes = [IsAdminOrModerator, IsAdminOrReadOnly]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
@@ -344,6 +344,13 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
+    @swagger_auto_schema(
+        request_body=RegisterSerializer,
+        responses={
+            201: openapi.Response("User registered successfully"),
+            400: "Validation Error"
+        },
+    )
 
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
@@ -386,3 +393,14 @@ def add_user_to_group(request):
         return Response({"error": "Group not found"}, status=400)
     except User.DoesNotExist:
         return Response({"error": "User not found"}, status=400)
+    
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def user_info_from_jwt(request):
+    user = request.user
+    return Response({
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "groups": [group.name for group in user.groups.all()],
+    })    
