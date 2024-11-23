@@ -25,7 +25,7 @@ const initialState: ProductType = {
     first_name: "",
     last_name: "",
     password: "",
-    role: "",
+    groups: [],
   },
   image: "",
   title: "",

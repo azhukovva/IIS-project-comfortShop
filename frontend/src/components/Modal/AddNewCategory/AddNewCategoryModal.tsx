@@ -105,15 +105,6 @@ const AddNewCategory = () => {
             isRequired
             onChange={handleInputChange}
           />
-          {/* <Input
-          name="slug"
-          value={categoryData.slug}
-          labelText="Category short description"
-          placeholder="Add one word to describe Your category"
-          isRequired={false}
-          onChange={handleInputChange}
-          isBig
-        /> */}
         </div>
       </Modal>
     </>

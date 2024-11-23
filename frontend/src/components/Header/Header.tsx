@@ -22,6 +22,8 @@ const Header = () => {
     handleSelling,
     isAuth,
     handleIsAuth,
+    setToken,
+    token
   } = useContext(Context);
 
   const handleSellClick = () => {
@@ -36,13 +38,14 @@ const Header = () => {
 
   const handleAccountClick = () => {
     console.log("isAuth", isAuth);
-    console.log(localStorage.getItem("authToken"));
+    
+    console.log("TOKEN:", token);
     if (isAuth === false) {
-      localStorage.setItem("authToken", "");
+      setToken(null);
       handleLoginClick(true);
     } else {
       handleLogoutClick(true);
-      console.log(isAuth, localStorage.getItem("authToken"));
+      console.log(isAuth);
     }
   };
 

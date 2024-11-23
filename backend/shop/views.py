@@ -48,7 +48,7 @@ from .serializers import (
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAdminOrReadOnly]
+    permission_classes = [IsAdminOrReadOnly, IsModeratorOrReadOnly]
     lookup_field = "slug"
     search_fields = ["name"]
 
@@ -94,7 +94,7 @@ class ProposedCategoryViewSet(viewsets.ModelViewSet):
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
-    permission_classes = [IsEnterepreneurOrReadOnly, IsAdminOrModerator]
+    permission_classes = [IsEnterepreneurOrReadOnly, IsAdminOrReadOnly, IsModeratorOrReadOnly]
     filterset_fields = ["category", "user", "title", "stock", "price"]
 
     def get_queryset(self):
@@ -183,13 +183,13 @@ class OrderViewSet(viewsets.ModelViewSet):
 class AttributeViewSet(viewsets.ModelViewSet):
     queryset = Attribute.objects.all()
     serializer_class = AttributeSerializer
-    permission_classes = [IsAdminOrModerator]
+    permission_classes = [IsAdminOrReadOnly, IsModeratorOrReadOnly]
 
 
 class AttributeValueViewSet(viewsets.ModelViewSet):
     queryset = AttributeValue.objects.all()
     serializer_class = AttributeValueSerializer
-    permission_classes = [IsAdminOrModerator, IsAdminOrReadOnly]
+    permission_classes = [IsModeratorOrReadOnly, IsAdminOrReadOnly]
 
 
 ### Basket Views
@@ -291,7 +291,7 @@ class RatingViewSet(viewsets.ModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAdminOrModerator]
+    permission_classes = [IsAdminOrReadOnly, IsModeratorOrReadOnly]
 
     @action(detail=False, methods=["post"], permission_classes=[IsAdminOrModerator])
     def create_user(self, request):
@@ -440,3 +440,20 @@ def get_user_by_id(request, user_id):
         return Response(serializer.data)
     except User.DoesNotExist:
         return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])  
+def get_user_by_username(request, username):
+    try:
+        user = User.objects.get(username=username)
+        return Response({
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "is_active": user.is_active,
+            "date_joined": user.date_joined
+        }, status=status.HTTP_200_OK)
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)    

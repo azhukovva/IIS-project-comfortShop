@@ -10,6 +10,9 @@ type ContextType = {
   user: UserType | null;
   setUser: (user: UserType | null) => void;
 
+  token: string | null;
+  setToken: (token: string | null) => void;
+
   isLoading: boolean;
   isAuth: boolean;
 
@@ -45,6 +48,9 @@ const initialState: ContextType = {
   user: null,
   setUser: () => {},
 
+  token: null,
+  setToken: () => {},
+
   isLoading: false,
   isAuth: false,
   showPopup: false,
@@ -75,6 +81,7 @@ export const Context = createContext<ContextType>(initialState);
 
 const ContextProvider = ({ children }: PropsType) => {
   const [user, setUser] = useState<UserType | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   
   const [isLoading, setIsLoading] = useState(false);
   const [isAuth, setIsAuth] = useState(false);  
@@ -124,6 +131,9 @@ const ContextProvider = ({ children }: PropsType) => {
   const value: ContextType = {
     user,
     setUser,
+
+    token,
+    setToken,
 
     isLoading,
     isAuth,

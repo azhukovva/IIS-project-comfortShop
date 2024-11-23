@@ -31,9 +31,9 @@ const App = () => {
           <Route path="/" element={<Welcome />} />
 
           <Route path="/users" element={<ManagePanel />} />
-          <ProtectedRoute allowedRoles={["admin", "user"]}>
+          {/* <ProtectedRoute allowedRoles={["admin", "user"]}> */}
             <Route path="/basket" element={<Basket />} />
-          </ProtectedRoute>
+          {/* </ProtectedRoute> */}
           <Route path="/categories" element={<Categories />} />
 
           <Route path="/categories/:category" element={<Category />} />

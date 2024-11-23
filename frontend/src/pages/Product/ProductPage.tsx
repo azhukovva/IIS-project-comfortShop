@@ -20,7 +20,7 @@ const ProductPage = () => {
 
   const [isAddRating, setIsAddRating] = useState(false);
 
-  const { handleIsAuth } = useContext(Context);
+  const { handleIsAuth, token } = useContext(Context);
 
   // Fetch product info
   const fetch = async () => {
@@ -49,7 +49,8 @@ const ProductPage = () => {
   const addToBasket = async () => {
     try {
       console.log("add to basket");
-      const authToken = localStorage.getItem("authToken");
+      const authToken = token;
+
       if (!authToken) {
         handleIsAuth(true);
       }

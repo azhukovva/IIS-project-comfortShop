@@ -6,7 +6,7 @@ import { Context } from "../Context";
 
 type PropsType = PropsWithChildren & {
   children: React.ReactNode;
-  allowedRoles?: UserType['role'][];
+  allowedRoles?: string[];
 };
 
 export default function ProtectedRoute({allowedRoles, children}: PropsType) {
@@ -16,8 +16,11 @@ export default function ProtectedRoute({allowedRoles, children}: PropsType) {
     if (currentUser === undefined){
         return <div>Loading...</div>
     }
+    const hasAccess = allowedRoles
+    ? currentUser?.groups.some(group => allowedRoles.includes(group))
+    : true; 
 
-    if (currentUser === null || (allowedRoles && !allowedRoles.includes(currentUser.role))) {
+    if (currentUser === null || hasAccess) {
         handleLoginClick(true);
         return <div>Permission denied</div>
     }

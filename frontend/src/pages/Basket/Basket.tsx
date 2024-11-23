@@ -12,7 +12,7 @@ const Basket = () => {
   const [isEmpty, setIsEmpty] = useState(true);
   const [basketItems, setBasketItems] = useState<BasketProductType[]>([]);
 
-  const {handleIsAuth} = useContext(Context)
+  const {handleIsAuth, token} = useContext(Context)
 
   const getBasketItems = async (id: string) => {
     try {
@@ -32,7 +32,7 @@ const Basket = () => {
 
   const removeFromBasket = async () => {
     try {
-      const authToken = localStorage.getItem('authToken');
+      const authToken = token;
       if (!authToken){
         handleIsAuth(true)
       }

@@ -54,6 +54,7 @@ urlpatterns = [
     path('register/', shop_views.RegisterView.as_view(), name='register'),
     #path('login/', shop_views.LoginView.as_view(), name='login'),
     path('api-token-auth/', views.obtain_auth_token, name='api_token_auth'),
+    path('api/user/<str:username>/', shop_views.get_user_by_username, name='get_user_by_username'),
 ]
 
 

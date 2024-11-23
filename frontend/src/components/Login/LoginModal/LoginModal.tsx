@@ -21,7 +21,7 @@ const initialState = {
 const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
   const [state, setState] = useState(initialState); // user state
 
-  const { setUser, handleLoginClick, handleIsAuth, showPopup, handlePopup } =
+  const { setUser, handleLoginClick, handleIsAuth, showPopup, handlePopup, setToken } =
     useContext(Context);
 
   const { authToken } = useAuth();
@@ -48,8 +48,8 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
       });
 
       if (response?.data?.token) {
-        localStorage.setItem("authToken", response.data.token); // Store the token in localStorage
-
+        setToken(response.data.token);
+        
         setUser(response.data.user as UserType); //TODO
 
         onSubmit ? onSubmit() : onClose(); // Trigger the onSubmit callback if login is successful

@@ -10,6 +10,9 @@
  */
 
 import axios from "axios";
+import { useContext } from "react";
+import { Context } from "./Context";
+import token from "./Context";
 
 export type UserType = {
   id: string;
@@ -19,7 +22,7 @@ export type UserType = {
   last_name: string;
   password: string;
 
-  role: string;
+  groups: string[];
 };
 
 export type AuthTokenType = {
@@ -50,8 +53,9 @@ const axiosAuthInstance = axios.create({
   },
 });
 
+
 const getAuthToken = () => {
-  return localStorage.getItem("authToken");
+  return token
 };
 
 const getCsrfToken = () => {
@@ -61,18 +65,18 @@ const getCsrfToken = () => {
   return csrfToken ? csrfToken.split("=")[1] : null;
 };
 
+//REVIEW 
 // Request interceptor to include the auth token in the headers
 axiosAuthInstance.interceptors.request.use(
   (config) => {
-    const token = getAuthToken();
+    const tokenCheck = token;
     const csrfToken = getCsrfToken();
-    if (token) {
-      config.headers.Authorization = `Token ${token}`;
+    if (tokenCheck) {
+      config.headers.Authorization = `Token ${tokenCheck}`;
     }
     // if (csrfToken) {
     //   config.headers["X-CSRFTOKEN"] = csrfToken;
     // }
-    console.log(config);
     return config;
   },
   (error) => {

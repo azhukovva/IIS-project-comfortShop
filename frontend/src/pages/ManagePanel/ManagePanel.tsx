@@ -29,7 +29,8 @@ const Users = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axiosAuth("/api/users");
+      const response = await axiosAuth.get("/api/users");
+      console.log(response.data);
       setUsers(response.data);
     } catch (error) {
       console.error(error);
@@ -52,9 +53,9 @@ const Users = () => {
   const handleConfirmDelete = async () => {
     if (userToDelete) {
       try {
-        await axiosAuth.delete(`/api/users/${userToDelete.id}`);
+        await axiosAuth.delete(`/api/users/${userToDelete.username}`);
         setUsers((prevUsers) =>
-          prevUsers.filter((user) => user.id !== userToDelete.id)
+          prevUsers.filter((user) => user.username !== userToDelete.username)
         );
         setShowDeleteModal(false);
         setUserToDelete(null);
@@ -80,13 +81,13 @@ const Users = () => {
             {user ? (
               <div className={classes.userInfo}>
                 <p>
-                  <strong>My ID:</strong> {user.id}
+                  <strong>My ID:</strong> {user.username}
                 </p>
                 <p>
                   <strong>My Username:</strong> {user.username}
                 </p>
                 <p>
-                  <strong>My Role:</strong> {user.role}
+                  <strong>My Role:</strong> {user.groups.map((group) => group).join(", ")}
                 </p>
               </div>
             ) : (
@@ -111,8 +112,8 @@ const Users = () => {
                   </thead>
                   <tbody>
                     {users.map((user) => (
-                      <tr key={user.id}>
-                        <td>{user.id}</td>
+                      <tr key={user.username}>
+                        <td>{user.username}</td>
                         <td>{user.username}</td>
                         <td>
                           <Icon

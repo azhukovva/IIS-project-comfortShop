@@ -33,13 +33,14 @@ const Container = ({ children }: PropsType) => {
     isAuth,
     handleIsAuth,
     showPopup,
+    setToken,
     handlePopup,
   } = useContext(Context);
 
   const LogoutModal = () => {
     const handleLogout = async () => {
       try {
-        localStorage.setItem('authToken', "")
+        setToken(null);
         handleIsAuth(false)
         handleLogoutClick(false)
       } catch (error) {
