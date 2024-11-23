@@ -16,7 +16,7 @@ const photos = [];
 
 const Categories = () => {
   const [categories, setCategories] = useState<CategoryType[]>([]);
-  const { handleAddNewItem, handleAddNewCategory, isAddNewCategoryClicked } =
+  const { handleAddNewItem, handleAddNewCategory, isAddNewCategoryClicked, user } =
     useContext(Context);
 
   const fetchCategories = async () => {
@@ -29,6 +29,8 @@ const Categories = () => {
       console.log(error);
     }
   };
+
+  console.log("CURRENTUSER", user)
 
   useEffect(() => {
     fetchCategories();

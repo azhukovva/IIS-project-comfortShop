@@ -12,11 +12,12 @@ const Basket = () => {
   const [isEmpty, setIsEmpty] = useState(true);
   const [basketItems, setBasketItems] = useState<BasketProductType[]>([]);
 
-  const {handleIsAuth, token} = useContext(Context)
+  const {handleIsAuth, token, user} = useContext(Context)
 
   const getBasketItems = async (id: string) => {
     try {
-      const response = axiosAuth.get(`/api/baskets/${id}`);
+      const axiosAuthInstance = axiosAuth(token);
+      const response = axiosAuthInstance.get(`/api/baskets/${id}`);
       setBasketItems((await response).data);
     } catch (error) {
       if (error instanceof Error) {
@@ -32,12 +33,12 @@ const Basket = () => {
 
   const removeFromBasket = async () => {
     try {
+      const axiosAuthInstance = axiosAuth(token);
       const authToken = token;
       if (!authToken){
         handleIsAuth(true)
       }
-      const user = { username: authToken };
-      const response = axiosAuth.post(`/api/baskets/add_product`, {user})
+      const response = axiosAuthInstance.post(`/api/baskets/add_product`, user)
     } catch (error) {
       if (error instanceof Error) {
         console.error(

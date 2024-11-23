@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 
 import Sidebar from "../../../components/Sidebar/Sidebar";
@@ -15,7 +15,7 @@ import {
   get,
   ProductType,
 } from "../../../utils/axios";
-
+import { Context } from "../../../utils/Context";
 
 // Define the category-subcategory mapping
 export const categoriesMap: Record<string, string[]> = {
@@ -50,6 +50,7 @@ const Category = () => {
 
   const navigate = useNavigate();
   const breadcrumbItems = useBreadcrumb();
+  const { token } = useContext(Context);
 
   // State to store the subcategories
   const [subCategories, setSubCategories] = useState<CategoryType[]>([]);
@@ -97,7 +98,10 @@ const Category = () => {
 
   const addSubcategory = async (categoryId: string) => {
     try {
-      const response = await axiosAuth.post(`/api/categories/${categoryId}`);
+      const axiosAuthInstance = axiosAuth(token);
+      const response = await axiosAuthInstance.post(
+        `/api/categories/${categoryId}`
+      );
     } catch (error) {
       if (error instanceof Error) {
         console.error(

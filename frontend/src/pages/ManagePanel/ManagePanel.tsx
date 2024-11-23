@@ -24,14 +24,15 @@ const Users = () => {
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [newUser, setNewUser] = useState({ username: "", password: "" });
 
-  const { isAuth, handleLoginClick, isAddUser, handleAddUser, user } =
+  const { isAuth, handleLoginClick, isAddUser, handleAddUser, user, token } =
     useContext(Context);
 
   const fetchUsers = async () => {
     try {
-      const response = await axiosAuth.get("/api/users");
+      const axiosAuthInstance = axiosAuth(token);
+      const response = await axiosAuthInstance.get("api/users");
       console.log(response.data);
-      setUsers(response.data);
+      // setUsers(response.data);
     } catch (error) {
       console.error(error);
     }
@@ -53,7 +54,8 @@ const Users = () => {
   const handleConfirmDelete = async () => {
     if (userToDelete) {
       try {
-        await axiosAuth.delete(`/api/users/${userToDelete.username}`);
+        const axiosAuthInstance = axiosAuth(token);
+        await axiosAuthInstance.delete(`/api/users/${userToDelete.username}`);
         setUsers((prevUsers) =>
           prevUsers.filter((user) => user.username !== userToDelete.username)
         );

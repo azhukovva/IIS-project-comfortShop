@@ -22,7 +22,7 @@ const initialState = {
 
 const AddNewCategory = () => {
   const [categoryData, setCategoryData] = useState(initialState);
-  const { handleAddNewCategory, handleIsAuth, isAuth, handleLoginClick, isLoginClicked } =
+  const { handleAddNewCategory, handleIsAuth, isAuth, handleLoginClick, isLoginClicked, token } =
     useContext(Context);
 
   const handleInputChange = useCallback(
@@ -52,11 +52,12 @@ const AddNewCategory = () => {
       slug: generateSlug(categoryData.name), // Generate a UUID for the slug
     };
     try {
+      const axiosAuthInstance = axiosAuth(token);
       if (categoryData.name === '') {
         alert('Category name is required');
         return;
       }
-      const response = await axiosAuth.post('/api/categories/', categoryWithSlug); // Use the authenticated Axios instance
+      const response = await axiosAuthInstance.post('/api/categories/', categoryWithSlug); // Use the authenticated Axios instance
       console.log('Category added:', response.data);
       handleAddNewCategory(false);
     } catch (error) {

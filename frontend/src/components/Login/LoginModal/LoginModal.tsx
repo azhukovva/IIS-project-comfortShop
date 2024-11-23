@@ -47,11 +47,16 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
         password: state.password,
       });
 
+      console.log("Login response:", response, state.username, state.password);
+
       if (response?.data?.token) {
         setToken(response.data.token);
         
-        setUser(response.data.user as UserType); //TODO
-
+        //TODO 
+        // const currentUserInfo = await axiosAuth.get(`/api/user/${state.username}`);
+        // setUser(currentUserInfo);
+        // console.log("User logged in:", currentUserInfo);
+        
         onSubmit ? onSubmit() : onClose(); // Trigger the onSubmit callback if login is successful
         handleIsAuth(true);
         handlePopup(true);
@@ -59,6 +64,8 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
       }
     } catch (error) {
       console.log(error);
+      handleIsAuth(false);
+      onClose();
     }
   };
 

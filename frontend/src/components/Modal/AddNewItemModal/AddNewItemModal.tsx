@@ -38,13 +38,18 @@ const initialState: ProductType = {
 
 const AddNewItemModal = () => {
   const [itemData, setItemData] = useState(initialState);
-  const [categories, setCategories] = useState<string[]>([]);  
+  const [categories, setCategories] = useState<string[]>([]);
 
-  const { handleAddNewItem, isAuth, handleLoginClick, isLoginClicked, user } =
-    useContext(Context);
+  const {
+    handleAddNewItem,
+    isAuth,
+    handleLoginClick,
+    isLoginClicked,
+    user,
+    token,
+  } = useContext(Context);
 
   const currencies = ["CZK", "EUR"];
-
 
   const handleInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -78,18 +83,19 @@ const AddNewItemModal = () => {
     } catch (error) {
       console.error("Failed to fetch categories:", error);
     }
-  }
-  console.log(isAuth)
+  };
+  console.log(isAuth);
 
   //TODO
   const handleSubmitAddNewItem = async () => {
     if (!isAuth || !user) {
-      console.log(user)
+      console.log(user);
       console.log("User not authenticated");
       handleLoginClick(true);
       return;
     }
     try {
+      const axiosAuthInstance = axiosAuth(token);
       const requestBody = {
         title: itemData.title,
         description: itemData.description,
@@ -106,7 +112,10 @@ const AddNewItemModal = () => {
           password: user.password,
         },
       };
-      const response = await axiosAuth.post(`/api/products`, requestBody);
+      const response = await axiosAuthInstance.post(
+        `/api/products`,
+        requestBody
+      );
 
       console.log("Product added:", response.data, requestBody);
     } catch (error) {

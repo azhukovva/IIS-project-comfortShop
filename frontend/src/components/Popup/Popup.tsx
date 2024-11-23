@@ -17,7 +17,7 @@ const Popup = ({ text, isGood }: PropsType) => {
     backgroundColor: 'white', 
     borderRadius: "1rem",
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-    zIndex: 1000,
+    zIndex: 20000,
   };
 
   return (

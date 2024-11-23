@@ -1,5 +1,5 @@
-import React, { Dispatch, createContext, useState } from "react";
-import { UserType } from "./axios";
+import React, { Dispatch, createContext, useEffect, useState } from "react";
+import { axiosAuth, UserType } from "./axios";
 
 /*
  * Root element where floating elements are generated
@@ -95,6 +95,10 @@ const ContextProvider = ({ children }: PropsType) => {
   const [isAddNewCategoryClicked, setIsAddNewCategoryClicked] = useState(false);
   const [isAddUser, setIsAddUser] = useState(false);
 
+  useEffect(() => {
+    axiosAuth(token);
+  }, [token]);
+
   const handleLoginClick = (state?: boolean) => {
     setIsLoginClicked((prev) => (state !== undefined ? state : !prev));
   };
@@ -170,3 +174,8 @@ const ContextProvider = ({ children }: PropsType) => {
 };
 
 export default ContextProvider;
+
+// export const useToken = () => {
+//   const { token } = React.useContext(Context);
+//   return token
+// }
