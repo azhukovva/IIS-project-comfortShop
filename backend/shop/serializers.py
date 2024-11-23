@@ -21,14 +21,6 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ["id", "username", "email", "first_name", "last_name"]
 
-    def create(self, validated_data):
-        user = super().create(validated_data)
-        
-        admin_group, created = Group.objects.get_or_create(name="admin")
-        user.groups.add(admin_group)
-        
-        return user    
-
 
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
     parent = serializers.SerializerMethodField()
