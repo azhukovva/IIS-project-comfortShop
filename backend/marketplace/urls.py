@@ -48,13 +48,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("shop.urls")),
     path("swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
-    path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
-    path('add-user-to-group/', shop_views.add_user_to_group, name='add_user_to_group'),
-
-    path('register/', shop_views.RegisterView.as_view(), name='register'),
-    #path('login/', shop_views.LoginView.as_view(), name='login'),
-    path('api-token-auth/', views.obtain_auth_token, name='api_token_auth'),
-    path('api/user/<str:username>/', shop_views.get_user_by_username, name='get_user_by_username'),
 ]
 
 

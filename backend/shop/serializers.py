@@ -11,7 +11,7 @@ from .models import (
     OrderProduct,
     Product,
     Rating,
-    Post,
+    ProposedCategory
 )
 
 
@@ -20,6 +20,8 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id", "username", "email", "first_name", "last_name", "groups"]
+        extra_kwargs = {"groups": {"required": False, "many": True}}
+        read_only_fields = ["id", "groups"]
 
     def get_groups(self, obj):
         return [group.name for group in obj.groups.all()]
@@ -71,6 +73,17 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
 
         depth = 1  # TODO: Check if this is needed
 
+class ProposedCategorySerializer(serializers.ModelSerializer):
+    parent = serializers.SlugRelatedField(
+        queryset=Category.objects.all(),
+        slug_field="slug",
+    )
+    image = serializers.ImageField(required=False, allow_null=True)
+    class Meta:
+        model = ProposedCategory
+        fields = ["slug", "name", "parent", "image"]
+
+
 
 class AttributeSerializer(serializers.ModelSerializer):
     category = serializers.SlugRelatedField(
@@ -103,11 +116,9 @@ class ProductViewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ["id", "title", "description", "price", "category", "user", "stock", "attribute_values", "image", "is_approved"]
+        fields = ["id", "title", "description", "price", "category", "user", "stock", "attribute_values", "image"]
 
-    def create(self, validated_data):
-        validated_data["is_approved"] = False
-        return super().create(validated_data)
+        
 
 
 class ProductWriteSerializer(serializers.ModelSerializer):
@@ -202,7 +213,8 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ["id", "user", "products", "created_at", "updated_at"]
+        fields = ["id", "user", "products", "address", "city", "zip_code", "total_price", "created_at", "updated_at"]
+        read_only_fields = ["created_at", "updated_at", "total_price"]
 
 
 # BasketProduct Serializer
@@ -227,12 +239,4 @@ class BasketSerializer(serializers.ModelSerializer):
 class RatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
-        fields = ['user', 'post', 'rating']
-
-
-class PostSerializer(serializers.ModelSerializer):
-    average_rating = serializers.ReadOnlyField()  
-    ratings = RatingSerializer(many=True, read_only=True)  
-    class Meta:
-        model = Post
-        fields = ['id', 'header', 'text', 'average_rating', 'ratings'] 
+        fields = ["user", "product", "title", "text", "rating"]
