@@ -115,12 +115,6 @@ class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = [IsEnterepreneurOrReadOnly| IsAdminOrModerator]
     filterset_fields = ["category", "user", "title", "stock", "price"]
 
-    def get_queryset(self):
-        queryset = Product.objects.all()
-        if not self.request.user.groups.filter(name__in=["moderator", "admin"]).exists():
-            queryset = queryset.filter(is_approved=True)
-        return queryset
-
     def get_serializer_class(self):
         if self.request.method in permissions.SAFE_METHODS:
             return ProductViewSerializer
