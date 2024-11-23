@@ -1,24 +1,26 @@
 from rest_framework import permissions
 
 
-class IsAdminUserOrReadOnly(permissions.BasePermission):
+class IsGroupUserOrReadOnly(permissions.BasePermission):
+    group_name = None  
+
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
+        return request.user.groups.filter(name=self.group_name).exists()
 
-        # check if user is in group "admin"
-        return request.user.groups.filter(name="admin").exists()   
+class IsAdminOrReadOnly(IsGroupUserOrReadOnly):
+    group_name = "admin"
 
-
-class IsModeratorUserOrReadOnly(permissions.BasePermission):
-    def has_permission(self, request, view):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-
-        # check if user is in group "moderator"
-        return request.user.groups.filter(name="moderator").exists()
+class IsModeratorOrReadOnly(IsGroupUserOrReadOnly):
+    group_name = "moderator"
     
-"""
+
+class IsAdminOrModerator(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.groups.filter(name__in=['admin', 'moderator']).exists()    
+    
+
 class IsEnterepreneurOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
@@ -27,22 +29,3 @@ class IsEnterepreneurOrReadOnly(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return obj.entrepreneur == request.user
-"""
-
-class AllowUnauthenticatedReadOnly(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return request.method in permissions.SAFE_METHODS
-
-
-class DynamicRolePermission(permissions.BasePermission):
-    def has_permission(self, request, view):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-
-        if view.action == "create_moderator" and request.user.groups.filter(name="admin").exists():
-            return True
-
-        if view.action == "approve_category" and request.user.groups.filter(name="moderator").exists():
-            return True
-
-        return False    

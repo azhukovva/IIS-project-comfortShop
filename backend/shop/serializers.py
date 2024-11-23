@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 
 from .models import (
@@ -76,7 +76,11 @@ class ProductViewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ["id", "title", "description", "price", "category", "user", "stock", "attribute_values", "image"]
+        fields = ["id", "title", "description", "price", "category", "user", "stock", "attribute_values", "image", "is_approved"]
+
+    def create(self, validated_data):
+        validated_data["is_approved"] = False
+        return super().create(validated_data)
 
 
 class ProductWriteSerializer(serializers.ModelSerializer):
