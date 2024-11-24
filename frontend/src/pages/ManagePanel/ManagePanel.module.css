@@ -10,7 +10,20 @@
   gap: 2rem;
   margin: 1rem 0;
   padding-bottom: 1rem;
-  /* border-bottom: 1px solid rgba(0, 0, 0, 0.3); */
+  font-size: 1.2rem;
+  justify-content: center;
+}
+
+.userInfo p {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1rem;
+  text-align: left;
+}
+
+.userInfo div {
+  font-size: 1.35rem;
 }
 
 .userList {

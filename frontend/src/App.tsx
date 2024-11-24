@@ -21,6 +21,7 @@ import ProductPage from "./pages/Product/ProductPage";
 import ManagePanel from "./pages/ManagePanel/ManagePanel";
 import AuthProvider, { useAuth } from "./utils/Authentification/AuthProvider";
 import ProtectedRoute from "./utils/Authentification/ProtectedRoute";
+import Order from "./pages/Orders/Order/Order";
 
 const App = () => {
   return (
@@ -52,6 +53,11 @@ const App = () => {
             path="/categories/:category/product/:id"
             element={<ProductPage />}
           />
+          <Route
+            path="/orders/:id"
+            element={<Order />}
+          />
+
         </Routes>
       </Container>
     </AuthProvider>

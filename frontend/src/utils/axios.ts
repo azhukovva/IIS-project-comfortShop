@@ -16,12 +16,6 @@ export type AuthTokenType = {
   token: string;
 };
 
-interface AttributeValue {
-  additionalProp1: string;
-  additionalProp2: string;
-  additionalProp3: string;
-}
-
 // --------------------------- API ---------------------------
 const axiosInstance = axios.create({
   baseURL: "http://localhost:8000",
@@ -116,6 +110,25 @@ export type CategoryType = {
   children: [];
   image: string;
 };
+
+export type OrderProductType = {
+  id: number;
+  product: ProductType; 
+  quantity: number;
+  price: string;
+}
+
+export type OrderType = {
+  id: number;
+  user: UserType;
+  products: OrderProductType[];
+  adress: string;
+  city: string;
+  zip_code: string;
+  total_price: string;
+  created_at: string;
+  updated_at: string;
+}
 
 export type PostType = {
   id: number | null;

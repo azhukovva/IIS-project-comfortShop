@@ -46,7 +46,7 @@ const Container = ({ children }: PropsType) => {
         setUser(null);
         handleIsAuth(false)
         handleLogoutClick(false)
-        navigate("/");
+        navigate("/categories");
       } catch (error) {
         console.log(error);
       }

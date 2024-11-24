@@ -6,7 +6,13 @@ import React, {
   useState,
 } from "react";
 import Page from "../../components/Page/Page";
-import { axiosAuth, CategoryType, UserType } from "../../utils/axios";
+import {
+  axiosAuth,
+  CategoryType,
+  get,
+  OrderType,
+  UserType,
+} from "../../utils/axios";
 
 import classes from "./ManagePanel.module.css";
 import Button from "../../components/Button/Button";
@@ -16,12 +22,22 @@ import icons from "../../utils/icons";
 import Modal from "../../components/Modal/Modal";
 import { Context } from "../../utils/Context";
 import Input from "../../components/Input/Input";
+import { useNavigate } from "react-router-dom";
 
-export const parseGroups = (groups: string[]) => {};
+export const parseGroups = (groups: string[]): string[] => {
+  const groupMap: { [key: string]: string } = {
+    "1": "admin",
+    "2": "moderator",
+    "3": "entrepreneur",
+    "4": "user",
+  };
+  return groups.map((group) => groupMap[group] || "unknown");
+};
 
 const Users = () => {
   const [users, setUsers] = useState<UserType[]>([]); // State to store users
   const [categories, setCategories] = useState<CategoryType[]>([]); // State to store proposed categories
+  const [orders, setOrders] = useState<OrderType[]>([]);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState<UserType | null>(null);
@@ -43,6 +59,8 @@ const Users = () => {
     token,
   } = useContext(Context);
 
+  const navigate = useNavigate();
+
   const fetchUsers = async () => {
     try {
       const axiosAuthInstance = axiosAuth(token);
@@ -62,6 +80,17 @@ const Users = () => {
 
       console.log("categories", response.data);
       setCategories(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchOrders = async () => {
+    try {
+      const response = await get("api/orders");
+
+      console.log("orders", response.data);
+      setOrders(response.data);
     } catch (error) {
       console.error(error);
     }
@@ -120,7 +149,7 @@ const Users = () => {
     if (userToDelete) {
       try {
         const axiosAuthInstance = axiosAuth(token);
-        await axiosAuthInstance.delete(`/api/users/${userToDelete.username}`);
+        await axiosAuthInstance.delete(`/api/users/${userToDelete.id}`);
         setUsers((prevUsers) =>
           prevUsers.filter((user) => user.username !== userToDelete.username)
         );
@@ -155,8 +184,8 @@ const Users = () => {
                   <strong>My Username:</strong> {user.username}
                 </p>
                 <p>
-                  <strong>My Role:</strong>{" "}
-                  {user.groups.map((group) => group).join(", ")}
+                  <strong>My Role:</strong>
+                  <div>{parseGroups(user.groups).join(", ")}</div>
                 </p>
               </div>
             ) : (
@@ -166,9 +195,12 @@ const Users = () => {
             )}
           </div>
         </div>
-        {isAuth && user?.groups.includes("admin") && (
-          <div style={{ flex: 1 }}>
-            <div>
+
+        {parseGroups(user?.groups || []).includes("admin") && (
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "2rem" }}
+          >
+            <div style={{ maxHeight: "38vh", overflowY: "auto" }}>
               <h2>All Users</h2>
               <div className={classes.userList}>
                 {users.length === 0 ? (
@@ -208,44 +240,85 @@ const Users = () => {
                   </table>
                 )}
               </div>
-              <div style={{ flex: 1 }}>
-                <h2>Manage Categories</h2>
-                <div className={classes.userList}>
-                  {categories.length === 0 ? (
-                    <p>No categories available.</p>
-                  ) : (
-                    <table className={classes.table}>
-                      <thead>
-                        <tr>
-                          <th>Name</th>
-                          <th>Slug</th>
-                          <th>Parent</th>
-                          <th>Children</th>
+            </div>
+            {/* // */}
 
-                          <th>Delete</th>
+            <div style={{ maxHeight: "38vh", overflowY: "auto" }}>
+              <h2>Manage Categories</h2>
+              <div className={classes.userList}>
+                {categories.length === 0 ? (
+                  <p>No categories available.</p>
+                ) : (
+                  <table className={classes.table}>
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Slug</th>
+                        <th>Parent</th>
+                        <th>Children</th>
+
+                        <th>Delete</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {categories.map((category) => (
+                        <tr key={category.slug}>
+                          <td>{category.name}</td>
+                          <td>{category.slug}</td>
+                          <td>{category.parent}</td>
+                          <td>{category.children}</td>
+                          <td>
+                            <Icon
+                              icon={icons.delete}
+                              style={{ cursor: "pointer" }}
+                              width={20}
+                              onClick={() =>
+                                handleDeleteCategoryClick(category)
+                              }
+                            />
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {categories.map((category) => (
-                          <tr key={category.slug}>
-                            <td>{category.name}</td>
-                            <td>{category.slug}</td>
-                            <td>{category.parent}</td>
-                            <td>{category.children}</td>
-                            <td>
-                              <Icon
-                                icon={icons.delete}
-                                style={{ cursor: "pointer" }}
-                                width={20}
-                                onClick={() => handleDeleteCategoryClick(category)}
-                              />
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  )}
-                </div>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
+
+            <div style={{ maxHeight: "38vh", overflowY: "auto" }}>
+              <h2>Manage Orders</h2>
+              <div className={classes.userList}>
+                {orders.length === 0 ? (
+                  <p>No orders available.</p>
+                ) : (
+                  <table className={classes.table}>
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Slug</th>
+                        <th>Parent</th>
+                        <th>Children</th>
+
+                        <th>Delete</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {orders.map((order) => (
+                        <tr
+                          key={order.id}
+                          onClick={() => navigate(`/orders/${order.id}`)}
+                        >
+                          <td>{order.id}</td>
+                          <td>{order.user.username}</td>
+                          <td>{order.products.map((product) => product.id)}</td>
+                          <td>{order.total_price}</td>
+                          <td>{order.city}</td>
+                          <td>{order.created_at}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
             </div>
           </div>
