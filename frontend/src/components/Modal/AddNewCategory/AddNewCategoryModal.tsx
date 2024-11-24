@@ -14,6 +14,7 @@ import Input from "../../Input/Input";
 import Button from "../../Button/Button";
 import LoginModal from "../../Login/LoginModal/LoginModal";
 import { AxiosError } from "axios";
+import { parseGroups } from "../../../pages/ManagePanel/ManagePanel";
 
 const initialState = {
   name: "",
@@ -135,7 +136,12 @@ const AddNewCategory = () => {
         title="Add New Category"
         textOk="Add"
         textCancel="Cancel"
-        onSubmit={addCategory}
+        onSubmit={
+          parseGroups(user?.groups || []).includes("admin") ||
+          parseGroups(user?.groups || []).includes("moderator")
+            ? addCategory
+            : proposeCategory
+        }
         onClose={() => handleAddNewCategory(false)}
         iconName="add"
       >

@@ -43,7 +43,6 @@ const setupAxiosAuthInstance = (token: string | null) => {
   // Request interceptor to include the auth token in the headers
   axiosAuthInstance.interceptors.request.use(
     (config) => {
-      const csrfToken = getCsrfToken();
       if (token) {
         console.log("Token:", token);
         config.headers.Authorization = `Token ${token}`;

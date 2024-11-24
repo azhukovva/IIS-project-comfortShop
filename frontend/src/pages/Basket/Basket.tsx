@@ -50,12 +50,25 @@ const Basket = () => {
     }
   };
 
+  console.log("ITEMS", basketItems)
+
   const onFinishOrder = async () => {
     try {
       if (!user) {
         handleLoginClick(true);
       }
       const axiosAuthInstance = axiosAuth(token);
+      console.log("REQUEST", {
+        user: {
+          username: user?.username,
+          email: user?.email,
+          first_name: user?.first_name,
+          last_name: user?.last_name,
+        },
+        address: address,
+        city: city,
+        zip_code: zipCode,
+      })
       const response = axiosAuthInstance.post(`/api/orders/`, {
         user: {
           username: user?.username,

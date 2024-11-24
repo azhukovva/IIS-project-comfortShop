@@ -41,6 +41,8 @@ const AddNewItemModal = () => {
   const [categories, setCategories] = useState<string[]>([]);
   const [categoriesSlugs, setCategoriesSlugs] = useState<string[]>([]);
 
+  const [showBecomeModal, setShowBecomeModal] = useState(false);
+
   const {
     handleAddNewItem,
     isAuth,
