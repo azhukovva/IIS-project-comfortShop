@@ -6,6 +6,8 @@ import { Context } from "../../utils/Context";
 import classes from "./Footer.module.css";
 import Button from "../Button/Button";
 import { useLocation, useNavigate } from "react-router-dom";
+import { parseGroups } from "../../pages/ManagePanel/ManagePanel";
+import BecomeSeller from "../Modal/Roles/BecomeSeller";
 
 const Footer = () => {
   const { handleAddNewItem, handleAddNewCategory, handleAddUser, isAuth, user } =
@@ -13,14 +15,25 @@ const Footer = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [showBecomeModal, setShowBecomeModal] = React.useState(false);
+
+  // Check if the user is entrepreneur
+  const handleAddItem = () => {
+    if (!parseGroups(user?.groups || []).includes("entrepreneur") ) {
+    handleAddNewItem(true)
+    setShowBecomeModal(true);
+  }
+}
+
   return (
     <footer className={classes.container}>
+      {showBecomeModal && <BecomeSeller onClose={() => setShowBecomeModal(false)}/>}
       <div className={classes.content}>
         <div style={{ display: "flex", gap: "1rem" }}>
           <Button
             isActive
             iconName="add"
-            onClick={() => handleAddNewItem(true)}
+            onClick={handleAddItem}
           >
             Add New Item
           </Button>

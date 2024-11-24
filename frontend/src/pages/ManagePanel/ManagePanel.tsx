@@ -255,7 +255,10 @@ const Users = () => {
             {/* // */}
 
             <div style={{ maxHeight: "38vh", overflowY: "auto" }}>
+        
               <h2>Manage Categories</h2>
+
+     
               <div className={classes.userList}>
                 {categories.length === 0 ? (
                   <p>No categories available.</p>
