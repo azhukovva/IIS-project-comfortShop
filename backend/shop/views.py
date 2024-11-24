@@ -81,10 +81,11 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class ProposedCategoryViewSet(viewsets.ModelViewSet):
     queryset = ProposedCategory.objects.all()
     serializer_class = ProposedCategorySerializer
-    permission_classes = [IsAuthenticated] # TODO: Change to is moderator or admin or entrepreneur
+    permission_classes = [IsAuthenticated] 
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
 
     @action(detail=True, methods=["post"], permission_classes=[IsAdminOrModerator])
     def approve(self, request, pk=None):

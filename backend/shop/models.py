@@ -48,6 +48,7 @@ class Category(models.Model):
 
 
 class ProposedCategory(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -115,7 +116,7 @@ class AttributeValue(models.Model):
 
 
 class Order(models.Model):
-    user = models.ForeignKey(User, related_name="orders", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name="orders", on_delete=models.CASCADE) 
     products = models.ManyToManyField(Product, through="OrderProduct")
     address = models.CharField(max_length=255)
     city = models.CharField(max_length=100)
