@@ -52,11 +52,11 @@ class ProposedCategory(models.Model):
     slug = models.SlugField(unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     parent = models.ForeignKey(
-        "self",
-        related_name="children",
+        Category,
+        related_name="proposed_children",
         on_delete=models.CASCADE,
         blank=True,
-        null=True,  
+        null=True, 
     )
     image = models.ImageField(upload_to="category_images/", blank=True, null=True)
 

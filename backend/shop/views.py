@@ -35,6 +35,7 @@ from .serializers import (
     OrderSerializer,
     ProductViewSerializer,
     ProductWriteSerializer,
+    ProposedCategorySerializer,
     UserSerializer,
     RatingSerializer,
     RegisterSerializer,
@@ -79,8 +80,8 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 class ProposedCategoryViewSet(viewsets.ModelViewSet):
     queryset = ProposedCategory.objects.all()
-    serializer_class = CategorySerializer
-    permission_classes = [IsAdminOrModerator|IsEnterepreneurOrReadOnly] # TODO: Change to is moderator or admin or entrepreneur
+    serializer_class = ProposedCategorySerializer
+    permission_classes = [IsAuthenticated] # TODO: Change to is moderator or admin or entrepreneur
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -114,12 +115,6 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     permission_classes = [IsEnterepreneurOrReadOnly| IsAdminOrModerator]
     filterset_fields = ["category", "user", "title", "stock", "price"]
-
-    def get_queryset(self):
-        queryset = Product.objects.all()
-        if not self.request.user.groups.filter(name__in=["moderator", "admin"]).exists():
-            queryset = queryset.filter(is_approved=True)
-        return queryset
 
     def get_serializer_class(self):
         if self.request.method in permissions.SAFE_METHODS:
