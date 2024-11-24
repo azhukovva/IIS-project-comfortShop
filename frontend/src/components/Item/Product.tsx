@@ -10,9 +10,10 @@ import { Context } from "../../utils/Context";
 type PropsType = {
   item: ProductType;
   isNotInBasket?: boolean;
+  onDelete?: () => void;
 };
 
-const Product = ({ item, isNotInBasket }: PropsType) => {
+const Product = ({ item, isNotInBasket, onDelete }: PropsType) => {
   const [showModal, setShowModal] = useState(false);
 
   const {handleIsAuth} = useContext(Context)
@@ -27,7 +28,7 @@ const Product = ({ item, isNotInBasket }: PropsType) => {
         className={classes.photoContainer}
         style={{ backgroundImage: `url(${item.image})` }}
       >
-      <Icon icon={isNotInBasket ? "" : icons.delete} className={classes.basketIcon}/>
+      <Icon icon={isNotInBasket ? "" : icons.delete} className={classes.basketIcon} onClick={onDelete}/>
       </div>
       <div className={classes.textContainer}>
         <span style={{ textTransform: "uppercase" }}>{item.title}</span>

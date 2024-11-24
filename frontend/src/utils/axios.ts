@@ -8,7 +8,7 @@ export type UserType = {
   last_name: string;
   password: string;
   groups: string[];
-};
+}; 
 
 export type AuthTokenType = {
   username: string;
@@ -17,6 +17,7 @@ export type AuthTokenType = {
 };
 
 // --------------------------- API ---------------------------
+
 const axiosInstance = axios.create({
   baseURL: "http://localhost:8000",
   headers: {

@@ -32,17 +32,12 @@ const App = () => {
           <Route path="/" element={<Welcome />} />
 
           <Route path="/users" element={<ManagePanel />} />
-          {/* <ProtectedRoute allowedRoles={["admin", "user"]}> */}
-            <Route path="/basket" element={<Basket />} />
-          {/* </ProtectedRoute> */}
+
+          <Route path="/basket" element={<Basket />} />
+
           <Route path="/categories" element={<Categories />} />
 
           <Route path="/categories/:category" element={<Category />} />
-
-          {/* <Route path="/categories/home-cozyness" element={<Home />} />
-        <Route path="/categories/hobby-leisure" element={<Hobby />} />
-        <Route path="/categories/sweets" element={<Sweets />} />
-        <Route path="/categories/beauty-care" element={<Beauty />} /> */}
 
           <Route
             path="/categories/:category/:subcategory"
@@ -53,11 +48,7 @@ const App = () => {
             path="/categories/:category/product/:id"
             element={<ProductPage />}
           />
-          <Route
-            path="/orders/:id"
-            element={<Order />}
-          />
-
+          <Route path="/orders/:id" element={<Order />} />
         </Routes>
       </Container>
     </AuthProvider>

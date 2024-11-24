@@ -172,26 +172,37 @@ const Users = () => {
   return (
     <Page title="Manage Panel">
       <div className={classes.container}>
-        <div style={{ flex: 1, borderBottom: "1px solid rgba(0, 0, 0, 0.3)" }}>
+        <div style={{ borderBottom: "1px solid rgba(0, 0, 0, 0.3)" }}>
           <h2>About me</h2>
-          <div>
+          <div style={{ display: "flex", gap: "3rem" }}>
             {user ? (
               <div className={classes.userInfo}>
-                <p>
-                  <strong>My ID:</strong> {user.id}
-                </p>
-                <p>
-                  <strong>My Username:</strong> {user.username}
-                </p>
-                <p>
-                  <strong>My Role:</strong>
-                  <div>{parseGroups(user.groups).join(", ")}</div>
-                </p>
+                <div>
+                  <p>
+                    <strong>My ID:</strong> {user.id}
+                  </p>
+                  <p>
+                    <strong>My Username:</strong> {user.username}
+                  </p>
+                  <p>
+                    <strong>My Role:</strong>
+                    <div>{parseGroups(user.groups).join(", ")}</div>
+                  </p>
+                </div>
+
+                <div className={classes.orders}>
+                  <Button onClick={() => navigate(`/orders/${user.id}`)} isActive>
+                    My Orders
+                  </Button>
+                </div>
               </div>
             ) : (
-              <p style={{ marginTop: "2rem", paddingBottom: "1rem" }}>
-                No user information available.
-              </p>
+              <div>
+                <p style={{ marginTop: "2rem", paddingBottom: "1rem" }}>
+                  No user information available.
+                </p>
+                <Button onClick={() => handleLoginClick(true)}>Log In</Button>
+              </div>
             )}
           </div>
         </div>

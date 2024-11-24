@@ -1,6 +1,10 @@
 import React, { Dispatch, createContext, useEffect, useState } from "react";
 import { axiosAuth, UserType } from "./axios";
 
+export const saveUser = () => {
+  localStorage.setItem("user", JSON.stringify({}));
+}
+
 /*
  * Root element where floating elements are generated
  */
