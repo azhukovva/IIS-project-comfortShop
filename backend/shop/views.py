@@ -145,6 +145,7 @@ class OrderViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Retrie
         with transaction.atomic():
             basket = Basket.objects.get(user=request.user)
             order = Order.objects.create(user=request.user)
+            
             for basket_product in basket.products.all():
                 OrderProduct.objects.create(
                     order=order,
