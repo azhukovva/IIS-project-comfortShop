@@ -35,6 +35,7 @@ from .serializers import (
     OrderSerializer,
     ProductViewSerializer,
     ProductWriteSerializer,
+    ProposedCategorySerializer,
     UserSerializer,
     RatingSerializer,
     RegisterSerializer,
@@ -79,8 +80,8 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 class ProposedCategoryViewSet(viewsets.ModelViewSet):
     queryset = ProposedCategory.objects.all()
-    serializer_class = CategorySerializer
-    permission_classes = [IsAdminOrModerator|IsEnterepreneurOrReadOnly] # TODO: Change to is moderator or admin or entrepreneur
+    serializer_class = ProposedCategorySerializer
+    permission_classes = [IsAuthenticated] # TODO: Change to is moderator or admin or entrepreneur
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
