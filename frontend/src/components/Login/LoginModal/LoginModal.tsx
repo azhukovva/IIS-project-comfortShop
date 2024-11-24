@@ -52,9 +52,8 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
       if (response?.data?.token) {
         setToken(response.data.token);
         
-        //TODO 
         const axiosAuthInstance = axiosAuth(response.data.token);
-        
+
         const responseUser = await axiosAuthInstance.get(`/api/user/${state.username}`);
         const currentUserInfo: UserType = responseUser.data;
         

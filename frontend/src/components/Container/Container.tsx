@@ -20,6 +20,7 @@ type PropsType = {
 
 const Container = ({ children }: PropsType) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { category } = useParams<{ category: string }>();
 
   const {
@@ -45,6 +46,7 @@ const Container = ({ children }: PropsType) => {
         setUser(null);
         handleIsAuth(false)
         handleLogoutClick(false)
+        navigate("/");
       } catch (error) {
         console.log(error);
       }

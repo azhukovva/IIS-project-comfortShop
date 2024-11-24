@@ -53,7 +53,7 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
         return;
       }
 
-      const response = await post("http://localhost:8000/register/", {
+      const response = await post("http://localhost:8000/api/register/", {
         username: state.username,
         email: state.email,
         password: state.password,
@@ -66,8 +66,13 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
 
         setToken(response.data.token);
 
-        // const currentUserInfo: UserType = await axiosAuth.get(`/api/users/${state.username}`);
-        // setUser(currentUserInfo as UserType); //TODO
+        const axiosAuthInstance = axiosAuth(response.data.token);
+        
+        const responseUser = await axiosAuthInstance.get(`/api/user/${state.username}`);
+        const currentUserInfo: UserType = responseUser.data;
+        
+        setUser(currentUserInfo);
+        console.log("User logged in:", currentUserInfo);
 
         onSubmit ? onSubmit() : onClose(); // Trigger the onSubmit callback if login is successful
 

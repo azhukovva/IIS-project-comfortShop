@@ -17,14 +17,6 @@ import {
 } from "../../../utils/axios";
 import { Context } from "../../../utils/Context";
 
-// Define the category-subcategory mapping
-export const categoriesMap: Record<string, string[]> = {
-  "home-cozyness": ["Plants", "Candles", "Blankets", "Decor"],
-  "hobby-leisure": ["Books", "Board Games", "Sports Gear", "Art Supplies"],
-  sweets: ["Chocolates", "Candies", "Gourmet Snacks"],
-  "beauty-care": ["Skincare", "Makeup", "Hair Care", "Fragrances"],
-};
-
 const Category = () => {
   const { category } = useParams<{ category: string }>();
   let categoryName = "";
@@ -55,7 +47,7 @@ const Category = () => {
   // State to store the subcategories
   const [subCategories, setSubCategories] = useState<CategoryType[]>([]);
   const [subcategoriesNames, setSubcategoriesNames] = useState<string[]>([]);
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<CategoryType | null>(null);
 
   const [products, setProducts] = useState<ProductType[]>([]);
 
@@ -116,17 +108,57 @@ const Category = () => {
 
   useEffect(() => {
     if (categoryId) {
-      category && setActiveCategory(category);
+      category && setActiveCategory({
+        name: categoryName,
+        slug: categoryId,
+        parent: "",
+        children: [],
+        image: "", // Provide a default or actual image URL if available
+      });
       fetch(categoryId); // all products
       fetchSubcategories(categoryId); // subcategories
       console.log("Category:", category);
     }
   }, [category]);
 
+  useEffect(() => {
+    if (activeCategory) {
+      fetch(activeCategory.slug);
+    }
+  }, [activeCategory]);
+
   console.log("Products:", products);
-  const handleSubcategoryClick = (subcategory: string) => {
-    navigate(`/categories/${categoryName}+${categoryId}/${subcategory}`);
-    setActiveCategory(subcategory);
+
+  // const handleSubcategoryClick = (subcategory: string) => {
+  //   // navigate(`/categories/${categoryName}+${categoryId}/${subcategory}`);
+  //   setActiveCategory(subcategory);
+  // };
+
+  const handleSubcategoryClick = async (subcategoryName: string) => {
+    const subcategory = subCategories.find(
+      (sub) => sub.name === subcategoryName
+    );
+    if (subcategory) {
+      setActiveCategory(subcategory);
+
+      // Fetch products for the selected subcategory
+      try {
+        const response = await get(
+          `/api/categories/${subcategory.slug}/products`
+        );
+        console.log("Subcategory Products:", response.data);
+        setProducts(response.data);
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(
+            "Failed to fetch subcategory products:",
+            (error as any).response?.data || error.message
+          );
+        } else {
+          console.error("Failed to fetch subcategory products:", error);
+        }
+      }
+    }
   };
 
   return (

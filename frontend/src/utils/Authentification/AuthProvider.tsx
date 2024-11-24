@@ -39,7 +39,6 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
     setCurrentUser(null);
   };
 
