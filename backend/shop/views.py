@@ -275,6 +275,14 @@ class UserViewSet(viewsets.ModelViewSet):
         user.groups.add(group)
         return Response({"status": "User promoted to moderator"})
     
+    @action(detail=True, methods=["post"], permission_classes=[IsAdminOrModerator])
+    def promote_to_entrepreneur(self, request, pk=None):
+        user = self.get_object()
+        group, created = Group.objects.get_or_create(name="entrepreneur")
+        user.groups.add(group)
+        return Response({"status": "User promoted to entrepreneur"})
+
+    
     @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])
     def me(self, request):
         serializer = self.get_serializer(request.user)
