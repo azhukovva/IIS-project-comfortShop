@@ -140,11 +140,12 @@ class OrderViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Retrie
         if not self.request.user.groups.filter(name__in=["moderator", "admin"]).exists():
             queryset = queryset.filter(user=self.request.user)
         return queryset
-
+    
     def create(self, request, *args, **kwargs):
         with transaction.atomic():
             basket = Basket.objects.get(user=request.user)
             order = Order.objects.create(user=request.user)
+            
             for basket_product in basket.products.all():
                 OrderProduct.objects.create(
                     order=order,
@@ -154,7 +155,7 @@ class OrderViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Retrie
             basket.products.all().delete()
         serializer = self.get_serializer(order)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
