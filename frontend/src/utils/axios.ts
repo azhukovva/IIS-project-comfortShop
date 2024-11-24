@@ -1,14 +1,3 @@
-/**
- * @fileoverview Request protocol implementation
- *
- * This file contains implementation of a request protocol.
- * Request protocol is the object that helps to make requests to
- * a backend.
- *
- * @module axios
- *
- */
-
 import axios from "axios";
 
 export type UserType = {
@@ -18,41 +7,23 @@ export type UserType = {
   first_name: string;
   last_name: string;
   password: string;
-
-  role: string;
-};
+  groups: string[];
+}; 
 
 export type AuthTokenType = {
   username: string;
   password: string;
   token: string;
-}
-
-interface AttributeValue {
-  additionalProp1: string;
-  additionalProp2: string;
-  additionalProp3: string;
-}
-
+};
 
 // --------------------------- API ---------------------------
+
 const axiosInstance = axios.create({
   baseURL: "http://localhost:8000",
   headers: {
     "Content-Type": "application/json",
   },
 });
-
-const axiosAuthInstance = axios.create({
-  baseURL: "http://localhost:8000",
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
-const getAuthToken = () => {
-  return localStorage.getItem("authToken");
-};
 
 const getCsrfToken = () => {
   const csrfToken = document.cookie
@@ -61,41 +32,51 @@ const getCsrfToken = () => {
   return csrfToken ? csrfToken.split("=")[1] : null;
 };
 
-// Request interceptor to include the auth token in the headers
-axiosAuthInstance.interceptors.request.use(
-  (config) => {
-    const token = getAuthToken();
-    const csrfToken = getCsrfToken();
-    if (token) {
-      config.headers.Authorization = `Token ${token}`;
-    }
-    // if (csrfToken) {
-    //   config.headers["X-CSRFTOKEN"] = csrfToken;
-    // }
-    console.log(config);
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+const setupAxiosAuthInstance = (token: string | null) => {
+  const axiosAuthInstance = axios.create({
+    baseURL: "http://localhost:8000",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
-// Response interceptor to handle token expiry for authenticated requests
-axiosAuthInstance.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      // Handle token expiry or invalid token
-      console.log("Token is invalid or expired");
+  // Request interceptor to include the auth token in the headers
+  axiosAuthInstance.interceptors.request.use(
+    (config) => {
+      const csrfToken = getCsrfToken();
+      if (token) {
+        console.log("Token:", token);
+        config.headers.Authorization = `Token ${token}`;
+      }
+      // if (csrfToken) {
+      //   config.headers["X-CSRFTOKEN"] = csrfToken;
+      // }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
-  }
-);
+  );
 
+  // Response interceptor to handle token expiry for authenticated requests
+  axiosAuthInstance.interceptors.response.use(
+    (response) => {
+      return response;
+    },
+    (error) => {
+      if (error.response && error.response.status === 401) {
+        // Handle token expiry or invalid token
+        console.log("Token is invalid or expired");
+      }
+      return Promise.reject(error);
+    }
+  );
+
+  return axiosAuthInstance;
+};
+
+export const axiosAuth = setupAxiosAuthInstance;
 export const { get, post, delete: del, put, patch } = axiosInstance;
-export const axiosAuth = axiosAuthInstance;
 
 // --------------------------- API END ---------------------------
 
@@ -131,17 +112,35 @@ export type CategoryType = {
   image: string;
 };
 
+export type OrderProductType = {
+  id: number;
+  product: ProductType; 
+  quantity: number;
+  price: string;
+}
+
+export type OrderType = {
+  id: number;
+  user: UserType;
+  products: OrderProductType[];
+  adress: string;
+  city: string;
+  zip_code: string;
+  total_price: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export type PostType = {
   id: number | null;
   header: string | null;
   text: string;
   average_rating: string;
   ratings: RatingType[];
-}
+};
 
 export type RatingType = {
   user: number;
   post: PostType;
   rating: number;
 };
-

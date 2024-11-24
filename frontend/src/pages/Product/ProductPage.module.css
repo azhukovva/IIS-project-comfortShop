@@ -57,5 +57,26 @@
 }
 
 .leftSide {
-  
+
+}
+
+.mainContent {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  margin-top: 3rem;
+  padding: 0;
+}
+
+.isEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  height: 50%;
+  row-gap: 1.5rem;
+  color: #4a4a4a;
 }

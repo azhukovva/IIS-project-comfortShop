@@ -1,9 +1,10 @@
-import React, { ChangeEvent, useCallback, useState } from "react";
+import React, { ChangeEvent, useCallback, useContext, useState } from "react";
 import { axiosAuth, PostType } from "../../../utils/axios";
 import Modal from "../Modal";
 import Input from "../../Input/Input";
 
 import classes from "./RatingModal.module.css";
+import { Context } from "../../../utils/Context";
 
 type PostCreateType = {
   header: string;
@@ -22,6 +23,8 @@ type ModaalProps = {
 const RatingModal = ({ onClose }: ModaalProps) => {
   const [state, setState] = useState(initialState);
 
+  const { token } = useContext(Context);
+
   const handleInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       setState((prev) => ({
@@ -34,7 +37,8 @@ const RatingModal = ({ onClose }: ModaalProps) => {
 
   const onAddPost = async () => {
     try {
-      const response = await axiosAuth.post("/api/posts/", state);
+    const axiosAuthInstance = axiosAuth(token);
+      const response = await axiosAuthInstance.post("/api/posts/", state);
       console.log("Post added:", response.data);
     } catch (error) {
       console.error("Failed to add post:", error);
@@ -43,7 +47,8 @@ const RatingModal = ({ onClose }: ModaalProps) => {
 
   const onDeletePost = async (id: number) => {
     try {
-      const response = await axiosAuth.delete(`/api/posts/${id}`);
+        const axiosAuthInstance = axiosAuth(token);
+      const response = await axiosAuthInstance.delete(`/api/posts/${id}`);
       console.log("Post added:", response.data);
     } catch (error) {
       console.error("Failed to add post:", error);

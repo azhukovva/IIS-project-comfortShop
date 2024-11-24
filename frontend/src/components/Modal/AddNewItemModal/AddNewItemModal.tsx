@@ -25,7 +25,7 @@ const initialState: ProductType = {
     first_name: "",
     last_name: "",
     password: "",
-    role: "",
+    groups: [],
   },
   image: "",
   title: "",
@@ -38,13 +38,19 @@ const initialState: ProductType = {
 
 const AddNewItemModal = () => {
   const [itemData, setItemData] = useState(initialState);
-  const [categories, setCategories] = useState<string[]>([]);  
+  const [categories, setCategories] = useState<string[]>([]);
+  const [categoriesSlugs, setCategoriesSlugs] = useState<string[]>([]);
 
-  const { handleAddNewItem, isAuth, handleLoginClick, isLoginClicked, user } =
-    useContext(Context);
+  const {
+    handleAddNewItem,
+    isAuth,
+    handleLoginClick,
+    isLoginClicked,
+    user,
+    token,
+  } = useContext(Context);
 
   const currencies = ["CZK", "EUR"];
-
 
   const handleInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -57,9 +63,12 @@ const AddNewItemModal = () => {
   );
 
   const handleCategoryChange = (value: string) => {
+    const categoryIndex = categories.indexOf(value);
+    const categorySlug = categoriesSlugs[categoryIndex];
+
     setItemData((prev) => ({
       ...prev,
-      category: value,
+      category: categorySlug,
     }));
   };
 
@@ -74,39 +83,45 @@ const AddNewItemModal = () => {
     try {
       const response = await get("/api/categories");
       const categories = response.data.map((category: any) => category.name);
-      setCategories(categories);
+      const categoriesSlugs = response.data.map((category: any) => category.slug);
+      setCategoriesSlugs(categoriesSlugs);
+      setCategories(categories); // to dropdown
     } catch (error) {
       console.error("Failed to fetch categories:", error);
     }
-  }
-  console.log(isAuth)
+  };
+  console.log(isAuth);
 
   //TODO
   const handleSubmitAddNewItem = async () => {
     if (!isAuth || !user) {
-      console.log(user)
+      console.log(user);
       console.log("User not authenticated");
       handleLoginClick(true);
       return;
     }
     try {
+      console.log(itemData)
+      const axiosAuthInstance = axiosAuth(token);
       const requestBody = {
         title: itemData.title,
         description: itemData.description,
         price: itemData.price,
         category: itemData.category,
-        stock: itemData.stock,
-        attribute_values: itemData.attribute_values,
         user: {
-          id: user.id,
           username: user.username,
           email: user.email,
           first_name: user.first_name,
           last_name: user.last_name,
-          password: user.password,
         },
+        stock: itemData.stock,
+        
       };
-      const response = await axiosAuth.post(`/api/products`, requestBody);
+      console.log("Request body:", requestBody);
+      const response = await axiosAuthInstance.post(
+        `/api/products`,
+        requestBody
+      );
 
       console.log("Product added:", response.data, requestBody);
     } catch (error) {
@@ -122,14 +137,16 @@ const AddNewItemModal = () => {
   };
 
   useEffect(() => {
-    if (!isAuth) {
+    if (!isAuth || !user) {
       handleLoginClick(true);
       return;
     }
+    
     fetchCategories();
   }, []);
 
   console.log("Item data:", itemData);
+  console.log("USER", user)
 
   return (
     <>
@@ -207,7 +224,7 @@ const AddNewItemModal = () => {
             value={itemData.description}
             labelText="Product Description"
             placeholder="Add description"
-            isRequired={false}
+            isRequired
             onChange={handleInputChange}
             isBig
           />

@@ -14,7 +14,7 @@ const initialState = {
 const AddUserModal = () => {
   const [newUser, setNewUser] = useState(initialState);
 
-  const { handleAddUser } = useContext(Context);
+  const { handleAddUser, token } = useContext(Context);
 
   const handleInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -27,7 +27,11 @@ const AddUserModal = () => {
   );
   const handleAddUserSubmit = async () => {
     try {
-      const response = await axiosAuth.post("/api/users/create_user", newUser);
+      const axiosAuthInstance = axiosAuth(token);
+      const response = await axiosAuthInstance.post(
+        "/api/users/create_user",
+        newUser
+      );
       setNewUser({ username: "", password: "" });
       handleAddUser(false);
     } catch (error) {

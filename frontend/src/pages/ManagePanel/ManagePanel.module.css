@@ -1,17 +1,30 @@
 .container {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   margin-top: 2rem;
-  gap: 4rem;
+  gap: 3.5rem;
 }
 
 .userInfo {
-  padding: 2rem;
+  line-height: 2rem;
+  gap: 7rem;
   margin: 1rem 0;
-  border: 1px solid #ddd;
-  border-radius: 1rem;
-  background-color: #f9f9f9;
-  flex: 1;
+  padding-bottom: 1.5rem;
+  font-size: 1.2rem;
+  justify-content: center;
+  display: flex;
+}
+
+.userInfo p {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1rem;
+  text-align: left;
+}
+
+.userInfo div {
+  font-size: 1.35rem;
 }
 
 .userList {

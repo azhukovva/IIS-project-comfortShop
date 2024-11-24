@@ -16,14 +16,21 @@ import LoginModal from "../../Login/LoginModal/LoginModal";
 import { AxiosError } from "axios";
 
 const initialState = {
-  name: '',
-  slug: '',
+  name: "",
+  slug: "",
 };
 
 const AddNewCategory = () => {
   const [categoryData, setCategoryData] = useState(initialState);
-  const { handleAddNewCategory, handleIsAuth, isAuth, handleLoginClick, isLoginClicked } =
-    useContext(Context);
+  const {
+    handleAddNewCategory,
+    handleIsAuth,
+    isAuth,
+    handleLoginClick,
+    isLoginClicked,
+    token,
+    user,
+  } = useContext(Context);
 
   const handleInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -37,10 +44,10 @@ const AddNewCategory = () => {
 
   const generateSlug = (name: string) => {
     return name
-    .toLowerCase()
-    .replace(/ /g, '-')
-    .replace(/[^\w-]+/g, '');
-  }
+      .toLowerCase()
+      .replace(/ /g, "-")
+      .replace(/[^\w-]+/g, "");
+  };
 
   const addCategory = async () => {
     if (!isAuth) {
@@ -52,18 +59,54 @@ const AddNewCategory = () => {
       slug: generateSlug(categoryData.name), // Generate a UUID for the slug
     };
     try {
-      if (categoryData.name === '') {
-        alert('Category name is required');
+      const axiosAuthInstance = axiosAuth(token);
+      if (categoryData.name === "") {
+        alert("Category name is required");
         return;
       }
-      const response = await axiosAuth.post('/api/categories/', categoryWithSlug); // Use the authenticated Axios instance
-      console.log('Category added:', response.data);
+      const response = await axiosAuthInstance.post(
+        "/api/categories/",
+        categoryWithSlug
+      ); // Use the authenticated Axios instance
+      console.log("Category added:", response.data);
       handleAddNewCategory(false);
     } catch (error) {
       if (error instanceof AxiosError) {
-        console.log('Error adding category:', error.response?.data || error.message);
+        console.log(
+          "Error adding category:",
+          error.response?.data || error.message
+        );
       } else {
-        console.log('Error adding category:', error);
+        console.log("Error adding category:", error);
+      }
+    }
+  };
+
+  const proposeCategory = async () => {
+    if (!isAuth || !user) {
+      handleLoginClick(true);
+      return;
+    }
+    try {
+      const axiosAuthInstance = axiosAuth(token);
+      if (categoryData.name === "") {
+        alert("Category name is required");
+        return;
+      }
+      const response = await axiosAuthInstance.post(
+        "/api/proposed_categories/",
+        categoryData
+      );
+      console.log("Category proposed:", response.data);
+      handleAddNewCategory(false);
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.log(
+          "Error proposing category:",
+          error.response?.data || error.message
+        );
+      } else {
+        console.log("Error proposing category:", error);
       }
     }
   };
@@ -74,11 +117,11 @@ const AddNewCategory = () => {
       handleAddNewCategory(false);
       return;
     }
-  })
+  });
 
   return (
     <>
-       {isLoginClicked && (
+      {isLoginClicked && (
         <LoginModal
           onClose={() => handleLoginClick(false)}
           onSubmit={() => {
@@ -105,15 +148,6 @@ const AddNewCategory = () => {
             isRequired
             onChange={handleInputChange}
           />
-          {/* <Input
-          name="slug"
-          value={categoryData.slug}
-          labelText="Category short description"
-          placeholder="Add one word to describe Your category"
-          isRequired={false}
-          onChange={handleInputChange}
-          isBig
-        /> */}
         </div>
       </Modal>
     </>
@@ -121,5 +155,3 @@ const AddNewCategory = () => {
 };
 
 export default AddNewCategory;
-
-

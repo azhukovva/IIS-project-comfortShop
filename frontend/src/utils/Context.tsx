@@ -1,5 +1,9 @@
-import React, { Dispatch, createContext, useState } from "react";
-import { UserType } from "./axios";
+import React, { Dispatch, createContext, useEffect, useState } from "react";
+import { axiosAuth, UserType } from "./axios";
+
+export const saveUser = () => {
+  localStorage.setItem("user", JSON.stringify({}));
+}
 
 /*
  * Root element where floating elements are generated
@@ -9,6 +13,9 @@ export const floatingRoot = document.getElementById("root");
 type ContextType = {
   user: UserType | null;
   setUser: (user: UserType | null) => void;
+
+  token: string | null;
+  setToken: (token: string | null) => void;
 
   isLoading: boolean;
   isAuth: boolean;
@@ -45,6 +52,9 @@ const initialState: ContextType = {
   user: null,
   setUser: () => {},
 
+  token: null,
+  setToken: () => {},
+
   isLoading: false,
   isAuth: false,
   showPopup: false,
@@ -75,6 +85,7 @@ export const Context = createContext<ContextType>(initialState);
 
 const ContextProvider = ({ children }: PropsType) => {
   const [user, setUser] = useState<UserType | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   
   const [isLoading, setIsLoading] = useState(false);
   const [isAuth, setIsAuth] = useState(false);  
@@ -87,6 +98,10 @@ const ContextProvider = ({ children }: PropsType) => {
   const [isAddNewItemClicked, setIsAddNewItemClicked] = useState(false);
   const [isAddNewCategoryClicked, setIsAddNewCategoryClicked] = useState(false);
   const [isAddUser, setIsAddUser] = useState(false);
+
+  useEffect(() => {
+    axiosAuth(token);
+  }, [token]);
 
   const handleLoginClick = (state?: boolean) => {
     setIsLoginClicked((prev) => (state !== undefined ? state : !prev));
@@ -125,6 +140,9 @@ const ContextProvider = ({ children }: PropsType) => {
     user,
     setUser,
 
+    token,
+    setToken,
+
     isLoading,
     isAuth,
     showPopup,
@@ -160,3 +178,8 @@ const ContextProvider = ({ children }: PropsType) => {
 };
 
 export default ContextProvider;
+
+// export const useToken = () => {
+//   const { token } = React.useContext(Context);
+//   return token
+// }

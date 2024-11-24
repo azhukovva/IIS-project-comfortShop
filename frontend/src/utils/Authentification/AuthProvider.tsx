@@ -4,8 +4,8 @@ import { post, UserType } from "../axios";
 type AuthContext = {
   authToken?: string | null; // undefined - pending, null - no token, string - token, OK
   currentUser?: UserType | null;
-//   handleLogin: (username: string, password: string) => Promise<void>;
-//   handleLogout: () => void;
+  //   handleLogin: (username: string, password: string) => Promise<void>;
+  //   handleLogout: () => void;
 };
 
 const AuthContext = createContext<AuthContext | undefined>(undefined);
@@ -39,14 +39,11 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
     setCurrentUser(null);
   };
 
   return (
-    <AuthContext.Provider
-      value={{authToken, currentUser}}
-    >
+    <AuthContext.Provider value={{ authToken, currentUser }}>
       {children}
     </AuthContext.Provider>
   );

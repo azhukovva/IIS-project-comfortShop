@@ -5,7 +5,6 @@ import useBreadcrumb from "../../../hooks/UseBreadcrumb";
 import classes from "./Subcategory.module.css";
 import Sidebar from "../../../components/Sidebar/Sidebar";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
-import { categoriesMap } from "../Category/Category";
 import Product from "../../../components/Item/Product";
 
 const Subcategory = () => {
@@ -35,13 +34,13 @@ const Subcategory = () => {
     navigate(`/product/${id}`);
   }
 
-  useEffect(() => {
-    if (category && categoriesMap[category]) {
-      setSubCategories(categoriesMap[category]);
-    } else {
-      setSubCategories([]);
-    }
-  }, [category]);
+  // useEffect(() => {
+  //   if (category && categoriesMap[category]) {
+  //     setSubCategories(categoriesMap[category]);
+  //   } else {
+  //     setSubCategories([]);
+  //   }
+  // }, [category]);
 
   console.log("Subcategory:", subcategory); // Debugging
 

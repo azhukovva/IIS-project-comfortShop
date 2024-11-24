@@ -20,6 +20,7 @@ type PropsType = {
 
 const Container = ({ children }: PropsType) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { category } = useParams<{ category: string }>();
 
   const {
@@ -33,15 +34,19 @@ const Container = ({ children }: PropsType) => {
     isAuth,
     handleIsAuth,
     showPopup,
+    setToken,
+    setUser,
     handlePopup,
   } = useContext(Context);
 
   const LogoutModal = () => {
     const handleLogout = async () => {
       try {
-        localStorage.setItem('authToken', "")
+        setToken(null);
+        setUser(null);
         handleIsAuth(false)
         handleLogoutClick(false)
+        navigate("/categories");
       } catch (error) {
         console.log(error);
       }

@@ -13,11 +13,11 @@ const Popup = ({ text, isGood }: PropsType) => {
     left: "50%",
     transform: "translate(-50%, -50%)",
     padding: "20px",
-    color: "#4a4a4a",
-    backgroundColor: 'white', 
+    color: "white",
+    backgroundColor: '#8AB358', 
     borderRadius: "1rem",
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-    zIndex: 1000,
+    zIndex: 20000,
   };
 
   return (

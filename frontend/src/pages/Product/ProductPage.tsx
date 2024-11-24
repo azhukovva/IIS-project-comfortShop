@@ -3,7 +3,7 @@ import Page from "../../components/Page/Page";
 import { useNavigate, useParams } from "react-router-dom";
 
 import classes from "./ProductPage.module.css";
-import { get, ProductType } from "../../utils/axios";
+import { axiosAuth, get, ProductType } from "../../utils/axios";
 import Button from "../../components/Button/Button";
 import { images } from "../../utils/images";
 import icons from "../../utils/icons";
@@ -11,6 +11,7 @@ import { Icon } from "@iconify/react";
 import { Context } from "../../utils/Context";
 import RatingCard from "./RatingCard/RatingCard";
 import RatingModal from "../../components/Modal/RatingModal/RatingModal";
+import SignInModal from "../../components/Modal/SignInModal/SignInModal";
 
 const ProductPage = () => {
   const { id } = useParams();
@@ -19,13 +20,15 @@ const ProductPage = () => {
   const [posts, setPosts] = useState([]);
 
   const [isAddRating, setIsAddRating] = useState(false);
+  const [showSignInModal, setShowSignInModal] = useState(false);
 
-  const { handleIsAuth } = useContext(Context);
+  const { handleIsAuth, token, user, handleLoginClick } = useContext(Context);
 
   // Fetch product info
   const fetch = async () => {
     try {
-      const response = await get(`api/products/${id}`);
+      const axiosAuthInstance = axiosAuth(token);
+      const response = await axiosAuthInstance.get(`api/products/${id}`);
       setProduct(response.data);
       console.log(response.data);
       return response;
@@ -36,7 +39,8 @@ const ProductPage = () => {
 
   const fetchPosts = async () => {
     try {
-      const response = await get(`api/rating/${id}`);
+      const axiosAuthInstance = axiosAuth(token);
+      const response = await axiosAuthInstance.get(`api/rating/${id}`);
       console.log(response.data);
       setPosts(response.data);
       return response;
@@ -49,12 +53,19 @@ const ProductPage = () => {
   const addToBasket = async () => {
     try {
       console.log("add to basket");
-      const authToken = localStorage.getItem("authToken");
-      if (!authToken) {
-        handleIsAuth(true);
+
+      if (!user) {
+        handleLoginClick(true);
       }
-      const user = { username: authToken };
-      // const response = axiosAuth.post(`/api/baskets/add_product`, {user})
+
+      const axiosAuthInstance = axiosAuth(token);
+      const response = axiosAuthInstance.post(`/api/baskets/add_product`, {
+        product_id: id,
+        quantity: 1,
+      });
+
+      console.log(response);  
+      
     } catch (error) {
       if (error instanceof Error) {
         console.error(
@@ -68,9 +79,11 @@ const ProductPage = () => {
   };
 
   useEffect(() => {
-    fetch();
-    fetchPosts();
-  }, []);
+    if (user) {
+      fetch();
+      fetchPosts();
+    }
+  }, [user]);
 
   return (
     <Page>
@@ -80,7 +93,7 @@ const ProductPage = () => {
         </Button>
       </div>
 
-      {product && (
+      {user && product ? (
         <div className={classes.content}>
           <div className={classes.leftSide}>
             <div className={classes.imageContainer}>
@@ -108,7 +121,7 @@ const ProductPage = () => {
               {posts.length === 0 ? (
                 <p>No ratings available.</p>
               ) : (
-                posts.map((post) => <RatingCard post={post}/>)
+                posts.map((post) => <RatingCard post={post} />)
               )}
             </div>
             <Button isActive isOnAdd onClick={() => setIsAddRating(true)}>
@@ -116,8 +129,23 @@ const ProductPage = () => {
             </Button>
           </div>
         </div>
+      ) : (
+        <div className={classes.isEmpty}>
+          <span className={classes.isEmptyText}>
+            Please log in to view product details
+          </span>
+          <div style={{ display: "flex", gap: "1rem" }}>
+            <Button isActive onClick={() => handleLoginClick(true)}>
+              Log In
+            </Button>
+            <Button onClick={() => setShowSignInModal(true)}>Sign In</Button>
+          </div>
+        </div>
       )}
-      {isAddRating && <RatingModal onClose={() => setIsAddRating(false)}/>}
+      {isAddRating && <RatingModal onClose={() => setIsAddRating(false)} />}
+      {showSignInModal && (
+        <SignInModal onClose={() => setShowSignInModal(false)} />
+      )}
     </Page>
   );
 };

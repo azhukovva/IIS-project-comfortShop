@@ -21,7 +21,7 @@ const initialState = {
 const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
   const [state, setState] = useState(initialState); // user state
 
-  const { setUser, handleLoginClick, handleIsAuth, showPopup, handlePopup } =
+  const { setUser, handleLoginClick, handleIsAuth, showPopup, handlePopup, setToken } =
     useContext(Context);
 
   const { authToken } = useAuth();
@@ -47,11 +47,19 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
         password: state.password,
       });
 
+      console.log("Login response:", response, state.username, state.password);
+
       if (response?.data?.token) {
-        localStorage.setItem("authToken", response.data.token); // Store the token in localStorage
+        setToken(response.data.token);
+        
+        const axiosAuthInstance = axiosAuth(response.data.token);
 
-        setUser(response.data.user as UserType); //TODO
-
+        const responseUser = await axiosAuthInstance.get(`/api/users/me`);
+        const currentUserInfo: UserType = responseUser.data;
+        
+        setUser(currentUserInfo);
+        console.log("User logged in:", currentUserInfo);
+        
         onSubmit ? onSubmit() : onClose(); // Trigger the onSubmit callback if login is successful
         handleIsAuth(true);
         handlePopup(true);
@@ -59,6 +67,8 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
       }
     } catch (error) {
       console.log(error);
+      handleIsAuth(false);
+      onClose();
     }
   };
 

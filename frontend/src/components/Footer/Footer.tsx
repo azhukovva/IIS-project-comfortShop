@@ -8,7 +8,7 @@ import Button from "../Button/Button";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const Footer = () => {
-  const { handleAddNewItem, handleAddNewCategory, handleAddUser, isAuth } =
+  const { handleAddNewItem, handleAddNewCategory, handleAddUser, isAuth, user } =
     useContext(Context);
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,7 +33,7 @@ const Footer = () => {
           </Button>
         </div>
         <div>
-          {isAuth && location.pathname !== "/users" && (
+          {isAuth && user !== null && location.pathname !== "/users" && (
             <Button isActive iconName="user" onClick={() => navigate("/users")}>
               Manage Panel
             </Button>
