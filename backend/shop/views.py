@@ -284,8 +284,15 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response({"status": "User promoted to entrepreneur"})
 
     
-    @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=["get", "put"], permission_classes=[IsAuthenticated])
     def me(self, request):
+        user = request.user
+        if request.method == "PUT":
+            serializer = self.get_serializer(user, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()  # Сохраняем изменения в объекте user
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
         serializer = self.get_serializer(request.user)
         return Response(serializer.data)
     
