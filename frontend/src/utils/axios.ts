@@ -140,11 +140,11 @@ export type OrderType = {
 }
 
 export type PostType = {
-  id: number | null;
-  header: string | null;
-  text: string;
-  average_rating: string;
-  ratings: RatingType[];
+ user: number;
+ title: string;
+ text: string;
+ rating: number;
+ product: number;
 };
 
 export type RatingType = {

@@ -11,6 +11,7 @@ import {
   get,
   OrderType,
   ProposedCategoryType,
+  RatingType,
   UserType,
 } from "../../utils/axios";
 
@@ -38,6 +39,7 @@ const Users = () => {
   const [users, setUsers] = useState<UserType[]>([]); // State to store users
   const [categories, setCategories] = useState<ProposedCategoryType[]>([]); // State to store proposed categories
   const [orders, setOrders] = useState<OrderType[]>([]);
+  const [ratings, setRatings] = useState<RatingType[]>([]);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState<UserType | null>(null);
@@ -57,7 +59,10 @@ const Users = () => {
   const [username, setUsername] = useState(user?.username);
   const [email, setEmail] = useState(user?.email);
   const [firstName, setFirstName] = useState(user?.first_name);
-  const [lastName, setLastName] = useState(user?.last_name );
+  const [lastName, setLastName] = useState(user?.last_name);
+
+  // const [categoryToDelete, setCategoryToDelete] =
+  //   useState<ProposedCategoryType | null>(null);
 
   const [categoryToDelete, setCategoryToDelete] =
     useState<ProposedCategoryType | null>(null);
@@ -108,6 +113,7 @@ const Users = () => {
     fetchUsers();
     fetchCategories();
     fetchOrders();
+    fetchRatings();
   }, [isAddUser, isLoginClicked]);
 
   // Users
@@ -201,6 +207,32 @@ const Users = () => {
     }
   };
 
+  const handleDeleteRatingClick = async () => {
+    try {
+      const axiosAuthInstance = axiosAuth(token);
+      const response = await axiosAuthInstance.delete(
+        `/api/ratings/${user?.id}/`
+      );
+      fetchRatings();
+      console.log("Rating deleted:", response.data);
+    } catch (error) {
+      console.error("Failed to delete rating:", error);
+    }
+  };
+
+  const linkToProduct = async (id: number) => {
+    try {
+      const axiosAuthInstance = axiosAuth(token);
+      const response = await axiosAuthInstance.get(`api/products/${id}`);
+      const product = response.data;
+      const category = product.category;
+      if (product !== null && category !== null)
+        navigate(`/categories/${category}/product/${id}`);
+    } catch (error) {
+      console.error("Failed to link to product:", error);
+    }
+  };
+
   // Common
   const handleCancelDelete = () => {
     setShowDeleteModal(false);
@@ -219,8 +251,8 @@ const Users = () => {
         last_name: lastName,
       });
       const me: any = await axiosAuthInstance.get(`/api/users/me/`);
-      console.log ("ME", me)
-      setUser(me.data)
+      console.log("ME", me);
+      setUser(me.data);
       setIsEdit(false);
       // Reset input fields to initial state
       // setUsername(user?.username || "");
@@ -232,12 +264,26 @@ const Users = () => {
     }
   };
 
+  // Editing User Information
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     if (name === "username") setUsername(value);
     if (name === "email") setEmail(value);
     if (name === "firstName") setFirstName(value);
     if (name === "lastName") setLastName(value);
+  };
+
+  const fetchRatings = async () => {
+    try {
+      const axiosAuthInstance = axiosAuth(token);
+      const response = await axiosAuthInstance.get(`api/rating/${user?.id}`);
+
+      console.log("ratings", response.data);
+
+      setRatings(response.data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -273,17 +319,19 @@ const Users = () => {
                 </div>
 
                 <div className={classes.buttons}>
-                  <div> <Button
-                    onClick={isEdit ? handleSaveUser : () => setIsEdit(!isEdit)}
-                    isActive
-                  >
-                    {isEdit ? "Save" : "Edit Profile"}
-                  </Button></div>
-                 
-                  <Button
-                    onClick={() => navigate("/orders")}
-                    isActive
-                  >
+                  <div>
+                    {" "}
+                    <Button
+                      onClick={
+                        isEdit ? handleSaveUser : () => setIsEdit(!isEdit)
+                      }
+                      isActive
+                    >
+                      {isEdit ? "Save" : "Edit Profile"}
+                    </Button>
+                  </div>
+
+                  <Button onClick={() => navigate("/orders")} isActive>
                     My Orders
                   </Button>
                 </div>
@@ -479,7 +527,46 @@ const Users = () => {
             </div>
           </div>
         )}
+        <div style={{ maxHeight: "38vh", overflowY: "auto" }}>
+          <h2>Manage My Ratings</h2>
+          <div className={classes.userList}>
+            {ratings.length === 0 ? (
+              <p>No ratings available.</p>
+            ) : (
+              <table className={classes.table}>
+                <thead>
+                  <tr>
+                    <th>My Rate</th>
+                    <th>Description</th>
+                    <th>Product</th>
 
+                    <th>Delete</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ratings.map((rating) => (
+                    <tr key={rating.post.user}>
+                      <td>{rating.rating}</td>
+                      <td>{rating.post.title}</td>
+                      <td onClick={() => linkToProduct(rating.post.product)}>
+                        {rating.post.product}
+                      </td>
+
+                      <td>
+                        <Icon
+                          icon={icons.delete}
+                          style={{ cursor: "pointer" }}
+                          width={20}
+                          onClick={handleDeleteRatingClick}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
         {showDeleteModal && (
           <Modal
             title="Confirm Delete"

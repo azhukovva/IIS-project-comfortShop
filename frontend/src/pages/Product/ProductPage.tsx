@@ -3,7 +3,7 @@ import Page from "../../components/Page/Page";
 import { useNavigate, useParams } from "react-router-dom";
 
 import classes from "./ProductPage.module.css";
-import { axiosAuth, get, ProductType } from "../../utils/axios";
+import { axiosAuth, get, PostType, ProductType } from "../../utils/axios";
 import Button from "../../components/Button/Button";
 import { images } from "../../utils/images";
 import icons from "../../utils/icons";
@@ -18,11 +18,12 @@ const ProductPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState<ProductType>();
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState<PostType[]>([]);
 
   const [isAddRating, setIsAddRating] = useState(false);
   const [showSignInModal, setShowSignInModal] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
+  const [showPopupRating, setShowPopupRating] = useState(false);
 
   const { handleIsAuth, token, user, handleLoginClick } = useContext(Context);
 
@@ -43,8 +44,16 @@ const ProductPage = () => {
     try {
       const axiosAuthInstance = axiosAuth(token);
       const response = await axiosAuthInstance.get(`api/rating/${id}`);
+      const data = response.data;
+      const formattedData = Array.isArray(data) ? data : [data];
+
       console.log(response.data);
-      setPosts(response.data);
+      // if (Array.isArray(response.data)) {
+      //   setPosts(response.data);
+      // } else {
+      //   console.error("Response data is not an array:", response.data);
+      // }
+      setPosts(formattedData);
       return response;
     } catch (error) {
       console.log(error);
@@ -85,16 +94,34 @@ const ProductPage = () => {
     }
   };
 
+
+  const onDeletePost = async (id: number) => {
+    try {
+      const axiosAuthInstance = axiosAuth(token);
+      const response = await axiosAuthInstance.delete(`/api/rating/${id}`);
+      console.log("Post added:", response.data);
+    } catch (error) {
+      console.error("Failed to add post:", error);
+    }
+  };
+
+  const handleCloseRating = () => {
+    setIsAddRating(false)
+    setShowPopupRating(true);
+    setTimeout(() => setShowPopupRating(false), 2000);
+  }
+
   useEffect(() => {
     if (user) {
       fetch();
       fetchPosts();
     }
-  }, [user, id, token]);
+  }, [user, id, token, isAddRating]);
 
   return (
     <Page>
       {showPopup && <Popup text="Product added!" isGood />}
+      {showPopupRating && <Popup text="Rating added!" isGood />}
       <div className={classes.rowTop}>
         <Button isBack isActive onClick={() => navigate(-1)}>
           <Icon icon={icons.left} width={20} />
@@ -129,8 +156,7 @@ const ProductPage = () => {
               {posts.length === 0 ? (
                 <p>No ratings available.</p>
               ) : (
-                <div>{posts && Array.from(posts).map((post) => <RatingCard post={post} />)}</div>
-                
+                Array.isArray(posts) && posts.map((post) => <RatingCard post={post} />)
               )}
             </div>
             <Button isActive isOnAdd onClick={() => setIsAddRating(true)}>
@@ -151,7 +177,7 @@ const ProductPage = () => {
           </div>
         </div>
       )}
-      {isAddRating && id && <RatingModal onClose={() => setIsAddRating(false)} productId={id} onFetch={fetchPosts}/>}
+      {isAddRating && id && <RatingModal onClose={handleCloseRating} productId={id} onFetch={fetchPosts}/>}
       {showSignInModal && (
         <SignInModal onClose={() => setShowSignInModal(false)}/>
       )}

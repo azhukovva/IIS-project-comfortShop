@@ -31,6 +31,7 @@ type ModalProps = {
 
 const RatingModal = ({ onClose, productId, onFetch }: ModalProps) => {
   const [state, setState] = useState(initialState);
+  const [isShowPopup, setIsShowPopup] = useState(false);
 
   const { token, user, handleLoginClick } = useContext(Context);
 
@@ -61,17 +62,11 @@ const RatingModal = ({ onClose, productId, onFetch }: ModalProps) => {
       });
       console.log("Post added:", response.data);
       onClose();
-      onFetch();
-    } catch (error) {
-      console.error("Failed to add post:", error);
-    }
-  };
-
-  const onDeletePost = async (id: number) => {
-    try {
-      const axiosAuthInstance = axiosAuth(token);
-      const response = await axiosAuthInstance.delete(`/api/rating/${id}`);
-      console.log("Post added:", response.data);
+      setIsShowPopup(true)
+        setTimeout(() => {
+            setIsShowPopup(false)
+        }, 2000)
+        onFetch();
     } catch (error) {
       console.error("Failed to add post:", error);
     }
@@ -95,10 +90,11 @@ const RatingModal = ({ onClose, productId, onFetch }: ModalProps) => {
     >
       <div className={classes.container}>
         <Input
+          isRequired
           name="title"
           value={state.title}
-          labelText="Title"
-          placeholder="Enter Post Title"
+          labelText="Describe your rating"
+          placeholder="This product is ..."
           onChange={handleInputChange}
         />
         <Input
@@ -108,7 +104,7 @@ const RatingModal = ({ onClose, productId, onFetch }: ModalProps) => {
           type="text"
           labelText="Rating text"
           isRequired
-          placeholder="Write your rating here"
+          placeholder="Write your impression here"
           onChange={handleInputChange}
         />
         <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>

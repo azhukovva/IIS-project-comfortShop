@@ -11,7 +11,7 @@ import icons from "../../../utils/icons";
 
 const Order = () => {
   const { orderId } = useParams<{ orderId: string }>();
-  const [orders, setOrders] = useState<OrderType[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
 
   const [showSignInModal, setShowSignInModal] = useState(false);
 
@@ -20,23 +20,21 @@ const Order = () => {
 
   useEffect(() => {
     const fetchOrder = async () => {
-      const axiosAuthInstance = axiosAuth(token);
-
       try {
-        const response = await axiosAuthInstance.get(`/api/orders/`);
-        setOrders(response.data);
+
+        const axiosAuthInstance = axiosAuth(token);
+        const response = await axiosAuthInstance.get(`/api/orders`);
+        response.data && setOrders(response.data);
         console.log("Order:", response.data);
+        
       } catch (error) {
         console.error("Failed to fetch order:", error);
       }
+    
     };
 
     fetchOrder();
   }, [orderId, token]);
-
-  //   if (!orders || orders.length === 0) {
-  //     return <div>Loading...</div>;
-  //   }
 
   return (
     <Page title="My Orders">
