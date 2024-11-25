@@ -49,6 +49,17 @@ class CategoryViewSet(viewsets.ModelViewSet):
     lookup_field = "slug"
     search_fields = ["name"]
 
+    @action(detail=True, methods=["get"], permission_classes=[AllowAny]) # detail=True means that this action is for a single object
+    def category_create(request):
+        if request.method == "POST":
+            form = CategoryForm(request.POST, request.FILES)  # Не забудьте request.FILES
+            if form.is_valid():
+                form.save()
+                return redirect('category_list')  # Замените 'category_list' на реальное имя маршрута
+        else:
+            form = CategoryForm()
+        return render(request, 'category_form.html', {'form': form})
+
     @action(detail=False, methods=["get"], permission_classes=[AllowAny]) # detail=False means that this action is for the list of objects
     def root(self, request):
         queryset = Category.objects.filter(parent=None)
