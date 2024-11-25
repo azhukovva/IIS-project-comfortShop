@@ -239,4 +239,4 @@ class BasketSerializer(serializers.ModelSerializer):
 class RatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
-        fields = ["user", "product", "title", "text", "rating"]
+        fields = ["id","user", "product", "title", "text", "rating"]
