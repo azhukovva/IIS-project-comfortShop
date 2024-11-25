@@ -28,9 +28,7 @@ from rest_framework import permissions
 from rest_framework.authtoken import views
 from rest_framework.decorators import api_view, permission_classes
 
-
-
-
+# API documentation
 schema_view = get_schema_view(
     openapi.Info(
         title="My Shop API",
@@ -50,6 +48,6 @@ urlpatterns = [
     path("swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
 ]
 
-
+# Serve media files in developmentS
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) 

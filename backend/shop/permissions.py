@@ -1,7 +1,7 @@
 from rest_framework import permissions
 
 
-class IsGroupUserOrReadOnly(permissions.BasePermission):
+class IsGroupUserOrReadOnly(permissions.BasePermission): # Custom permission class
     group_name = None  
 
     def has_permission(self, request, view):

@@ -13,26 +13,27 @@ from .models import (
     Rating,
     ProposedCategory
 )
+# Serializers define the API representation.
 
-
-
+# User Serializer
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id", "username", "email", "first_name", "last_name", "groups"]
-        extra_kwargs = {"groups": {"required": False, "many": True}}
-        read_only_fields = ["id", "groups"]
+        extra_kwargs = {"groups": {"required": False, "many": True}}  # We don't want to require groups
+        read_only_fields = ["id", "groups"]  # We don't want to allow users to change their groups
 
     def get_groups(self, obj):
         return [group.name for group in obj.groups.all()]
 
+# Register Serializer
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'email', 'password', 'first_name', 'last_name']
-        extra_kwargs = {'password': {'write_only': True}}
+        extra_kwargs = {'password': {'write_only': True}} # We don't want to show the password
 
-    def create(self, validated_data):
+    def create(self, validated_data): # Create a new user
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
@@ -40,17 +41,17 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
         return user
 
-    def validate_email(self, value):
+    def validate_email(self, value): # Check if the email is already taken
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError("Email is already taken.")
         return value
 
-    def validate_username(self, value):
+    def validate_username(self, value): # Check if the username is already taken
         if User.objects.filter(username=value).exists():
             raise serializers.ValidationError("Username is already taken.")
         return value
 
-
+# Category Serializer
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
     parent = serializers.SerializerMethodField()
     children = serializers.SerializerMethodField()
@@ -69,10 +70,11 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
         read_only_fields = ["children"]
 
         extra_kwargs = {"url": {"lookup_field": "slug"}}
-        lookup_field = "slug"
+        lookup_field = "slug" # This is the field that will be used to retrieve the object
 
-        depth = 1  # TODO: Check if this is needed
+        depth = 1  
 
+# ProposedCategory Serializer
 class ProposedCategorySerializer(serializers.ModelSerializer):
     parent = serializers.SlugRelatedField(
         queryset=Category.objects.all(),
@@ -84,10 +86,9 @@ class ProposedCategorySerializer(serializers.ModelSerializer):
         fields = ["id","slug", "name", "parent", "image"]
         
 
-
-
+# Attribute Serializer
 class AttributeSerializer(serializers.ModelSerializer):
-    category = serializers.SlugRelatedField(
+    category = serializers.SlugRelatedField(  # Show the category slug in the attribute
         queryset=Category.objects.all(),
         slug_field="slug",
     )
@@ -96,16 +97,16 @@ class AttributeSerializer(serializers.ModelSerializer):
         model = Attribute
         fields = ["id", "name", "category"]
 
-
+# AttributeValue Serializer
 class AttributeValueSerializer(serializers.ModelSerializer):
-    attribute = serializers.PrimaryKeyRelatedField(queryset=Attribute.objects.all())
-    products = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(), many=True)
+    attribute = serializers.PrimaryKeyRelatedField(queryset=Attribute.objects.all()) # Show the attribute id in the attribute value
+    products = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(), many=True) # Show the product ids in the attribute value
 
     class Meta:
         model = AttributeValue
         fields = ["id", "value", "attribute", "products"]
 
-
+# Product Serializer
 class ProductViewSerializer(serializers.ModelSerializer):
     category = serializers.SlugRelatedField(
         queryset=Category.objects.all(),
@@ -119,9 +120,7 @@ class ProductViewSerializer(serializers.ModelSerializer):
         model = Product
         fields = ["id", "title", "description", "price", "category", "user", "stock", "attribute_values", "image"]
 
-        
-
-
+# ProductWrite Serializer        
 class ProductWriteSerializer(serializers.ModelSerializer):
     category = serializers.SlugRelatedField(
         queryset=Category.objects.all(),
@@ -137,7 +136,7 @@ class ProductWriteSerializer(serializers.ModelSerializer):
         model = Product
         fields = ["id", "title", "description", "price", "category", "user", "stock", "attribute_values", "image"]
 
-    def validate_attribute_values(self, attribute_values):
+    def validate_attribute_values(self, attribute_values): # Check if the attribute values are valid
         category_slug = self.initial_data.get("category", None)
         if not category_slug:
             raise serializers.ValidationError("Category is required to validate attribute values.")
@@ -153,10 +152,10 @@ class ProductWriteSerializer(serializers.ModelSerializer):
         # Get all valid attributes for the category and its parents
         valid_attributes = Attribute.objects.filter(category__in=all_categories)
 
-        for attribute_value in attribute_values:
+        for attribute_value in attribute_values: 
             attribute_id = attribute_value.get("attribute")
             if not attribute_id:
-                raise serializers.ValidationError("Each attribute value must contain an 'attribute' key.")
+                raise serializers.ValidationError("Each attribute value must contain an 'attribute' key.") # Check if the attribute value contains an attribute key
 
             try:
                 attribute = valid_attributes.get(id=attribute_id)
@@ -172,7 +171,7 @@ class ProductWriteSerializer(serializers.ModelSerializer):
         product = Product.objects.create(**validated_data)
 
         for attribute_value in attribute_values:
-            selected_attribute_value, created = AttributeValue.objects.get_or_create(
+            selected_attribute_value, created = AttributeValue.objects.get_or_create( # Get or create the attribute value
                 value=attribute_value["value"], attribute_id=attribute_value["attribute"]
             )
             selected_attribute_value.products.add(product)
