@@ -81,7 +81,8 @@ class ProposedCategorySerializer(serializers.ModelSerializer):
     image = serializers.ImageField(required=False, allow_null=True)
     class Meta:
         model = ProposedCategory
-        fields = ["slug", "name", "parent", "image"]
+        fields = ["id","slug", "name", "parent", "image"]
+        
 
 
 

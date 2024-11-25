@@ -81,10 +81,11 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class ProposedCategoryViewSet(viewsets.ModelViewSet):
     queryset = ProposedCategory.objects.all()
     serializer_class = ProposedCategorySerializer
-    permission_classes = [IsAuthenticated] # TODO: Change to is moderator or admin or entrepreneur
+    permission_classes = [IsAuthenticated] 
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
 
     @action(detail=True, methods=["post"], permission_classes=[IsAdminOrModerator])
     def approve(self, request, pk=None):
@@ -283,8 +284,15 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response({"status": "User promoted to entrepreneur"})
 
     
-    @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=["get", "put"], permission_classes=[IsAuthenticated])
     def me(self, request):
+        user = request.user
+        if request.method == "PUT":
+            serializer = self.get_serializer(user, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()  # Сохраняем изменения в объекте user
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
         serializer = self.get_serializer(request.user)
         return Response(serializer.data)
     
