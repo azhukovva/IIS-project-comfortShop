@@ -46,7 +46,7 @@ const Category = () => {
 
   // State to store the subcategories
   const [subCategories, setSubCategories] = useState<CategoryType[]>([]);
-  const [subcategoriesNames, setSubcategoriesNames] = useState<string[]>([]);
+  const [subcategoriesNames, setSubcategoriesNames] = useState<string[]>(["All"]);
   const [activeCategory, setActiveCategory] = useState<CategoryType | null>(null);
 
   const [products, setProducts] = useState<ProductType[]>([]);

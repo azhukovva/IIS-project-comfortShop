@@ -12,6 +12,7 @@ import { Context } from "../../utils/Context";
 import RatingCard from "./RatingCard/RatingCard";
 import RatingModal from "../../components/Modal/RatingModal/RatingModal";
 import SignInModal from "../../components/Modal/SignInModal/SignInModal";
+import Popup from "../../components/Popup/Popup";
 
 const ProductPage = () => {
   const { id } = useParams();
@@ -21,6 +22,7 @@ const ProductPage = () => {
 
   const [isAddRating, setIsAddRating] = useState(false);
   const [showSignInModal, setShowSignInModal] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
 
   const { handleIsAuth, token, user, handleLoginClick } = useContext(Context);
 
@@ -49,7 +51,8 @@ const ProductPage = () => {
     }
   };
 
-  //TODO
+  console.log(posts)
+
   const addToBasket = async () => {
     try {
       console.log("add to basket");
@@ -59,13 +62,17 @@ const ProductPage = () => {
       }
 
       const axiosAuthInstance = axiosAuth(token);
-      const response = axiosAuthInstance.post(`/api/baskets/add_product`, {
-        product_id: id,
-        quantity: 1,
-      });
+      const response = await axiosAuthInstance.post(
+        `/api/baskets/add_product`,
+        {
+          product_id: id,
+          quantity: 1,
+        }
+      );
 
-      console.log(response);  
-
+      console.log(response);
+      setShowPopup(true);
+      setTimeout(() => setShowPopup(false), 2000);
     } catch (error) {
       if (error instanceof Error) {
         console.error(
@@ -83,10 +90,11 @@ const ProductPage = () => {
       fetch();
       fetchPosts();
     }
-  }, [user]);
+  }, [user, id, token]);
 
   return (
     <Page>
+      {showPopup && <Popup text="Product added!" isGood />}
       <div className={classes.rowTop}>
         <Button isBack isActive onClick={() => navigate(-1)}>
           <Icon icon={icons.left} width={20} />
@@ -121,7 +129,8 @@ const ProductPage = () => {
               {posts.length === 0 ? (
                 <p>No ratings available.</p>
               ) : (
-                posts.map((post) => <RatingCard post={post} />)
+                <div>{posts && Array.from(posts).map((post) => <RatingCard post={post} />)}</div>
+                
               )}
             </div>
             <Button isActive isOnAdd onClick={() => setIsAddRating(true)}>
@@ -142,9 +151,9 @@ const ProductPage = () => {
           </div>
         </div>
       )}
-      {isAddRating && <RatingModal onClose={() => setIsAddRating(false)} />}
+      {isAddRating && id && <RatingModal onClose={() => setIsAddRating(false)} productId={id} onFetch={fetchPosts}/>}
       {showSignInModal && (
-        <SignInModal onClose={() => setShowSignInModal(false)} />
+        <SignInModal onClose={() => setShowSignInModal(false)}/>
       )}
     </Page>
   );

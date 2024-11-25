@@ -1,9 +1,18 @@
-import React from 'react'
+import React, { useState } from "react";
+import Page from "../../components/Page/Page";
 
 const Orders = () => {
-  return (
-    <div>Orders</div>
-  )
-}
+  const [isEmpty, setIsEmpty] = useState(true);
+  const [basketItems, setBasketItems] = useState<any>({
+    user: null,
+    products: [],
+  });
 
-export default Orders
+  return (
+    <Page title="My Orders">
+      <div></div>
+    </Page>
+  );
+};
+
+export default Orders;
