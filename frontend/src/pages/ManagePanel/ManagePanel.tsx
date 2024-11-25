@@ -144,12 +144,45 @@ const Users = () => {
     }
   };
 
+  const onPomoteSeller = async (id: string) => {
+    if (!user) {
+      handleLoginClick(true);
+      return;
+    }
+    try {
+      const axiosAuthInstance = axiosAuth(token);
+      console.log("USER", user);
+      const response = await axiosAuthInstance.post(
+        `/api/users/${id}/promote_to_entrepreneur/`
+      );
+      console.log("Promoted to seller:", response.data);
+    } catch (error) {
+      console.error("Failed to promote:", error);
+    }
+  };
+
+  const handleApproveCategory = async (id: string) => {
+    if (!user) {
+      handleLoginClick(true);
+      return;
+    }
+    try {
+      const axiosAuthInstance = axiosAuth(token);
+      const response = await axiosAuthInstance.post(
+        `/api/proposed_categories/${id}/approve/`
+      );
+      console.log("Category approved:", response.data);
+    } catch (error) {
+      console.error("Failed to approve category:", error);
+    }
+  };
+
   // Users
   const handleConfirmDelete = async () => {
     if (userToDelete) {
       try {
         const axiosAuthInstance = axiosAuth(token);
-        await axiosAuthInstance.delete(`/api/users/${userToDelete.id}`);
+        await axiosAuthInstance.delete(`/api/users/${userToDelete.id}/`);
         setUsers((prevUsers) =>
           prevUsers.filter((user) => user.username !== userToDelete.username)
         );
@@ -171,6 +204,11 @@ const Users = () => {
 
   return (
     <Page title="Manage Panel">
+      <div className={classes.rowTop}>
+        <Button isBack isActive onClick={() => navigate(-1)}>
+          <Icon icon={icons.left} width={20} />
+        </Button>
+      </div>
       <div className={classes.container}>
         <div style={{ borderBottom: "1px solid rgba(0, 0, 0, 0.3)" }}>
           <h2>About me</h2>
@@ -191,17 +229,22 @@ const Users = () => {
                 </div>
 
                 <div className={classes.orders}>
-                  <Button onClick={() => navigate(`/orders/${user.id}`)} isActive>
+                  <Button
+                    onClick={() => navigate(`/orders/${user.id}`)}
+                    isActive
+                  >
                     My Orders
                   </Button>
                 </div>
               </div>
             ) : (
-              <div>
+              <div style={{ paddingBottom: "2rem" }}>
                 <p style={{ marginTop: "2rem", paddingBottom: "1rem" }}>
                   No user information available.
                 </p>
-                <Button onClick={() => handleLoginClick(true)}>Log In</Button>
+                <Button onClick={() => handleLoginClick(true)} isActive>
+                  Log In
+                </Button>
               </div>
             )}
           </div>
@@ -225,7 +268,7 @@ const Users = () => {
                         <th>Email</th>
                         <th>First Name</th>
                         <th>Last Name</th>
-
+                        <th>Promotion</th>
                         <th>Delete</th>
                       </tr>
                     </thead>
@@ -237,6 +280,17 @@ const Users = () => {
                           <td>{user.email}</td>
                           <td>{user.first_name}</td>
                           <td>{user.last_name}</td>
+                          <td>
+                            <div style={{ display: "flex", gap: "1rem" }}>
+                              <Button
+                                isActive
+                                onClick={() => onPomoteSeller(user.id)}
+                              >
+                                Entrepreneur
+                              </Button>
+                              <Button isActive>Moderator</Button>
+                            </div>
+                          </td>
                           <td>
                             <Icon
                               icon={icons.delete}
@@ -255,10 +309,8 @@ const Users = () => {
             {/* // */}
 
             <div style={{ maxHeight: "38vh", overflowY: "auto" }}>
-        
               <h2>Manage Categories</h2>
 
-     
               <div className={classes.userList}>
                 {categories.length === 0 ? (
                   <p>No categories available.</p>
@@ -270,7 +322,7 @@ const Users = () => {
                         <th>Slug</th>
                         <th>Parent</th>
                         <th>Children</th>
-
+                        <th>Approve Category</th>
                         <th>Delete</th>
                       </tr>
                     </thead>
@@ -281,6 +333,14 @@ const Users = () => {
                           <td>{category.slug}</td>
                           <td>{category.parent}</td>
                           <td>{category.children}</td>
+                          <td>
+                            <Button
+                              iconName="user"
+                              onClick={() => handleApproveCategory(category.slug)} //TODO - id?
+                            >
+                              Approve
+                            </Button>
+                          </td>
                           <td>
                             <Icon
                               icon={icons.delete}

@@ -65,7 +65,7 @@ const ProductPage = () => {
       });
 
       console.log(response);  
-      
+
     } catch (error) {
       if (error instanceof Error) {
         console.error(

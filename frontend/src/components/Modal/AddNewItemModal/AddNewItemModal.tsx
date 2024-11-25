@@ -32,7 +32,7 @@ const initialState: ProductType = {
   description: "",
   price: "",
   category: "",
-  stock: 0,
+  stock: 1,
   attribute_values: [],
 };
 
@@ -85,7 +85,9 @@ const AddNewItemModal = () => {
     try {
       const response = await get("/api/categories");
       const categories = response.data.map((category: any) => category.name);
-      const categoriesSlugs = response.data.map((category: any) => category.slug);
+      const categoriesSlugs = response.data.map(
+        (category: any) => category.slug
+      );
       setCategoriesSlugs(categoriesSlugs);
       setCategories(categories); // to dropdown
     } catch (error) {
@@ -103,7 +105,7 @@ const AddNewItemModal = () => {
       return;
     }
     try {
-      console.log(itemData)
+      console.log(itemData);
       const axiosAuthInstance = axiosAuth(token);
       const requestBody = {
         title: itemData.title,
@@ -117,14 +119,14 @@ const AddNewItemModal = () => {
           last_name: user.last_name,
         },
         stock: itemData.stock,
-        
+        attribute_values: itemData.attribute_values,
       };
       console.log("Request body:", requestBody);
       const response = await axiosAuthInstance.post(
-        `/api/products`,
+        `/api/products/`,
         requestBody
       );
-
+      handleAddNewItem(false)
       console.log("Product added:", response.data, requestBody);
     } catch (error) {
       if (error instanceof Error) {
@@ -143,12 +145,8 @@ const AddNewItemModal = () => {
       handleLoginClick(true);
       return;
     }
-    
     fetchCategories();
-  }, []);
-
-  console.log("Item data:", itemData);
-  console.log("USER", user)
+  }, [user]);
 
   return (
     <>

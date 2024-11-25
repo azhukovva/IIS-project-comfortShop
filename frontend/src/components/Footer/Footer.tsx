@@ -29,7 +29,7 @@ const Footer = () => {
     console.log("GROUPS", parseGroups(user?.groups || []));
     if (
       !parseGroups(user?.groups || []).includes("entrepreneur") &&
-      // !parseGroups(user?.groups || []).includes("admin") &&
+      !parseGroups(user?.groups || []).includes("admin") &&
       !parseGroups(user?.groups || []).includes("moderator")
     ) {
       console.log("SHOW BECOME MODAL");
