@@ -143,22 +143,42 @@ class OrderViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Retrie
         return queryset
     
     def create(self, request, *args, **kwargs):
+        
+        basket = Basket.objects.get(user=request.user)
+        if not basket.products.exists():
+            return Response({"error": "Basket is empty"}, status=status.HTTP_400_BAD_REQUEST)
+
+        order = Order.objects.create(user=request.user,address=request.data.get('address'), city=request.data.get('city'), zip_code=request.data.get('zip_code'), total_price=0)
+        order.total_price = order.c_total_price  
+        order.save()  
+
         with transaction.atomic():
-            basket = Basket.objects.get(user=request.user)
-            order = Order.objects.create(user=request.user)
-            
-            for basket_product in basket.products.all():
-                OrderProduct.objects.create(
-                    order=order,
-                    product=basket_product.product,
-                    quantity=basket_product.quantity,
-                )
-            basket.products.all().delete()
+            for basket_product in BasketProduct.objects.filter(basket=basket):
+                
+                product = basket_product.product
+                if product.stock >= basket_product.quantity:
+                    product.stock -= basket_product.quantity  # Уменьшаем количество товара
+                    product.save()  # Сохраняем изменения
+
+                    OrderProduct.objects.create(
+                        order=Order.objects.get(id=order.id),
+                        product=basket_product.product,
+                        quantity=basket_product.quantity,
+                        price=basket_product.product.price
+                    )
+                else:
+                    return Response({"error": "Not enough stock"}, status=status.HTTP_400_BAD_REQUEST)    
+
+            BasketProduct.objects.filter(basket=basket).delete()
+
+
+        order.save()    
         serializer = self.get_serializer(order)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
+    
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
 
 
 ### Attribute Views

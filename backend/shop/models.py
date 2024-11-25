@@ -133,8 +133,9 @@ class Order(models.Model):
         return sum(item.price * item.quantity for item in self.orderproduct_set.all())
     
     def save(self, *args, **kwargs):
-        self.total_price = self.c_total_price  
-        super().save(*args, **kwargs)
+        super().save(*args, **kwargs) 
+        self.total_price = self.c_total_price 
+        super().save(update_fields=["total_price"])
 
 
 class OrderProduct(models.Model):
