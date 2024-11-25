@@ -41,6 +41,7 @@ from .serializers import (
     RegisterSerializer,
 )
 
+# Category Views
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -48,20 +49,20 @@ class CategoryViewSet(viewsets.ModelViewSet):
     lookup_field = "slug"
     search_fields = ["name"]
 
-    @action(detail=False, methods=["get"], permission_classes=[AllowAny])
+    @action(detail=False, methods=["get"], permission_classes=[AllowAny]) # detail=False means that this action is for the list of objects
     def root(self, request):
         queryset = Category.objects.filter(parent=None)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     @action(detail=True, methods=["get"], permission_classes=[AllowAny])
-    def children(self, request, slug=None):
+    def children(self, request, slug=None): # detail=True means that this action is for a single object 
         category = self.get_object()
         queryset = category.children.all()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=["get"], permission_classes=[AllowAny])
+    @action(detail=True, methods=["get"], permission_classes=[AllowAny]) 
     def products(self, request, slug=None):
         category: Category = self.get_object()
         all_categories = category.get_all_children(include_self=True)
@@ -69,15 +70,15 @@ class CategoryViewSet(viewsets.ModelViewSet):
         serializer = ProductViewSerializer(queryset, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=["get"], permission_classes=[AllowAny])
+    @action(detail=True, methods=["get"], permission_classes=[AllowAny]) 
     def attributes(self, request, slug=None):
         category = self.get_object()
-        tree_ids = category.get_all_parents_and_self().values_list("id", flat=True)
+        tree_ids = category.get_all_parents_and_self().values_list("id", flat=True) # Get all parents and self
         queryset = Attribute.objects.filter(category__in=tree_ids)
         serializer = AttributeSerializer(queryset, many=True)
         return Response(serializer.data)
 
-
+# Proposed Category Views
 class ProposedCategoryViewSet(viewsets.ModelViewSet):
     queryset = ProposedCategory.objects.all()
     serializer_class = ProposedCategorySerializer
@@ -87,7 +88,7 @@ class ProposedCategoryViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
 
-    @action(detail=True, methods=["post"], permission_classes=[IsAdminOrModerator])
+    @action(detail=True, methods=["post"], permission_classes=[IsAdminOrModerator]) # category approve action
     def approve(self, request, pk=None):
         try:
             proposed_category = ProposedCategory.objects.get(id=pk)
@@ -111,14 +112,14 @@ class ProposedCategoryViewSet(viewsets.ModelViewSet):
             )
 
 
-
+# Product Views
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     permission_classes = [IsEnterepreneurOrReadOnly| IsAdminOrModerator]
     filterset_fields = ["category", "user", "title", "stock", "price"]
 
-    def get_serializer_class(self):
-        if self.request.method in permissions.SAFE_METHODS:
+    def get_serializer_class(self):     # get_serializer_class method is used to determine which serializer to use based on the request method
+        if self.request.method in permissions.SAFE_METHODS:   
             return ProductViewSerializer
         return ProductWriteSerializer
 
@@ -130,35 +131,55 @@ class ProductViewSet(viewsets.ModelViewSet):
             raise exceptions.PermissionDenied("You cannot delete this product.")
         instance.delete()
 
-
+# Order Views
 class OrderViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
+    def get_queryset(self):  # get_queryset method is used to determine which objects to return based on the request
         queryset = Order.objects.all()
         if not self.request.user.groups.filter(name__in=["moderator", "admin"]).exists():
             queryset = queryset.filter(user=self.request.user)
         return queryset
     
-    def create(self, request, *args, **kwargs):
-        with transaction.atomic():
-            basket = Basket.objects.get(user=request.user)
-            order = Order.objects.create(user=request.user)
-            
-            for basket_product in basket.products.all():
-                OrderProduct.objects.create(
-                    order=order,
-                    product=basket_product.product,
-                    quantity=basket_product.quantity,
-                )
-            basket.products.all().delete()
+    def create(self, request, *args, **kwargs): # create method is used to create a new object
+        
+        basket = Basket.objects.get(user=request.user)
+        if not basket.products.exists():
+            return Response({"error": "Basket is empty"}, status=status.HTTP_400_BAD_REQUEST)
+
+        order = Order.objects.create(user=request.user,address=request.data.get('address'), city=request.data.get('city'), zip_code=request.data.get('zip_code'), total_price=0)
+        order.total_price = order.c_total_price  
+        order.save()  
+
+        with transaction.atomic(): # transaction.atomic() is used to ensure that all operations are performed successfully
+            for basket_product in BasketProduct.objects.filter(basket=basket):
+                
+                product = basket_product.product
+                if product.stock >= basket_product.quantity:
+                    product.stock -= basket_product.quantity  # Reduce the stock of the product
+                    product.save()  # Save the product
+
+                    OrderProduct.objects.create(
+                        order=Order.objects.get(id=order.id),
+                        product=basket_product.product,
+                        quantity=basket_product.quantity,
+                        price=basket_product.product.price
+                    )
+                else:
+                    return Response({"error": "Not enough stock"}, status=status.HTTP_400_BAD_REQUEST)    
+
+            BasketProduct.objects.filter(basket=basket).delete()
+
+
+        order.save()    
         serializer = self.get_serializer(order)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
+    
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
 
 
 ### Attribute Views
@@ -263,21 +284,21 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [IsAdminOrModerator]
 
-    def get_queryset(self):
+    def get_queryset(self):  # get_queryset method is used to determine which objects to return based on the request
         queryset = User.objects.all()
         if not self.request.user.groups.filter(name__in=["moderator", "admin"]).exists() and not self.request.method in permissions.SAFE_METHODS:
             queryset = queryset.filter(id=self.request.user.id)
         return queryset
     
     @action(detail=True, methods=["post"], permission_classes=[IsAdminOrReadOnly])
-    def promote_to_moderator(self, request, pk=None):
+    def promote_to_moderator(self, request, pk=None):   # promote_to_moderator action
         user = self.get_object()
         group, created = Group.objects.get_or_create(name="moderator")
         user.groups.add(group)
         return Response({"status": "User promoted to moderator"})
     
     @action(detail=True, methods=["post"], permission_classes=[IsAdminOrModerator])
-    def promote_to_entrepreneur(self, request, pk=None):
+    def promote_to_entrepreneur(self, request, pk=None): # promote_to_entrepreneur action
         user = self.get_object()
         group, created = Group.objects.get_or_create(name="entrepreneur")
         user.groups.add(group)
@@ -285,30 +306,30 @@ class UserViewSet(viewsets.ModelViewSet):
 
     
     @action(detail=False, methods=["get", "put"], permission_classes=[IsAuthenticated])
-    def me(self, request):
+    def me(self, request): # action for the current user to get or update their profile
         user = request.user
         if request.method == "PUT":
             serializer = self.get_serializer(user, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
-            serializer.save()  # Сохраняем изменения в объекте user
+            serializer.save()  
             return Response(serializer.data, status=status.HTTP_200_OK)
         
         serializer = self.get_serializer(request.user)
         return Response(serializer.data)
     
 
-
+# Register View
 class RegisterView(APIView):
     permission_classes = [AllowAny]
 
-    @swagger_auto_schema(
+    @swagger_auto_schema(   # swagger_auto_schema is used to generate the documentation for the endpoint
         request_body=RegisterSerializer,
         responses={
             201: openapi.Response("User registered successfully"),
             400: "Validation Error"
         },
     )
-    def post(self, request):
+    def post(self, request): # post method is used to create a new object
         serializer = RegisterSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

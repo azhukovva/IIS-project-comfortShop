@@ -111,6 +111,15 @@ export type CategoryType = {
   image: string;
 };
 
+
+export type ProposedCategoryType = {
+  id: string;
+  name: string;
+  slug: string;
+  parent: string;
+  image: string;
+}
+
 export type OrderProductType = {
   id: number;
   product: ProductType; 

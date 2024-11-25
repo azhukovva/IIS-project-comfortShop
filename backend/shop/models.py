@@ -11,7 +11,7 @@ from django.db import models
 from django.contrib.auth.models import Group
 # MAIN MODELS
 
-
+# Category model
 class Category(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
@@ -27,7 +27,7 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-    def get_all_parents_and_self(self) -> list["Category"]:
+    def get_all_parents_and_self(self) -> list["Category"]:   
         parents = [self]
         parent = self.parent
         while parent is not None:
@@ -46,7 +46,7 @@ class Category(models.Model):
 
         return children
 
-
+# ProposedCategory model
 class ProposedCategory(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
@@ -64,7 +64,7 @@ class ProposedCategory(models.Model):
     def __str__(self):
         return self.name
 
-
+# Product model
 class Product(models.Model):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=200)
@@ -99,7 +99,7 @@ class Attribute(models.Model):
     def __str__(self):
         return self.name
 
-
+# AttributeValue model 
 class AttributeValue(models.Model):
     value = models.CharField(max_length=200)
     attribute = models.ForeignKey(Attribute, related_name="values", on_delete=models.CASCADE)
@@ -133,8 +133,9 @@ class Order(models.Model):
         return sum(item.price * item.quantity for item in self.orderproduct_set.all())
     
     def save(self, *args, **kwargs):
-        self.total_price = self.c_total_price  
-        super().save(*args, **kwargs)
+        super().save(*args, **kwargs) 
+        self.total_price = self.c_total_price 
+        super().save(update_fields=["total_price"])
 
 
 class OrderProduct(models.Model):
@@ -166,7 +167,7 @@ class BasketProduct(models.Model):
 
 # OTHER MODELS
 
-
+# Rating model
 class Rating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)

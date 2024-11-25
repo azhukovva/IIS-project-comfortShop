@@ -8,9 +8,9 @@ import React, {
 import Page from "../../components/Page/Page";
 import {
   axiosAuth,
-  CategoryType,
   get,
   OrderType,
+  ProposedCategoryType,
   UserType,
 } from "../../utils/axios";
 
@@ -36,18 +36,11 @@ export const parseGroups = (groups: string[]): string[] => {
 
 const Users = () => {
   const [users, setUsers] = useState<UserType[]>([]); // State to store users
-  const [categories, setCategories] = useState<CategoryType[]>([]); // State to store proposed categories
+  const [categories, setCategories] = useState<ProposedCategoryType[]>([]); // State to store proposed categories
   const [orders, setOrders] = useState<OrderType[]>([]);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState<UserType | null>(null);
-  const [showAddUserModal, setShowAddUserModal] = useState(false);
-  const [newUser, setNewUser] = useState({ username: "", password: "" });
-
-  const [categoryToDelete, setCategoryToDelete] = useState<CategoryType | null>(
-    null
-  );
-  const [showDeleteCategoryModal, setShowDeleteCategoryModal] = useState(false);
 
   const {
     isAuth,
@@ -58,6 +51,16 @@ const Users = () => {
     user,
     token,
   } = useContext(Context);
+
+  const [isEdit, setIsEdit] = useState(false);
+  const [username, setUsername] = useState(user?.username || "");
+  const [email, setEmail] = useState(user?.email || "");
+  const [firstName, setFirstName] = useState(user?.first_name || "");
+  const [lastName, setLastName] = useState(user?.last_name || "");
+
+  const [categoryToDelete, setCategoryToDelete] =
+    useState<ProposedCategoryType | null>(null);
+  const [showDeleteCategoryModal, setShowDeleteCategoryModal] = useState(false);
 
   const navigate = useNavigate();
 
@@ -103,6 +106,7 @@ const Users = () => {
     // }
     fetchUsers();
     fetchCategories();
+    fetchOrders();
   }, [isAddUser, isLoginClicked]);
 
   // Users
@@ -115,13 +119,14 @@ const Users = () => {
     setShowDeleteModal(true);
   };
 
-  const handleDeleteCategoryClick = (category: CategoryType) => {
+  const handleDeleteCategoryClick = (category: ProposedCategoryType) => {
     if (!isAuth) {
       handleLoginClick(true);
       return;
     }
     setCategoryToDelete(category);
     setShowDeleteCategoryModal(true);
+    fetchCategories();
   };
 
   const handleConfirmDeleteCategory = async () => {
@@ -129,11 +134,11 @@ const Users = () => {
       try {
         const axiosAuthInstance = axiosAuth(token);
         await axiosAuthInstance.delete(
-          `/api/proposed_categories/${categoryToDelete.slug}`
+          `/api/proposed_categories/${categoryToDelete.id}/`
         );
         setCategories((prevCategories) =>
           prevCategories.filter(
-            (category) => category.slug !== categoryToDelete.slug
+            (category) => category.id !== categoryToDelete.id
           )
         );
         setShowDeleteCategoryModal(false);
@@ -202,6 +207,34 @@ const Users = () => {
     setCategoryToDelete(null);
   };
 
+  const handleSaveUser = () => {
+    try {
+      const axiosAuthInstance = axiosAuth(token);
+      axiosAuthInstance.put(`/api/users/me/`, {
+        username,
+        email,
+        first_name: firstName,
+        last_name: lastName,
+      });
+      setIsEdit(false);
+      // Reset input fields to initial state
+      setUsername(user?.username || "");
+      setEmail(user?.email || "");
+      setFirstName(user?.first_name || "");
+      setLastName(user?.last_name || "");
+    } catch (error) {
+      console.error("Failed to edit user:", error);
+    }
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    if (name === "username") setUsername(value);
+    if (name === "email") setEmail(value);
+    if (name === "firstName") setFirstName(value);
+    if (name === "lastName") setLastName(value);
+  };
+
   return (
     <Page title="Manage Panel">
       <div className={classes.rowTop}>
@@ -226,16 +259,54 @@ const Users = () => {
                     <strong>My Role:</strong>
                     <div>{parseGroups(user.groups).join(", ")}</div>
                   </p>
+                  <p>
+                    <strong>You can call me:</strong>
+                    <div>
+                      {user.first_name} {user.last_name}
+                    </div>
+                  </p>
                 </div>
 
                 <div className={classes.orders}>
                   <Button
-                    onClick={() => navigate(`/orders/${user.id}`)}
+                    onClick={isEdit ? handleSaveUser : () => setIsEdit(!isEdit)}
                     isActive
                   >
-                    My Orders
+                    {isEdit ? "Save" : "Edit Profile"}
                   </Button>
                 </div>
+                {isEdit && (
+                  <div className={classes.edit}>
+                    <Input
+                      labelText="Username"
+                      placeholder="Change my Username"
+                      name="username"
+                      value={username}
+                      onChange={handleInputChange}
+                    />
+                    <Input
+                      labelText="Email"
+                      placeholder="Change my Email"
+                      name="email"
+                      value={email}
+                      onChange={handleInputChange}
+                    />
+                    <Input
+                      labelText="First Name"
+                      placeholder="Change my First Name"
+                      name="firstName"
+                      value={firstName}
+                      onChange={handleInputChange}
+                    />
+                    <Input
+                      labelText="Last Name"
+                      placeholder="Change my Last Name"
+                      name="lastName"
+                      value={lastName}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                )}
               </div>
             ) : (
               <div style={{ paddingBottom: "2rem" }}>
@@ -328,15 +399,14 @@ const Users = () => {
                     </thead>
                     <tbody>
                       {categories.map((category) => (
-                        <tr key={category.slug}>
+                        <tr key={category.id}>
                           <td>{category.name}</td>
                           <td>{category.slug}</td>
                           <td>{category.parent}</td>
-                          <td>{category.children}</td>
                           <td>
                             <Button
                               iconName="user"
-                              onClick={() => handleApproveCategory(category.slug)} //TODO - id?
+                              onClick={() => handleApproveCategory(category.id)}
                             >
                               Approve
                             </Button>
@@ -417,7 +487,7 @@ const Users = () => {
             title="Confirm Delete"
             textOk="Delete"
             textCancel="Cancel"
-            onSubmit={handleConfirmDelete}
+            onSubmit={handleConfirmDeleteCategory}
             onClose={handleCancelDelete}
             iconName="delete"
           >

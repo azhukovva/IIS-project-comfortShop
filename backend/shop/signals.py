@@ -7,14 +7,14 @@ from .models import ProposedCategory
 User = get_user_model()
 
 @receiver(post_migrate)
-def create_groups(sender, **kwargs):
+def create_groups(sender, **kwargs): # Create default groups
     Group.objects.get_or_create(name='admin')
     Group.objects.get_or_create(name='moderator')
     Group.objects.get_or_create(name='entrepreneur')
     Group.objects.get_or_create(name='user')  
 
 @receiver(post_save, sender=User)
-def assign_default_role(sender, instance, created, **kwargs):
+def assign_default_role(sender, instance, created, **kwargs): # Assign default role to user
     if created:  
         try:
             group = Group.objects.get(name='user')  
@@ -23,7 +23,7 @@ def assign_default_role(sender, instance, created, **kwargs):
             print("Default group 'user' does not exist. Please check group creation.")
 
 @receiver(post_save, sender=ProposedCategory)
-def add_to_entrepreneur_group(sender, instance, created, **kwargs):
+def add_to_entrepreneur_group(sender, instance, created, **kwargs): # Add user to entrepreneur group
     if created:
         user = instance.user
         group, created = Group.objects.get_or_create(name="entrepreneur")

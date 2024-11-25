@@ -10,6 +10,13 @@
   padding: 1rem;
 }
 
+.edit {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+}
+
 .userInfo {
   line-height: 2rem;
   gap: 7rem;
