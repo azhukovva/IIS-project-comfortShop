@@ -48,7 +48,7 @@ const App = () => {
             path="/categories/:category/product/:id"
             element={<ProductPage />}
           />
-          <Route path="/orders/:id" element={<Order />} />
+          <Route path="/orders" element={<Order />} />
         </Routes>
       </Container>
     </AuthProvider>

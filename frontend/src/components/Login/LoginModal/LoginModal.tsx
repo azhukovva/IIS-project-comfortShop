@@ -20,9 +20,16 @@ const initialState = {
 
 const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
   const [state, setState] = useState(initialState); // user state
+  const [isShowError, setIsShowError] = useState(false);
 
-  const { setUser, handleLoginClick, handleIsAuth, showPopup, handlePopup, setToken } =
-    useContext(Context);
+  const {
+    setUser,
+    handleLoginClick,
+    handleIsAuth,
+    showPopup,
+    handlePopup,
+    setToken,
+  } = useContext(Context);
 
   const { authToken } = useAuth();
 
@@ -37,6 +44,7 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
   );
 
   const handleLogin = async () => {
+    setIsShowError(false);
     try {
       if (state.username === "" || state.password === "") {
         return;
@@ -51,15 +59,15 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
 
       if (response?.data?.token) {
         setToken(response.data.token);
-        
+
         const axiosAuthInstance = axiosAuth(response.data.token);
 
         const responseUser = await axiosAuthInstance.get(`/api/users/me`);
         const currentUserInfo: UserType = responseUser.data;
-        
+
         setUser(currentUserInfo);
         console.log("User logged in:", currentUserInfo);
-        
+
         onSubmit ? onSubmit() : onClose(); // Trigger the onSubmit callback if login is successful
         handleIsAuth(true);
         handlePopup(true);
@@ -68,7 +76,7 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
     } catch (error) {
       console.log(error);
       handleIsAuth(false);
-      onClose();
+      setIsShowError(true);
     }
   };
 
@@ -102,6 +110,7 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
           placeholder="Enter your Password"
           onChange={handleInputChange}
         />
+        {isShowError && <span style={{textAlign: "center", color: "#741102"}}>Something went wrong. Please, try again</span>}
       </div>
     </Modal>
   );

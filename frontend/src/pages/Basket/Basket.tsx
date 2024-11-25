@@ -3,7 +3,7 @@ import Page from "../../components/Page/Page";
 import Button from "../../components/Button/Button";
 
 import classes from "./Basket.module.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { axiosAuth, BasketProductType, UserType } from "../../utils/axios";
 import Product from "../../components/Item/Product";
 import { Context } from "../../utils/Context";
@@ -16,7 +16,6 @@ type BasketProps = {
 };
 
 const Basket = () => {
-  const [isEmpty, setIsEmpty] = useState(true);
   const [basketItems, setBasketItems] = useState<BasketProps>({
     user: null,
     products: [],
@@ -29,15 +28,21 @@ const Basket = () => {
   const [showSignInModal, setShowSignInModal] = useState(false);
 
   const { handleIsAuth, token, user, handleLoginClick } = useContext(Context);
+  const navigate = useNavigate();
 
-  const removeFromBasket = async () => {
+  const removeFromBasket = async (id: number, quantity: number) => {
     try {
+      console.log("delete", { product_id: id, quantity: quantity });
       const axiosAuthInstance = axiosAuth(token);
       const authToken = token;
       if (!authToken) {
         handleIsAuth(true);
       }
-      const response = axiosAuthInstance.post(`/api/baskets/add_product`, user);
+      const response = await axiosAuthInstance.post(`/api/baskets/remove_product`,   {
+        product_id: id,
+        quantity: quantity,
+      });
+
     } catch (error) {
       if (error instanceof Error) {
         console.error(
@@ -51,6 +56,19 @@ const Basket = () => {
   };
 
   console.log("ITEMS", basketItems)
+
+  console.log("REQUEST", {
+    user: {
+      username: user?.username,
+      email: user?.email,
+      first_name: user?.first_name,
+      last_name: user?.last_name,
+    },
+    address: address,
+    city: city,
+    zip_code: zipCode,
+  })
+
 
   const onFinishOrder = async () => {
     try {
@@ -81,6 +99,7 @@ const Basket = () => {
         zip_code: zipCode,
       });
       console.log(response)
+      navigate(`/orders`);
     } catch (error) {
       if (error instanceof Error) {
         console.error(
@@ -152,7 +171,7 @@ const Basket = () => {
             <div style={{ display: "flex", gap: "2rem" }}>
               {basketItems.products.map((item) => (
                 <div key={item.id}>
-                  <Product item={item.product} onDelete={removeFromBasket} />
+                  <Product item={item.product} onDelete={() => removeFromBasket(item.id, item.quantity)} />
                 </div>
               ))}
             </div>

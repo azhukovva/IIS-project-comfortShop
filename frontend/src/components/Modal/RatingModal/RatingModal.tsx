@@ -5,25 +5,34 @@ import Input from "../../Input/Input";
 
 import classes from "./RatingModal.module.css";
 import { Context } from "../../../utils/Context";
+import StarRating from "./StarRating";
 
-type PostCreateType = {
-  header: string;
+type RatingCreateType = {
+  user: number;
+  product: string; // id
+  title: string;
   text: string;
+  rating: number;
 };
 
-const initialState: PostCreateType = {
-  header: "",
+const initialState: RatingCreateType = {
+  user: 0,
+  product: "",
+  title: "",
   text: "",
+  rating: 0,
 };
 
-type ModaalProps = {
+type ModalProps = {
+  productId: string;
   onClose: () => void;
+  onFetch: () => void;
 };
 
-const RatingModal = ({ onClose }: ModaalProps) => {
+const RatingModal = ({ onClose, productId, onFetch }: ModalProps) => {
   const [state, setState] = useState(initialState);
 
-  const { token } = useContext(Context);
+  const { token, user, handleLoginClick } = useContext(Context);
 
   const handleInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -35,11 +44,24 @@ const RatingModal = ({ onClose }: ModaalProps) => {
     []
   );
 
+  console.log(productId);
+
   const onAddPost = async () => {
+    if (!user) {
+      handleLoginClick(true);
+      return;
+    }
     try {
-    const axiosAuthInstance = axiosAuth(token);
-      const response = await axiosAuthInstance.post("/api/posts/", state);
+      console.log("in request", state);
+      const axiosAuthInstance = axiosAuth(token);
+      const response = await axiosAuthInstance.post("/api/rating/", {
+        ...state,
+        user: user.id,
+        product: productId,
+      });
       console.log("Post added:", response.data);
+      onClose();
+      onFetch();
     } catch (error) {
       console.error("Failed to add post:", error);
     }
@@ -47,12 +69,16 @@ const RatingModal = ({ onClose }: ModaalProps) => {
 
   const onDeletePost = async (id: number) => {
     try {
-        const axiosAuthInstance = axiosAuth(token);
-      const response = await axiosAuthInstance.delete(`/api/posts/${id}`);
+      const axiosAuthInstance = axiosAuth(token);
+      const response = await axiosAuthInstance.delete(`/api/rating/${id}`);
       console.log("Post added:", response.data);
     } catch (error) {
       console.error("Failed to add post:", error);
     }
+  };
+
+  const handleRatingChange = (value: number) => {
+    setState((prevState) => ({ ...prevState, rating: value }));
   };
 
   const comment = "Help us to improve our service by adding your rating!";
@@ -69,8 +95,8 @@ const RatingModal = ({ onClose }: ModaalProps) => {
     >
       <div className={classes.container}>
         <Input
-          name="header"
-          value={state.header}
+          name="title"
+          value={state.title}
           labelText="Title"
           placeholder="Enter Post Title"
           onChange={handleInputChange}
@@ -79,12 +105,16 @@ const RatingModal = ({ onClose }: ModaalProps) => {
           isBig
           name="text"
           value={state.text}
-          type="password"
-          labelText="Password"
+          type="text"
+          labelText="Rating text"
           isRequired
-          placeholder="Enter your Password"
+          placeholder="Write your rating here"
           onChange={handleInputChange}
         />
+        <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+          <span>Rating:</span>
+          <StarRating value={state.rating} onChange={handleRatingChange} />
+        </div>
       </div>
     </Modal>
   );

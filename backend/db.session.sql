@@ -100,9 +100,11 @@
 -- INSERT INTO shop_review (id)
 -- VALUES (1);
 
-INSERT INTO auth_user_groups (user_id, group_id)
-VALUES (8, 1);
+
 
 -- Insert into auth_user
--- INSERT INTO auth_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined)
--- VALUES (8, 'pbkdf2_sha256$870000$hb07eOI77Y5VdqWZRYPwPL$LB5I+drQNC0ZyzC/TZxfVlZXDa0seJatN8qXlYnU1i8=', '2024-11-21 21:12:47+00', true, 'ary', 'Aryna', 'AAAAAA', 'ary@example.com', true, true, '2024-11-21 21:12:47+00');
+INSERT INTO auth_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined)
+VALUES (18, 'pbkdf2_sha256$870000$hb07eOI77Y5VdqWZRYPwPL$LB5I+drQNC0ZyzC/TZxfVlZXDa0seJatN8qXlYnU1i8=', '2024-11-21 21:12:47+00', true, 'ary', 'Aryna', 'AAAAAA', 'ary@example.com', true, true, '2024-11-21 21:12:47+00');
+
+INSERT INTO auth_user_groups (user_id, group_id)
+VALUES (18, 1);

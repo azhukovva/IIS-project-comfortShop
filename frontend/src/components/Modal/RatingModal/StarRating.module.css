@@ -1,0 +1,32 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .ratingContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .starRating {
+    display: flex;
+    gap: 0.2rem;
+    cursor: pointer;
+  }
+  
+  .emptyStar {
+    color: #ccc;
+    font-size: 2rem;
+    transition: color 0.2s ease-in-out;
+  }
+  
+  .filledStar {
+    color: #8AB358;
+    font-size: 2rem;
+    transition: color 0.2s ease-in-out;
+  }
+  
+  

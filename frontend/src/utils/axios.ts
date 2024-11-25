@@ -131,7 +131,7 @@ export type OrderType = {
   id: number;
   user: UserType;
   products: OrderProductType[];
-  adress: string;
+  address: string;
   city: string;
   zip_code: string;
   total_price: string;

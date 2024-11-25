@@ -49,14 +49,15 @@ const Users = () => {
     isAddUser,
     handleAddUser,
     user,
+    setUser,
     token,
   } = useContext(Context);
 
   const [isEdit, setIsEdit] = useState(false);
-  const [username, setUsername] = useState(user?.username || "");
-  const [email, setEmail] = useState(user?.email || "");
-  const [firstName, setFirstName] = useState(user?.first_name || "");
-  const [lastName, setLastName] = useState(user?.last_name || "");
+  const [username, setUsername] = useState(user?.username);
+  const [email, setEmail] = useState(user?.email);
+  const [firstName, setFirstName] = useState(user?.first_name);
+  const [lastName, setLastName] = useState(user?.last_name );
 
   const [categoryToDelete, setCategoryToDelete] =
     useState<ProposedCategoryType | null>(null);
@@ -177,6 +178,7 @@ const Users = () => {
         `/api/proposed_categories/${id}/approve/`
       );
       console.log("Category approved:", response.data);
+      fetchCategories();
     } catch (error) {
       console.error("Failed to approve category:", error);
     }
@@ -207,21 +209,24 @@ const Users = () => {
     setCategoryToDelete(null);
   };
 
-  const handleSaveUser = () => {
+  const handleSaveUser = async () => {
     try {
       const axiosAuthInstance = axiosAuth(token);
-      axiosAuthInstance.put(`/api/users/me/`, {
+      await axiosAuthInstance.put(`/api/users/me/`, {
         username,
         email,
         first_name: firstName,
         last_name: lastName,
       });
+      const me: any = await axiosAuthInstance.get(`/api/users/me/`);
+      console.log ("ME", me)
+      setUser(me.data)
       setIsEdit(false);
       // Reset input fields to initial state
-      setUsername(user?.username || "");
-      setEmail(user?.email || "");
-      setFirstName(user?.first_name || "");
-      setLastName(user?.last_name || "");
+      // setUsername(user?.username || "");
+      // setEmail(user?.email || "");
+      // setFirstName(user?.first_name || "");
+      // setLastName(user?.last_name || "");
     } catch (error) {
       console.error("Failed to edit user:", error);
     }
@@ -267,12 +272,19 @@ const Users = () => {
                   </p>
                 </div>
 
-                <div className={classes.orders}>
-                  <Button
+                <div className={classes.buttons}>
+                  <div> <Button
                     onClick={isEdit ? handleSaveUser : () => setIsEdit(!isEdit)}
                     isActive
                   >
                     {isEdit ? "Save" : "Edit Profile"}
+                  </Button></div>
+                 
+                  <Button
+                    onClick={() => navigate("/orders")}
+                    isActive
+                  >
+                    My Orders
                   </Button>
                 </div>
                 {isEdit && (

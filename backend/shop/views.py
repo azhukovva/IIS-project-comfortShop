@@ -115,7 +115,7 @@ class ProposedCategoryViewSet(viewsets.ModelViewSet):
 # Product Views
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
-    permission_classes = [IsEnterepreneurOrReadOnly| IsAdminOrModerator]
+    permission_classes = [IsEnterepreneurOrReadOnly| IsAdminOrModerator| AllowAny]
     filterset_fields = ["category", "user", "title", "stock", "price"]
 
     def get_serializer_class(self):     # get_serializer_class method is used to determine which serializer to use based on the request method
