@@ -29,11 +29,12 @@ const AddUserModal = () => {
     try {
       const axiosAuthInstance = axiosAuth(token);
       const response = await axiosAuthInstance.post(
-        "/api/users/create_user",
+        "/api/users/",
         newUser
       );
       setNewUser({ username: "", password: "" });
       handleAddUser(false);
+      console.log("User added:", response.data);
     } catch (error) {
       console.error("Failed to add user:", error);
     }

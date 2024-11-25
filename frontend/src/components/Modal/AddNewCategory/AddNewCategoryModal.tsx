@@ -9,20 +9,24 @@ import Modal from "../Modal";
 
 import classes from "./AddNewCategoryModal.module.css";
 import { Context } from "../../../utils/Context";
-import { axiosAuth } from "../../../utils/axios";
+import { axiosAuth, get } from "../../../utils/axios";
 import Input from "../../Input/Input";
 import Button from "../../Button/Button";
 import LoginModal from "../../Login/LoginModal/LoginModal";
 import { AxiosError } from "axios";
 import { parseGroups } from "../../../pages/ManagePanel/ManagePanel";
+import Dropdown from "../../Dropdown/Dropdown";
 
 const initialState = {
   name: "",
   slug: "",
+  parent: "",
 };
 
 const AddNewCategory = () => {
   const [categoryData, setCategoryData] = useState(initialState);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [categoriesSlugs, setCategoriesSlugs] = useState<string[]>([]);
   const {
     handleAddNewCategory,
     handleIsAuth,
@@ -65,6 +69,7 @@ const AddNewCategory = () => {
         alert("Category name is required");
         return;
       }
+      console.log("Category with slug:", categoryWithSlug);
       const response = await axiosAuthInstance.post(
         "/api/categories/",
         categoryWithSlug
@@ -88,6 +93,10 @@ const AddNewCategory = () => {
       handleLoginClick(true);
       return;
     }
+    const categoryWithSlug = {
+      ...categoryData,
+      slug: generateSlug(categoryData.name), // Generate a UUID for the slug
+    };
     try {
       const axiosAuthInstance = axiosAuth(token);
       if (categoryData.name === "") {
@@ -96,7 +105,7 @@ const AddNewCategory = () => {
       }
       const response = await axiosAuthInstance.post(
         "/api/proposed_categories/",
-        categoryData
+        categoryWithSlug
       );
       console.log("Category proposed:", response.data);
       handleAddNewCategory(false);
@@ -112,13 +121,40 @@ const AddNewCategory = () => {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const response = await get("/api/categories");
+      const categories = response.data.map((category: any) => category.name);
+      const categoriesSlugs = response.data.map(
+        (category: any) => category.slug
+      );
+      setCategoriesSlugs(categoriesSlugs);
+      setCategories(categories); // to dropdown
+    } catch (error) {
+      console.error("Failed to fetch categories:", error);
+    }
+  };
+
+  const handleCategoryChange = (value: string) => {
+    const categoryIndex = categories.indexOf(value);
+    const categorySlug = categoriesSlugs[categoryIndex];
+
+    setCategoryData((prev) => ({
+      ...prev,
+      parent: categorySlug,
+    }));
+  };
+
   useEffect(() => {
     if (!isAuth) {
       handleLoginClick(true);
       handleAddNewCategory(false);
       return;
     }
+    fetchCategories();
   });
+
+  console.log(parseGroups(user?.groups || []));
 
   return (
     <>
@@ -154,6 +190,14 @@ const AddNewCategory = () => {
             isRequired
             onChange={handleInputChange}
           />
+          {user && !parseGroups(user.groups).includes("admin") && (
+            <Dropdown
+              options={categories}
+              placeholder="Category"
+              labelText="Category"
+              onChange={handleCategoryChange}
+            />
+          )}
         </div>
       </Modal>
     </>

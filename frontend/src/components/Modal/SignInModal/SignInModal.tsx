@@ -124,7 +124,7 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
               name="first_name"
               value={state.first_name}
               labelText="First Name"
-              isRequired
+              isRequired={false}
               placeholder="Enter your First Name"
               onChange={handleInputChange}
             />
@@ -132,7 +132,7 @@ const LoginModal = ({ onSubmit, onClose }: LoginModalProps) => {
               name="last_name"
               value={state.last_name}
               labelText="Last Name"
-              isRequired
+              isRequired={false}
               placeholder="Enter your Last Name"
               onChange={handleInputChange}
             />

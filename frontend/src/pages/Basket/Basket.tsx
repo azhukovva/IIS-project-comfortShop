@@ -141,7 +141,7 @@ const Basket = () => {
         ) : basketItems?.products.length === 0 ? (
           <div className={classes.isEmpty}>
             <span className={classes.isEmptyText}>Basket is empty</span>
-            <Link to="/categories" style={{ textDecoration: "none" }}>
+            <Link to="/categories/#categories" style={{ textDecoration: "none" }}>
               <Button isActive iconName="right">
                 Let's have some joy!
               </Button>
@@ -183,7 +183,7 @@ const Basket = () => {
               />
             </div>
             <div className={classes.basketSummary}>
-              <span>
+              <span style={{fontSize: "1.35rem"}}>
                 <strong>Total: </strong> {basketItems.products.length}
               </span>
               <div style={{ width: "fit-content" }}>
