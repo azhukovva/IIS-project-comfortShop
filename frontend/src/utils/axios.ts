@@ -8,7 +8,7 @@ export type UserType = {
   last_name: string;
   password: string;
   groups: string[];
-}; 
+};
 
 export type AuthTokenType = {
   username: string;
@@ -111,21 +111,20 @@ export type CategoryType = {
   image: string;
 };
 
-
 export type ProposedCategoryType = {
   id: string;
   name: string;
   slug: string;
   parent: string;
   image: string;
-}
+};
 
 export type OrderProductType = {
   id: number;
-  product: ProductType; 
+  product: ProductType;
   quantity: number;
   price: string;
-}
+};
 
 export type OrderType = {
   id: number;
@@ -137,18 +136,27 @@ export type OrderType = {
   total_price: string;
   created_at: string;
   updated_at: string;
-}
+};
 
 export type PostType = {
- user: number;
- title: string;
- text: string;
- rating: number;
- product: number;
+  id: number;
+  user: number;
+  title: string;
+  text: string;
+  rating: number;
+  product: number;
 };
 
 export type RatingType = {
-  user: number;
-  post: PostType;
+  id: number;
+
+  product: number;
+
   rating: number;
+
+  text: string;
+
+  title: string;
+
+  user: string;
 };

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { act, useContext, useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 
 import Sidebar from "../../../components/Sidebar/Sidebar";
@@ -46,14 +46,26 @@ const Category = () => {
 
   // State to store the subcategories
   const [subCategories, setSubCategories] = useState<CategoryType[]>([]);
-  const [subcategoriesNames, setSubcategoriesNames] = useState<string[]>(["All"]);
-  const [activeCategory, setActiveCategory] = useState<CategoryType | null>(null);
+  const [subcategoriesNames, setSubcategoriesNames] = useState<string[]>([
+    "All",
+  ]);
+  const [activeCategory, setActiveCategory] = useState<CategoryType | null>(
+    null
+  );
 
   const [products, setProducts] = useState<ProductType[]>([]);
 
   const fetch = async (categoryId: string) => {
     try {
-      const response = await get(`/api/categories/${categoryId}/products`); // products
+      let response;
+      if (activeCategory && activeCategory.name === "All") {
+        response = await get(`/api/categories/${categoryId}/products`); // all products
+      } else {
+        const subcategory = subCategories.find(
+          (sub) => sub.name === activeCategory?.name
+        );
+        response = await get(`/api/categories/${subcategory?.slug}/products/`);
+      }
       console.log("Response:", response.data);
       setProducts(response.data);
     } catch (error) {
@@ -73,9 +85,10 @@ const Category = () => {
       const response = await get(`/api/categories/${categoryId}/children/`);
       console.log("Response:", response.data);
       setSubCategories(response.data);
-      setSubcategoriesNames(
-        response.data.map((category: CategoryType) => category.name)
-      );
+      setSubcategoriesNames([
+        "All",
+        ...response.data.map((category: CategoryType) => category.name),
+      ]);
     } catch (error) {
       if (error instanceof Error) {
         console.error(
@@ -108,18 +121,19 @@ const Category = () => {
 
   useEffect(() => {
     if (categoryId) {
-      category && setActiveCategory({
-        name: categoryName,
-        slug: categoryId,
-        parent: "",
-        children: [],
-        image: "", // Provide a default or actual image URL if available
-      });
+      category &&
+        setActiveCategory({
+          name: categoryName,
+          slug: categoryId,
+          parent: "",
+          children: [],
+          image: "", // Provide a default or actual image URL if available
+        });
       fetch(categoryId); // all products
       fetchSubcategories(categoryId); // subcategories
       console.log("Category:", category);
     }
-  }, [category]);
+  }, [category, categoryId]);
 
   useEffect(() => {
     if (activeCategory) {
@@ -146,6 +160,7 @@ const Category = () => {
         const response = await get(
           `/api/categories/${subcategory.slug}/products`
         );
+        console.log("slug:", subcategory.slug);
         console.log("Subcategory Products:", response.data);
         setProducts(response.data);
       } catch (error) {

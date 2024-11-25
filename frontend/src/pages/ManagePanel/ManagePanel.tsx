@@ -24,6 +24,7 @@ import Modal from "../../components/Modal/Modal";
 import { Context } from "../../utils/Context";
 import Input from "../../components/Input/Input";
 import { useNavigate } from "react-router-dom";
+import Popup from "../../components/Popup/Popup";
 
 export const parseGroups = (groups: string[]): string[] => {
   const groupMap: { [key: string]: string } = {
@@ -43,6 +44,11 @@ const Users = () => {
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState<UserType | null>(null);
+
+  const [showPopupSave, setShowPopupSave] = useState(false);
+  const [showPopupSuccess, setShowPopupSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [showPopupDelete, setShowPopupDelete] = useState(false);
 
   const {
     isAuth,
@@ -134,6 +140,10 @@ const Users = () => {
     setCategoryToDelete(category);
     setShowDeleteCategoryModal(true);
     fetchCategories();
+    setShowPopupDelete(true);
+    setTimeout(() => {
+      setShowPopupDelete(false);
+    }, 2000);
   };
 
   const handleConfirmDeleteCategory = async () => {
@@ -151,6 +161,10 @@ const Users = () => {
         setShowDeleteCategoryModal(false);
         setCategoryToDelete(null);
       } catch (error) {
+        setShowError(true);
+        setTimeout(() => {
+          setShowError(false);
+        }, 2000);
         console.error("Failed to delete category:", error);
       }
     }
@@ -168,7 +182,40 @@ const Users = () => {
         `/api/users/${id}/promote_to_entrepreneur/`
       );
       console.log("Promoted to seller:", response.data);
+      setShowPopupSuccess(true);
+      setTimeout(() => {
+        setShowPopupSuccess(false);
+      }, 2000);
     } catch (error) {
+      setShowError(true);
+      setTimeout(() => {
+        setShowError(false);
+      }, 2000);
+      console.error("Failed to promote:", error);
+    }
+  };
+
+  const onPomoteModerator = async (id: string) => {
+    if (!user) {
+      handleLoginClick(true);
+      return;
+    }
+    try {
+      const axiosAuthInstance = axiosAuth(token);
+      console.log("USER", user);
+      const response = await axiosAuthInstance.post(
+        `/api/users/${id}/promote_to_moderator/`
+      );
+      console.log("Promoted to moderator:", response.data);
+      setShowPopupSuccess(true);
+      setTimeout(() => {
+        setShowPopupSuccess(false);
+      }, 2000);
+    } catch (error) {
+      setShowError(true);
+      setTimeout(() => {
+        setShowError(false);
+      }, 2000);
       console.error("Failed to promote:", error);
     }
   };
@@ -186,6 +233,10 @@ const Users = () => {
       console.log("Category approved:", response.data);
       fetchCategories();
     } catch (error) {
+      setShowError(true);
+      setTimeout(() => {
+        setShowError(false);
+      }, 2000);
       console.error("Failed to approve category:", error);
     }
   };
@@ -201,19 +252,25 @@ const Users = () => {
         );
         setShowDeleteModal(false);
         setUserToDelete(null);
+        setShowPopupDelete(true);
+        setTimeout(() => {
+          setShowPopupDelete(false);
+        }, 2000);
       } catch (error) {
         console.error("Failed to delete user:", error);
       }
     }
   };
 
-  const handleDeleteRatingClick = async () => {
+  const handleDeleteRatingClick = async (id: number) => {
     try {
       const axiosAuthInstance = axiosAuth(token);
-      const response = await axiosAuthInstance.delete(
-        `/api/ratings/${user?.id}/`
-      );
+      const response = await axiosAuthInstance.delete(`/api/rating/${id}/`);
       fetchRatings();
+      setShowPopupDelete(true);
+      setTimeout(() => {
+        setShowPopupDelete(false);
+      }, 2000);
       console.log("Rating deleted:", response.data);
     } catch (error) {
       console.error("Failed to delete rating:", error);
@@ -254,6 +311,10 @@ const Users = () => {
       console.log("ME", me);
       setUser(me.data);
       setIsEdit(false);
+      setShowPopupSave(true);
+      setTimeout(() => {
+        setShowPopupSave(false);
+      }, 2000);
       // Reset input fields to initial state
       // setUsername(user?.username || "");
       // setEmail(user?.email || "");
@@ -261,6 +322,10 @@ const Users = () => {
       // setLastName(user?.last_name || "");
     } catch (error) {
       console.error("Failed to edit user:", error);
+      setShowError(true);
+      setTimeout(() => {
+        setShowError(false);
+      }, 2000);
     }
   };
 
@@ -276,11 +341,17 @@ const Users = () => {
   const fetchRatings = async () => {
     try {
       const axiosAuthInstance = axiosAuth(token);
-      const response = await axiosAuthInstance.get(`api/rating/${user?.id}`);
+      const response = await axiosAuthInstance.get(`api/rating`);
 
       console.log("ratings", response.data);
-
-      setRatings(response.data);
+      const allRatings = response.data;
+      if (user) {
+        const myRatings = allRatings.filter(
+          (rating: RatingType) => rating.user === user?.id
+        );
+        console.log("myRatings", myRatings);
+        setRatings(myRatings);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -288,6 +359,12 @@ const Users = () => {
 
   return (
     <Page title="Manage Panel">
+      {showPopupSuccess && <Popup text="Success!" />}
+      {showPopupSave && <Popup text="Saved!" />}
+      {showPopupDelete && <Popup text="Deleted!" isDelete />}
+      {showError && (
+        <Popup text="Something went wrong! Please, try again" isError />
+      )}
       <div className={classes.rowTop}>
         <Button isBack isActive onClick={() => navigate(-1)}>
           <Icon icon={icons.left} width={20} />
@@ -381,7 +458,7 @@ const Users = () => {
           </div>
         </div>
 
-        {parseGroups(user?.groups || []).includes("admin") && (
+        {(parseGroups(user?.groups || []).includes("admin") || parseGroups(user?.groups || []).includes("moderator")) && (
           <div
             style={{ display: "flex", flexDirection: "column", gap: "2rem" }}
           >
@@ -419,7 +496,12 @@ const Users = () => {
                               >
                                 Entrepreneur
                               </Button>
-                              <Button isActive>Moderator</Button>
+                              <Button
+                                isActive
+                                onClick={() => onPomoteModerator(user.id)}
+                              >
+                                Moderator
+                              </Button>
                             </div>
                           </td>
                           <td>
@@ -452,7 +534,6 @@ const Users = () => {
                         <th>Name</th>
                         <th>Slug</th>
                         <th>Parent</th>
-                        <th>Children</th>
                         <th>Approve Category</th>
                         <th>Delete</th>
                       </tr>
@@ -545,11 +626,22 @@ const Users = () => {
                 </thead>
                 <tbody>
                   {ratings.map((rating) => (
-                    <tr key={rating.post.user}>
+                    <tr key={rating.user}>
                       <td>{rating.rating}</td>
-                      <td>{rating.post.title}</td>
-                      <td onClick={() => linkToProduct(rating.post.product)}>
-                        {rating.post.product}
+                      <td>{rating.title}</td>
+                      <td onClick={() => linkToProduct(rating.product)}>
+                        <div
+                          style={{
+                            cursor: "pointer",
+                            backgroundColor: "#f9f9f9",
+                            borderRadius: "1rem",
+                            border: "1px solid rgba(0, 0, 0, 0.3) ",
+                            padding: ".5rem 1.5rem",
+                            width: "fit-content",
+                          }}
+                        >
+                          {rating.product}
+                        </div>
                       </td>
 
                       <td>
@@ -557,7 +649,7 @@ const Users = () => {
                           icon={icons.delete}
                           style={{ cursor: "pointer" }}
                           width={20}
-                          onClick={handleDeleteRatingClick}
+                          onClick={() => handleDeleteRatingClick(rating.id)}
                         />
                       </td>
                     </tr>
